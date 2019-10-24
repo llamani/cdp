@@ -1,4 +1,4 @@
-## Sprint 1 - 21/10/19 au 08/11/19
+# Sprint 1 - 21/10/19 au 08/11/19
 
 | ID | User Story | Priorité | Difficulté |
 | -- | ---------- | -------- | ---------- |
@@ -11,5 +11,6 @@
 | US9 | En tant qu'utilisateur, je souhaite pouvoir consulter l'ensemble des tâches du projet et constater leur avancement grâce à un écran contenant 3 listes : TODO/IN PROGRESS/DONE. | 1 | 2 |
 | US10|  En tant qu'utilisateur, je souhaite pouvoir glisser une tâche d'une liste à une autre afin de changer son statut | 2 | 5 |
 | US11 | En tant qu'utilisateur, je souhaite pouvoir ajouter/modifier/consulter/supprimer une tâche à mon projet. J'ajoute/modifie en saisissant les champs suivants dans un formulaire (pré-rempli dans le cas de la modification) : Un nom (maximum 50 caractères), une description (maximum 255 caractères), une charge (un décimal correspondant au nombre de jour/homme), les issues associés à la tâche (via une liste déroulantes à choix multiples contenant l'ensemble des issues du projet), les membres affectés à cette tâche (aussi avec une liste déroulante à choix multiples facultatifs) et enfin les dépendances avec d'autres tâches (liste à choix multples facultatives contenant l'ensemble des tâches du projet). Un identifiant unique sera généré automatiquement pour cette nouvelle issue. Le statut "TODO" sera attribué par défaut. Je souhaite soumettre la création de la tâche au clic du bouton "Confirmer". Au clic du bouton  "Annuler", je souhaite revenir à l'écran ou sont affichées toutes les tâches du projet. Je souhaite que cette action soit disponible grâce à un bouton "Ajouter une tâche" situé en haut de l'écran affichant toutes les tâches du projet/ un bouton "Modifier" situé  à côté de la tâche concernée. Je supprime une tâche à l'aide d'un bouton "Supprimer" à côté de la tâche concernée.| 1 | 3 |
-[Lien vers les tâches]("Task1.md")
+
+[Lien vers les tâches du sprint 1]("Task1.md")
 
