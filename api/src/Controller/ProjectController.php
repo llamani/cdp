@@ -74,6 +74,7 @@ class ProjectController extends AbstractController {
             $project = new Project();
             $project->setName($parametersAsArray['name']);
             $project->setDescription($parametersAsArray['description']);
+            $project->setCreatedAt(new \DateTime());
             $em = $this->getDoctrine()->getManager();
             $em->persist($project);
             $em->flush();
