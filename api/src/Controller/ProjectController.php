@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class ProjectController extends AbstractController {
 
     /**
-     * @Route("/projects", name="api_get_all_projects", methods={GET})
+     * @Route("/projects", name="api_get_all_projects", methods={"GET"})
      */
     public function getAll(SerializerInterface $serializer)
     {
@@ -40,7 +40,7 @@ class ProjectController extends AbstractController {
     }
 
     /**
-     * @Route("/project/{id}", name="api_get_project_by_id", methods={GET})
+     * @Route("/project/{id}", name="api_get_project_by_id", methods={"GET"})
      */
     public function getProjectByID(SerializerInterface $serializer, $id) {
         $response = new Response();
@@ -64,7 +64,7 @@ class ProjectController extends AbstractController {
     }
 
     /**
-     * @Route("/project", name="api_create_project", methods={POST})
+     * @Route("/project", name="api_create_project", methods={"POST"})
      */
     public function createProject(Request $request, SerializerInterface $serializer) {
         $response = new Response();
@@ -89,7 +89,7 @@ class ProjectController extends AbstractController {
     }
 
     /**
-     * @Route("/project/{id}", name="api_update_project", methods={PUT})
+     * @Route("/project/{id}", name="api_update_project", methods={"PUT"})
      */
     public function updateProject(Request $request, SerializerInterface $serializer, $id) {
         $response = new Response();
@@ -120,7 +120,7 @@ class ProjectController extends AbstractController {
     }
 
     /**
-     * @Route("/project/{id}", name="api_delete_project", methods={DELETE})
+     * @Route("/project/{id}", name="api_delete_project", methods={"DELETE"})
      */
     public function deleteProject($id) {
         $response = new Response();
