@@ -1,0 +1,8 @@
+.issue-block {
+    padding: 1%;
+}
+
+.panel-body{
+    height:600px;
+    overflow-y:scroll;
+}
