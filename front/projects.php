@@ -1,15 +1,4 @@
-<!doctype html>
-<html lang="fr">
-    <head>
-        <meta charset="utf-8">
-        <title>Projets</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="projects.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
-    </head>
-    <body>
       <div class="jumbotron text-center">
       <h1>Projets</h1>
     </div>
@@ -86,25 +75,19 @@
               </button>
             </div>
             <div class="modal-body">
-                    <form  class= "form-signin" action="/add-project" method="POST">
+                    <form  class= "form-signin" action="/project" id="add-project" method="POST">
                         <div class="form-group">
                         <input type="text" class="form-control" name="name" id="_name" placeholder="Nom" required>
                         </div>
                         <div class="form-group">
                         <textarea class="form-control" rows = "5" cols = "60" name = "description" placeholder="Description" required></textarea><br>
-                        </div>
-                        <div class="form-group">
-                        <label for="start-date">Date de début</label>
-                        <input type="date" class="form-control" name="start-date" id="start-date" required>
-                        </div>
-                    </form>
+                        </div>   
+                    </form>  
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-              <button type="submit" class="btn btn-primary">Enregistrer</button>
+              <button type="submit" form="add-project" class="btn btn-primary">Enregistrer</button>
             </div>
           </div>
         </div>
       </div>
-    </body>
-</html>

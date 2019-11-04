@@ -1,13 +1,4 @@
-<!doctype html>
-<html lang="fr">
-    <head>
-        <meta charset="utf-8">
-        <title>S'inscrire</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    </head>
-    <body>
+
       <div class="container">
         <div class="col-sm-4"></div>
         <div class="col-sm-4">
@@ -31,9 +22,8 @@
     </div>
     <button type="submit" class="btn btn-default">Envoyer</button>
   </form>
+  <br />
+  <a href="#">Déjà inscrit ? Se connecter</a>
 </div>
 </div>
 <div class="col-sm-4"></div>
-
-    </body>
-</html>
