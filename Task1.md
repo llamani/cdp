@@ -26,7 +26,7 @@
 | T22 | US1 | Ajout d'un utilisateur dans le backend <ul><li> Création d'un fichier UserController.php</li><li>Définition dans UserController.php d'une route /add-controller</li><li>Implémentation d'une fonction addUser(Request \$request)</li></ul><br />**DoD** : Ajout d'un utilisateur dans la base de données après remplissage du formulaire dans /signup| 1 | Lucie | T1, T2 | TO DO |
 | T23 | US2 | Connexion d'un utilisateur dans le backend <ul><li>Définition dans UserController.php d'une route /login</li><li>Implémentation d'une fonction loginUser(Request \$request)</li></ul><br />**DoD** : Un utilisateur enregistré dans la base de données peut se connecter à son compte en remplissant le formulaire dans /login.| 0.5 | Laura | T1, T2 | TO DO |
 | T24 | US6, US10 | Glisser-Déposer des issues/tâches dans le backend <ul><li>Définition dans IssuesController.php d'une route /slide-issue et dans TasksController.php d'une route /slide-task</li><li>Implémentation d'une fonction updateStatus(\$issueId, \$new_status) dans IssuesController.php et d'une fonction updateStatus(\$taskId, \$new_status) dans TasksController.php</li></ul><br />**DoD** : La base de données est modifiée en conséquence après un glisser-déposer dans le front-end. | 0.5 | Laura | T1, T2 | TO DO |
-
+| T25 | - | Mettre en place un environnement Docker de l'application. <br />**DoD** : La commande "docker-compose up" permet de déployer l'application correctement (back, front & base de donées sur déployés sur les ports rensignées dans le fichier `.env` à la racine du projet). | 1 | Guillaume | - | DONE |
 ## Schéma de la base de données
 
 https://dbdiagram.io/d/5daf031202e6e93440f27fed
