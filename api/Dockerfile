@@ -25,4 +25,6 @@ COPY . .
 RUN PATH=$PATH:/usr/src/apps/vendor/bin:bin
 RUN composer install
 RUN chmod 777 -R var/
-RUN php bin/console doctrine:migrations:migrate -n
+
+#CMD ["php", "bin/console", "doctrine:migrations:migrate", "-n"]
+#RUN php bin/console doctrine:migrations:migrate -n
