@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Issue;
 use App\Entity\Project;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,27 +12,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 
-class ProjectController extends AbstractController {
+class IssueController extends AbstractController {
 
     /**
-     * @Route("/projects", name="api_get_all_projects", methods={"GET"})
+     * @Route("/issues/{projectId}", name="api_get_all_issues", methods={"GET"})
      */
-    public function getAll(SerializerInterface $serializer)
+    public function getAll(SerializerInterface $serializer, $projectId)
     {
         $response = new Response();
         try {
-            $projectsList = $this->getDoctrine()->getRepository(Project::class)->findAll();
+            $issuesList = $this->getDoctrine()->getRepository(Issue::class)->findBy(array('project' => $projectId));
 
-            if(!empty($projectsList)) {
-                $jsonContent = $serializer->serialize($projectsList, 'json',['circular_reference_handler' => function ($object) {return $object->getId();}]);
+            if(!empty($issuesList)) {
+                $jsonContent = $serializer->serialize($issuesList, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]);
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
-                // Aucune catégorie enregistrées
+                // Aucune catégorie enregistrée
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent(json_encode([]));
+               
             }
-            $response->headers->set('Content-Type', 'application/json');
+            $response->headers->set('Content-Type', 'text/html');
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             $response->setContent($e->getMessage());
@@ -40,21 +44,23 @@ class ProjectController extends AbstractController {
     }
 
     /**
-     * @Route("/project/{id}", name="api_get_project_by_id", methods={"GET"})
+     * @Route("/issue/{id}", name="api_get_issue_by_id", methods={"GET"})
      */
-    public function getProjectByID(SerializerInterface $serializer, $id) {
+    public function getIssueByID(SerializerInterface $serializer, $id) {
         $response = new Response();
         try {
-            $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
-            if($project != null) {
+            $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
+            if($issue != null) {
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize($project, 'json');
+                $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]);
                 $response->setContent($jsonContent);
             }
             else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown project with id ' . $id);
+                $response->setContent( 'Unknown issue with id ' . $id);
             }
         } catch (Exception $exception) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -64,23 +70,29 @@ class ProjectController extends AbstractController {
     }
 
     /**
-     * @Route("/project", name="api_create_project", methods={"POST"})
+     * @Route("/issue", name="api_create_issue", methods={"POST"})
      */
-    public function createProject(Request $request, SerializerInterface $serializer) {
+    public function createIssue(Request $request, SerializerInterface $serializer) {
         $response = new Response();
         try {
             $content = $request->getContent();
             $parametersAsArray = json_decode($content, true);
-            $project = new Project();
-            $project->setName($parametersAsArray['name']);
-            $project->setDescription($parametersAsArray['description']);
-            $project->setCreatedAt(new \DateTime());
+            $issue = new Issue();
+            $issue->setName($parametersAsArray['name']);
+            $issue->setDescription($parametersAsArray['description']);
+            $issue->setCreatedAt(new \DateTime());
+            $issue->setPriority($parametersAsArray['priority']);
+            $issue->setDifficulty($parametersAsArray['difficulty']);
+            $issue->setStatus($parametersAsArray['status']);
+            $issue->setProject($this->getDoctrine()->getRepository(Project::class)->find($parametersAsArray['project']));
             $em = $this->getDoctrine()->getManager();
-            $em->persist($project);
+            $em->persist($issue);
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
             $response->headers->set('Content-Type', 'application/json');
-            $jsonContent = $serializer->serialize($project, 'json');
+            $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
+                return $object->getId();
+            }]);
             $response->setContent($jsonContent);
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -90,27 +102,31 @@ class ProjectController extends AbstractController {
     }
 
     /**
-     * @Route("/project/{id}", name="api_update_project", methods={"PUT"})
+     * @Route("/issue/{id}", name="api_update_issue", methods={"PUT"})
      */
-    public function updateProject(Request $request, SerializerInterface $serializer, $id) {
+    public function updateIssue(Request $request, SerializerInterface $serializer, $id) {
         $response = new Response();
         try {
             $data = json_decode($request->getContent(), true);
-            $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
+            $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
 
-            if ($project != null) {
-                $project->setName($data['name']);
-                $project->setDescription($data['description']);
+            if ($issue != null) {
+                $issue->setName($data['name']);
+                $issue->setDescription($data['description']);
+                $issue->setPriority($data['priority']);
+                $issue->setDifficulty($data['difficulty']);
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($project);
+                $em->persist($issue);
                 $em->flush();
                 $response->setStatusCode(Response::HTTP_OK);
-                $jsonContent = $serializer->serialize($project, 'json');
+                $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]);
                 $response->headers->set('Content-Type', 'application/json');
                 $response->setContent($jsonContent);
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown project with id ' . $id);
+                $response->setContent( 'Unknown issue with id ' . $id);
             }
 
         } catch (Exception $e) {
@@ -121,22 +137,22 @@ class ProjectController extends AbstractController {
     }
 
     /**
-     * @Route("/project/{id}", name="api_delete_project", methods={"DELETE"})
+     * @Route("/issue/{id}", name="api_delete_issue", methods={"DELETE"})
      */
-    public function deleteProject($id) {
+    public function deleteIssue($id) {
         $response = new Response();
         try {
-            $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
-            if($project != null) {
+            $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
+            if($issue != null) {
                 $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->remove($project);
+                $entityManager->remove($issue);
                 $entityManager->flush();
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent(null);
             }
             else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown project with id ' . $id);
+                $response->setContent( 'Unknown issue with id ' . $id);
             }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
