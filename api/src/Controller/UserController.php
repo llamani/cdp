@@ -13,6 +13,35 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class UserController extends AbstractController {
 
+     /**
+     * @Route("/users", name="api_get_all_issues", methods={"GET"})
+     */
+    public function getAll(SerializerInterface $serializer)
+    {
+        $response = new Response();
+        try {
+            $usersList = $this->getDoctrine()->getRepository(User::class)->findAll();
+
+            if(!empty($usersList)) {
+                $jsonContent = $serializer->serialize($usersList, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]);
+                $response->setStatusCode(Response::HTTP_OK);
+                $response->setContent($jsonContent);
+            } else {
+                // Aucune catégorie enregistrée
+                $response->setStatusCode(Response::HTTP_OK);
+                $response->setContent(json_encode([]));
+               
+            }
+            $response->headers->set('Content-Type', 'text/html');
+        } catch (Exception $e) {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $response->setContent($e->getMessage());
+        }
+        return $response;
+    }
+
 
     /**
      * @Route("/user", name="api_create_user", methods={"POST"})
