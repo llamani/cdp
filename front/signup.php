@@ -1,9 +1,9 @@
-
+<script defer src="js/usersScript.js"></script>
 <div class="container">
     <div class="col-sm-4"></div>
     <div class="col-sm-4 sign-up">
         <h2>S'inscrire</h2>
-        <form action="/action_page.php">
+        <form action="/">
             <div class="form-group">
                 <label for="surname">Nom:</label>
                 <input type="text" class="form-control" id="name" placeholder="Nom" name="name">
@@ -16,7 +16,7 @@
                 <label for="pwd">Password:</label>
                 <input type="password" class="form-control" id="pwd" placeholder="Mot de passe" name="password">
             </div>
-            <button type="submit" class="btn btn-default">Envoyer</button>
+            <button type="submit" class="btn btn-default" id="signup">Envoyer</button>
         </form>
         <br />
         <a href="./index.php?page=login">Déjà inscrit ? Se connecter</a>
