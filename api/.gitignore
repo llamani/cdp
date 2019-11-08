@@ -20,3 +20,6 @@
 ###< symfony/web-server-bundle ###
 
 *.lock
+###> lexik/jwt-authentication-bundle ###
+#/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
