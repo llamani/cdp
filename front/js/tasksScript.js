@@ -9,7 +9,7 @@ for (let i = 0; i < add_el_btns.length; i++) {
 }
 
 var xmlhttp = new XMLHttpRequest();
-const url = "http://localhost:8000/tasks/1";
+const url = "http://localhost:8000/api/tasks/1";
 
 //Populates the lists with their corresponding issues
 xmlhttp.onreadystatechange = function () {
@@ -54,7 +54,7 @@ xmlhttp.send();
 
 
 var xmlhttp = new XMLHttpRequest();
-const issueIdsUrl = "http://localhost:8000/getIssueIds/1";
+const issueIdsUrl = "http://localhost:8000/api/getIssueIds/1";
 
 xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -155,7 +155,7 @@ function createTask() {
         "issue": 1
     }
 
-    const createUrl = "http://localhost:8000/task";
+    const createUrl = "http://localhost:8000/api/task";
 
     let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", createUrl);
@@ -193,7 +193,7 @@ function deleteTask(task) {
     if (isConfirmed) {
         const tId = task.substring(1);
 
-        const deleteUrl = "http://localhost:8000/task/" + tId;
+        const deleteUrl = "http://localhost:8000/api/task/" + tId;
 
         let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
         xmlhttp.open("DELETE", deleteUrl);
@@ -226,7 +226,7 @@ function updateTask() {
         "issue": 1
     }
 
-    const updateUrl = "http://localhost:8000/task/" + tId;
+    const updateUrl = "http://localhost:8000/api/task/" + tId;
 
     let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("PUT", updateUrl);

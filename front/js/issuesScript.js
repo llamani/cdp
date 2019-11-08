@@ -9,7 +9,7 @@ for (let i = 0; i < add_el_btns.length; i++) {
 }
 
 var xmlhttp = new XMLHttpRequest();
-const url = "http://localhost:8000/issues/1";
+const url = "http://localhost:8000/api/issues/1";
 
 //Populates the lists with their corresponding issues
 xmlhttp.onreadystatechange = function () {
@@ -150,7 +150,7 @@ function createIssue() {
         "project": 1
     }
 
-    const createUrl = "http://localhost:8000/issue";
+    const createUrl = "http://localhost:8000/api/issue";
 
     let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
     xmlhttp.open("POST", createUrl);
@@ -181,7 +181,7 @@ function deleteIssue(us) {
     if (isConfirmed) {
         const usId = us.substring(2);
 
-        const deleteUrl = "http://localhost:8000/issue/" + usId;
+        const deleteUrl = "http://localhost:8000/api/issue/" + usId;
 
         let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
         xmlhttp.open("DELETE", deleteUrl);
@@ -214,7 +214,7 @@ function updateIssue() {
         "difficulty": difficulty
     }
 
-    const updateUrl = "http://localhost:8000/issue/" + usId;
+    const updateUrl = "http://localhost:8000/api/issue/" + usId;
 
     let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
     xmlhttp.open("PUT", updateUrl);

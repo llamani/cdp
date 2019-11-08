@@ -20,6 +20,7 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
+        // php bin/console doctrine:fixtures:load
         for($i=0; $i< 10; $i++ ) {
             $project = new Project();
             $project->setName("project_" . $i);

@@ -19,7 +19,7 @@
 <script>
     function auth() {
         $.ajax ( {
-            url : "http://localhost:8000/auth",
+            url : "http://localhost:8000/login_check",
             method: "POST",
             data: {
                 "login": "",

@@ -1,6 +1,6 @@
 
 var xmlhttp = new XMLHttpRequest();
-const url = "http://localhost:8000/projects";
+const url = "http://localhost:8000/api/projects";
 
 xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -92,7 +92,7 @@ function createProject(){
         "description": description
     }
 
-    const createUrl = "http://localhost:8000/project";
+    const createUrl = "http://localhost:8000/api/project";
 
     let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
     xmlhttp.open("POST", createUrl);
@@ -112,7 +112,7 @@ function deleteProject(value){
     if (isConfirmed) {
         const id = value.substring(7);
 
-        const deleteUrl = "http://localhost:8000/project/" + id;
+        const deleteUrl = "http://localhost:8000/api/project/" + id;
 
         console.log(deleteUrl);
 
@@ -164,7 +164,7 @@ function updateProject(){
         "description": description
     }
 
-    const createUrl = "http://localhost:8000/project/" + id;
+    const createUrl = "http://localhost:8000/api/project/" + id;
 
     let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
     xmlhttp.open("PUT", createUrl);
