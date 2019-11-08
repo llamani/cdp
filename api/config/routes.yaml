@@ -1,10 +1,10 @@
-#default:
-#  prefix: /
-#  resource: '../src/Controller'
+default:
+  prefix: /
+  resource: '../src/Controller'
 
 api:
   prefix: /api
-  resource: '../src/Controller'
+  resource: '../src/Controller/Api'
 
 login_check:
   path: /login_check

@@ -42,9 +42,8 @@ class UserController extends AbstractController {
         return $response;
     }
 
-
     /**
-     * @Route("/user", name="api_create_user", methods={"POST"})
+     * @Route("/signup", name="api_signup", methods={"POST"})
      */
     public function createUser(Request $request, SerializerInterface $serializer) {
         $response = new Response();

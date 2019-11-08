@@ -14,7 +14,7 @@ function createUser(){
         "password" : password
     }
 
-    const createUrl = "http://localhost:8000/user";
+    const createUrl = "http://localhost:8000/signup";
 
     let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
     xmlhttp.open("POST", createUrl);
