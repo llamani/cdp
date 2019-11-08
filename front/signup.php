@@ -1,7 +1,6 @@
 <script defer src="js/usersScript.js"></script>
 <div class="container">
-    <div class="col-sm-4"></div>
-    <div class="col-sm-4 sign-up">
+    <div class="col-sm-offset-4 col-sm-4 sign-up">
         <h2>S'inscrire</h2>
         <form action="/" method="POST">
             <div class="form-group">
@@ -22,4 +21,3 @@
         <a href="./index.php?page=login">Déjà inscrit ? Se connecter</a>
     </div>
 </div>
-<div class="col-sm-4"></div>

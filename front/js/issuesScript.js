@@ -221,13 +221,10 @@ function updateIssue() {
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
-            document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + nom ;
-            document.getElementById("T" + tId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
-            document.getElementById("T" + tId + "-description").innerHTML = description;
-            document.getElementById("T" + tId + "-workload-btn").value = workload;
-            document.getElementById("T" + tId + "-workload").innerHTML = "<h6>Charge (en j/homme) :" +
-                "<span class=\"label label-default\">" + workload + " </span>" +
-                "</h6>";
+            document.getElementById("element-block-title-" + usId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> us" + usId + "</span >   " + nom ;
+            document.getElementById("us" + usId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
+            document.getElementById("us" + usId + "-description").innerHTML = description;
+            //TODO : priorité et difficulté
 
             $("#modal").modal("hide");
             // location.reload();

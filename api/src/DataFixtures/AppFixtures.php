@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Controller\UserController;
+use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -29,6 +30,15 @@ class AppFixtures extends Fixture
             $manager->persist($project);
         }
 
+        $issue = new Issue();
+        $issue->setCreatedAt(new \DateTime());
+        $issue->setName("isuue test");
+        $issue->setDescription("desc");
+        $issue->setDifficulty("easy");
+        $issue->setProject($project);
+        $issue->setPriority("low");
+        $issue->setStatus("done");
+        $manager->persist($issue);
         $user = new User();
         $user->setEmail("johndoe@example.com");
         $user->setName("John Doe");

@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class UserController extends AbstractController {
 
      /**
-     * @Route("/users", name="api_get_all_issues", methods={"GET"})
+     * @Route("/users", name="api_get_all_users", methods={"GET"})
      */
     public function getAll(SerializerInterface $serializer)
     {

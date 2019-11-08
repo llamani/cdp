@@ -9,12 +9,10 @@ xmlhttp.onreadystatechange = function () {
         let projectList = document.getElementById("projects");
 
         for (let i = 0; i < projects.length; i++) {
-            projectList.innerHTML += "<div class=\"col-sm-3\"></div>\n";
             //for (i; i < i + 3; i++){
                 const project = projects[i];
                 displayProject(project);
             //} 
-            projectList.innerHTML += "<div class=\"col-sm-3\"></div>\n";
         }
 
         var add_el_btns = document.getElementsByClassName("add-el");
@@ -59,16 +57,16 @@ function displayProject(project) {
 
     projectList.innerHTML +=
     "<div id=\"project-block-" + project.id + "\">\n" +
-    "<div class=\"col-sm-2\">\n" +
+    "<div class=\"col-sm-4  \">\n" +
       "<div class=\"project\">\n" +
         "<span class=\"glyphicon glyphicon-leaf logo-small\"></span>\n" + 
             "<div id=\"project" + project.id + "-name\"><h4>" + name + "</h4></div>\n" +
             "<div id=\"project" + project.id + "-description\">" + description + "</div>\n" +
-            "<div class=\"col-sm-2 project-block\"><button class=\"btn btn-warning btn-block edit-el\" value=\"project" + project.id + "\">" +
+            "<div class=\"project-block\"><button class=\"btn btn-warning btn-block edit-el\" value=\"project" + project.id + "\">" +
             "<span class=\"glyphicon glyphicon-pencil\"></span>\n" +
             "</button>\n" +
             "</div>\n" +
-            "<div class=\"col-sm-2 project-block\"><button class=\"btn btn-danger btn-block delete-el\" value=\"project" + project.id + "\">" +
+            "<div class=\"project-block\"><button class=\"btn btn-danger btn-block delete-el\" value=\"project" + project.id + "\">" +
             "<span class=\"glyphicon glyphicon-trash\"></span></button>" +
             "</div>\n"+
     "</div>\n" +
