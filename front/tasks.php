@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="css/issuesStyle.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <script defer src="js/issuesScript.js"></script>
-    <title>Issues</title>
+    <script defer src="js/tasksScript.js"></script>
+    <title>Tâches</title>
 </head>
 <div class="jumbotron text-center">
-    <h1>Issues</h1>
+    <h1>Tâches</h1>
 </div>
 <div class="container">
     <div class="row">
@@ -63,13 +63,13 @@
             <div class="modal-content">
                 <div class="modal-header text-center">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Nouvelle issue</h4>
+                    <h4 class="modal-title">Nouvelle tâche</h4>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
                             <label for="modal-id">Id:</label>
-                            <input type="text" class="form-control" id="modal-id" value="US1">
+                            <input type="text" class="form-control" id="modal-id" value="T1">
                         </div>
                         <div class="form-group">
                             <label for="modal-nom">Nom:</label>
@@ -79,21 +79,12 @@
                             <label for="modal-description">Description:</label>
                             <textarea rows="5" class="form-control" id="modal-description" placeholder="Maximum 255 caractères" maxlength="255"></textarea>
                         </div>
-                        <div class="form-group">
-                            <label for="modal-priority">Priorité:</label>
-                            <select class="form-control" id="modal-priority">
-                                <option value="low">Faible</option>
-                                <option value="medium">Moyenne</option>
-                                <option value="high">Elevée</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="modal-difficulty">Difficulté:</label>
-                            <select class="form-control" id="modal-difficulty">
-                                <option value="easy">Facile</option>
-                                <option value="intermediate">Intermédiaire</option>
-                                <option value="difficult">Difficile</option>
-                            </select>
+                        <div class="form-group row">
+                            <label for="modal-workload" class="col-sm-4">Charge (en j/hommes):</label>
+                            <div class="col-sm-4">
+                                <input type="number" data-decimals="2" min="0" step="0.1" class="form-control" id="modal-workload">
+                            </div>
+                            <div class="col-sm-4"></div>
                         </div>
                         <button hidden id="modal-status" value="todo"></button>
                         <button type="button" id="modal-mode" class="btn btn-success" value="create">Confirmer</button>

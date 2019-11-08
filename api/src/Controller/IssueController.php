@@ -11,9 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-
-class IssueController extends AbstractController {
-
+class IssueController extends AbstractController
+{
     /**
      * @Route("/issues/{projectId}", name="api_get_all_issues", methods={"GET"})
      */
@@ -22,8 +21,7 @@ class IssueController extends AbstractController {
         $response = new Response();
         try {
             $issuesList = $this->getDoctrine()->getRepository(Issue::class)->findBy(array('project' => $projectId));
-
-            if(!empty($issuesList)) {
+            if (!empty($issuesList)) {
                 $jsonContent = $serializer->serialize($issuesList, 'json', ['circular_reference_handler' => function ($object) {
                     return $object->getId();
                 }]);
@@ -33,7 +31,6 @@ class IssueController extends AbstractController {
                 // Aucune catégorie enregistrée
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent(json_encode([]));
-               
             }
             $response->headers->set('Content-Type', 'text/html');
         } catch (Exception $e) {
@@ -42,25 +39,24 @@ class IssueController extends AbstractController {
         }
         return $response;
     }
-
     /**
      * @Route("/issue/{id}", name="api_get_issue_by_id", methods={"GET"})
      */
-    public function getIssueByID(SerializerInterface $serializer, $id) {
+    public function getIssueByID(SerializerInterface $serializer, $id)
+    {
         $response = new Response();
         try {
             $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
-            if($issue != null) {
+            if ($issue != null) {
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->headers->set('Content-Type', 'application/json');
                 $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
                     return $object->getId();
                 }]);
                 $response->setContent($jsonContent);
-            }
-            else {
+            } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown issue with id ' . $id);
+                $response->setContent('Unknown issue with id ' . $id);
             }
         } catch (Exception $exception) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -68,11 +64,11 @@ class IssueController extends AbstractController {
         }
         return $response;
     }
-
     /**
      * @Route("/issue", name="api_create_issue", methods={"POST"})
      */
-    public function createIssue(Request $request, SerializerInterface $serializer) {
+    public function createIssue(Request $request, SerializerInterface $serializer)
+    {
         $response = new Response();
         try {
             $content = $request->getContent();
@@ -100,16 +96,15 @@ class IssueController extends AbstractController {
         }
         return $response;
     }
-
     /**
      * @Route("/issue/{id}", name="api_update_issue", methods={"PUT"})
      */
-    public function updateIssue(Request $request, SerializerInterface $serializer, $id) {
+    public function updateIssue(Request $request, SerializerInterface $serializer, $id)
+    {
         $response = new Response();
         try {
             $data = json_decode($request->getContent(), true);
             $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
-
             if ($issue != null) {
                 $issue->setName($data['name']);
                 $issue->setDescription($data['description']);
@@ -126,9 +121,32 @@ class IssueController extends AbstractController {
                 $response->setContent($jsonContent);
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown issue with id ' . $id);
+                $response->setContent('Unknown issue with id ' . $id);
             }
-
+        } catch (Exception $e) {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $response->setContent($e->getMessage());
+        }
+        return $response;
+    }
+    /**
+     * @Route("/issue/{id}", name="api_delete_issue", methods={"DELETE"})
+     */
+    public function deleteIssue($id)
+    {
+        $response = new Response();
+        try {
+            $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
+            if ($issue != null) {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->remove($issue);
+                $entityManager->flush();
+                $response->setStatusCode(Response::HTTP_OK);
+                $response->setContent(null);
+            } else {
+                $response->setStatusCode(Response::HTTP_NOT_FOUND);
+                $response->setContent('Unknown issue with id ' . $id);
+            }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             $response->setContent($e->getMessage());
@@ -137,22 +155,26 @@ class IssueController extends AbstractController {
     }
 
     /**
-     * @Route("/issue/{id}", name="api_delete_issue", methods={"DELETE"})
+     * @Route("/issueIds/{projectId}", name="api_get_issue_ids", methods={"GET"})
      */
-    public function deleteIssue($id) {
+    public function getIssueIds(SerializerInterface $serializer, $projectId)
+    {
         $response = new Response();
         try {
-            $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
-            if($issue != null) {
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->remove($issue);
-                $entityManager->flush();
+            $query = $this->getDoctrine()->getRepository(Issue::class)->createQueryBuilder("t");
+            $issueIdsList = $query->select('t.id')
+                ->getQuery()
+                ->getResult();
+
+            if ($issueIdsList != null) {
+                $jsonContent = $serializer->serialize($issueIdsList, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]);
                 $response->setStatusCode(Response::HTTP_OK);
-                $response->setContent(null);
-            }
-            else {
-                $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown issue with id ' . $id);
+                $response->setContent($jsonContent);
+            } else {  // Aucune catégorie enregistrée
+                $response->setStatusCode(Response::HTTP_OK);
+                $response->setContent(json_encode([]));
             }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);

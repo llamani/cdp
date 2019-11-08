@@ -1,3 +1,12 @@
+const add_el_btns = document.getElementsByClassName("add-el");
+const todoListEl = document.getElementById("to-do");
+const inProgressListEl = document.getElementById("in-progress");
+const doneListEl = document.getElementById("done");
+
+for (let i = 0; i < add_el_btns.length; i++) {
+    let add_btn = add_el_btns[i];
+    add_btn.addEventListener("click", function () { emptyModal(add_btn.value); });
+}
 
 var xmlhttp = new XMLHttpRequest();
 const url = "http://localhost:8000/issues/1";
@@ -12,21 +21,19 @@ xmlhttp.onreadystatechange = function () {
 
         for (let i = 0; i < issues.length; i++) {
             const issue = issues[i];
+            fillListWithIssue(getListAccordingToStatus(issue.status), issue);
+            /* 
             if (issue.status === 'todo')
-                fillListWithIssue(todoListEl, issue);
-            else if (issue.status === 'in progress')
-                fillListWithIssue(inProgressListEl, issue);
-            else
-                fillListWithIssue(doneListEl, issue);
+                 fillListWithIssue(todoListEl, issue);
+             else if (issue.status === 'in progress')
+                 fillListWithIssue(inProgressListEl, issue);
+             else
+                 fillListWithIssue(doneListEl, issue);
+                 */
         }
-        var edit_el_btns = document.getElementsByClassName("edit-el");
-        var add_el_btns = document.getElementsByClassName("add-el");
-        var delete_el_btns = document.getElementsByClassName("delete-el");
+        let edit_el_btns = document.getElementsByClassName("edit-el");
 
-        for (let i = 0; i < add_el_btns.length; i++) {
-            let add_btn = add_el_btns[i];
-            add_btn.addEventListener("click", function () { emptyModal(add_btn.value); });
-        }
+        let delete_el_btns = document.getElementsByClassName("delete-el");
 
         for (let i = 0; i < edit_el_btns.length; i++) {
             let edit_btn = edit_el_btns[i];
@@ -46,19 +53,26 @@ xmlhttp.setRequestHeader("Content-Type", "application/json");
 xmlhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
 xmlhttp.send();
 
+function getListAccordingToStatus(status) {
+    if (status === 'todo')
+        return todoListEl;
+    else if (status === 'in progress')
+        return inProgressListEl;
+    else return doneListEl;
+}
 
 function fillListWithIssue(list, issue) {
     list.innerHTML +=
         "<div id=\"issue-block-" + issue.id + "\" class=\"row\">\n" +
-        "<div class=\"col-sm-8 issue-block\">\n" +
+        "<div id=\"element-block-title-" + issue.id + "\" class=\"col-sm-8 issue-block\">\n" +
         "<a href=\"#us" + issue.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
         "<span class=\"badge\">" + issue.id + "</span >   " + issue.name + "</a > \n" +
         "</div>\n" +
-        "<div class=\"col-sm-2 issue-block\"><button class=\"btn btn-warning btn-block edit-el\" value=\"us" + issue.id + "\">" +
+        "<div class=\"col-sm-2 issue-block\"><button id=\"edit-el-" + issue.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"us" + issue.id + "\">" +
         "<span class=\"glyphicon glyphicon-pencil\"></span>\n" +
         "</button>\n" +
         "</div>\n" +
-        "<div class=\"col-sm-2 issue-block\"><button class=\"btn btn-danger btn-block delete-el\" value=\"us" + issue.id + "\">" +
+        "<div class=\"col-sm-2 issue-block\"><button id=\"delete-el-" + issue.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"us" + issue.id + "\">" +
         "<span class=\"glyphicon glyphicon-trash\"></span></button>" +
         "</div>\n" +
         "</div>\n" +
@@ -143,10 +157,18 @@ function createIssue() {
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
-            console.log("ici");
-            console.log(this.responseText);
+            const issue = JSON.parse(this.responseText);
+            //fillListWithTask(getListAccordingToStatus(task.status), task);
+            var node = document.createElement("div");
+            fillListWithIssue(node, issue);
+            getListAccordingToStatus(issue.status).appendChild(node);
+
+            const edit_btn = document.getElementById("edit-el-" + issue.id);
+            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
+            const delete_btn = document.getElementById("delete-el-" + issue.id);
+            delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); })
             $("#modal").modal("hide");
-           
+
         }
     };
     xmlhttp.send(JSON.stringify(jsonData));
@@ -199,10 +221,16 @@ function updateIssue() {
     xmlhttp.setRequestHeader("Content-Type", "application/json");
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
-            console.log("ici");
-            console.log(this.responseText);
+            document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + nom ;
+            document.getElementById("T" + tId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
+            document.getElementById("T" + tId + "-description").innerHTML = description;
+            document.getElementById("T" + tId + "-workload-btn").value = workload;
+            document.getElementById("T" + tId + "-workload").innerHTML = "<h6>Charge (en j/homme) :" +
+                "<span class=\"label label-default\">" + workload + " </span>" +
+                "</h6>";
+
             $("#modal").modal("hide");
-            location.reload();
+            // location.reload();
         }
     };
     xmlhttp.send(JSON.stringify(jsonData));
