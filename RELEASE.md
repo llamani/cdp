@@ -3,7 +3,7 @@
 ## Release 1 
 
 Realease 1 (sprint 1) : 08/11/2019 - 13:00  
-Identifiant du commit de la release : 
+Identifiant du commit de la release : 75e8200a3ff109cc7508817610a6a090bc879ff6
 
 ### Liste des issues réalisées
 
