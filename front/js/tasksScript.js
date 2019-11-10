@@ -1,69 +1,54 @@
-const add_el_btns = document.getElementsByClassName("add-el");
-const todoListEl = document.getElementById("to-do");
-const inProgressListEl = document.getElementById("in-progress");
-const doneListEl = document.getElementById("done");
+/*
+const projectId = localStorage.getItem("project"); 
+*/
 
-for (let i = 0; i < add_el_btns.length; i++) {
-    let add_btn = add_el_btns[i];
-    add_btn.addEventListener("click", function () { emptyModal(add_btn.value); });
-}
-
-var xmlhttp = new XMLHttpRequest();
-const url = "http://localhost:8000/api/tasks/1";
-
-//Populates the lists with their corresponding issues
-xmlhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-        const tasks = JSON.parse(this.responseText);
-
-        for (let i = 0; i < tasks.length; i++) {
-            const task = tasks[i];
-            fillListWithTask(getListAccordingToStatus(task.status), task);
-            /*
-             if (task.status === 'todo')
-                 fillListWithTask(todoListEl, task);
-             else if (task.status === 'in progress')
-                 fillListWithTask(inProgressListEl, task);
-             else
-                 fillListWithTask(doneListEl, task);
-                 */
-        }
-        let edit_el_btns = document.getElementsByClassName("edit-el");
-
-        let delete_el_btns = document.getElementsByClassName("delete-el");
+$(document).ready(function () {
+    startUp();
+    fillWithTasks();
+});
 
 
-        for (let i = 0; i < edit_el_btns.length; i++) {
-            let edit_btn = edit_el_btns[i];
-            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
-        }
+function startUp() {
+    const add_el_btns = document.getElementsByClassName("add-el");
 
-        for (let i = 0; i < delete_el_btns.length; i++) {
-            let delete_btn = delete_el_btns[i];
-            delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); });
-        }
-    }
-
-
-};
-
-xmlhttp.open("GET", url, true);
-xmlhttp.setRequestHeader("Content-Type", "application/json");
-xmlhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
-xmlhttp.send();
-
-
-var xmlhttp = new XMLHttpRequest();
-const issueIdsUrl = "http://localhost:8000/api/getIssueIds/1";
-
-xmlhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-        const issueIds = JSON.parse(this.responseText);
-
+    for (let i = 0; i < add_el_btns.length; i++) {
+        let add_btn = add_el_btns[i];
+        add_btn.addEventListener("click", function () { emptyModal(add_btn.value); });
     }
 }
 
+function fillWithTasks() {
+    $.ajax({
+        url: "http://localhost:8000/api/tasks/1",
+        method: "GET",
+        dataType: 'json',
+        crossDomain: true,
+        success: function (tasks) {
 
+            for (let i = 0; i < tasks.length; i++) {
+                const task = tasks[i];
+                fillListWithTask(getListAccordingToStatus(task.status), task);
+
+            }
+            let edit_el_btns = document.getElementsByClassName("edit-el");
+            let delete_el_btns = document.getElementsByClassName("delete-el");
+
+            for (let i = 0; i < edit_el_btns.length; i++) {
+                let edit_btn = edit_el_btns[i];
+                edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
+            }
+
+            for (let i = 0; i < delete_el_btns.length; i++) {
+                let delete_btn = delete_el_btns[i];
+                delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); });
+            }
+        },
+        error: function (error) {
+            console.error(error);
+        }
+    });
+    return false;
+}
 
 function fillListWithTask(list, task) {
     list.innerHTML +=
@@ -93,21 +78,6 @@ function fillListWithTask(list, task) {
         "</div>";
 
 }
-
-
-
-//TO DO : REPLACE ACTUAL FUNCTION
-/*function fillListWithTaskTest(list, task){
-    let elBlockDiv = document.createElement("div");
-    elBlockDiv.id = "element-block-test" + task.id;
-    elBlockDiv.classList.add("row");
-
-    let child = document.createElement("div");
-    child.
-    list.append(elBlockDiv);
-
-}*/
-
 
 
 function fillModal(value) {
@@ -154,17 +124,13 @@ function createTask() {
         "status": status,
         "issue": 1
     }
-
-    const createUrl = "http://localhost:8000/api/task";
-
-    let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-    xmlhttp.open("POST", createUrl);
-    xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4) {
-            const task = JSON.parse(this.responseText);
-            //fillListWithTask(getListAccordingToStatus(task.status), task);
-            var node = document.createElement("div");
+    $.ajax({
+        url: "http://localhost:8000/api/task",
+        method: "POST",
+        dataType: 'json',
+        crossDomain: true,
+        success: function (task) {
+            const node = document.createElement("div");
             fillListWithTask(node, task);
             getListAccordingToStatus(task.status).appendChild(node);
 
@@ -174,13 +140,19 @@ function createTask() {
             delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); })
             $("#modal").modal("hide");
 
-
+        },
+        error: function (error) {
+            console.error(error);
         }
-    };
-    xmlhttp.send(JSON.stringify(jsonData));
+    });
+    return false;
 }
 
 function getListAccordingToStatus(status) {
+    const todoListEl = document.getElementById("to-do");
+    const inProgressListEl = document.getElementById("in-progress");
+    const doneListEl = document.getElementById("done");
+
     if (status === 'todo')
         return todoListEl;
     else if (status === 'in progress')
@@ -188,27 +160,26 @@ function getListAccordingToStatus(status) {
     else return doneListEl;
 }
 
+
 function deleteTask(task) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const tId = task.substring(1);
-
-        const deleteUrl = "http://localhost:8000/api/task/" + tId;
-
-        let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-        xmlhttp.open("DELETE", deleteUrl);
-        xmlhttp.setRequestHeader("Content-Type", "application/json");
-        xmlhttp.onreadystatechange = function () {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
-                    let deletedBlock = document.getElementById("element-block-" + tId);
-                    deletedBlock.parentNode.removeChild(deletedBlock);
-                    let deletedDetails = document.getElementById("details-block-" + tId);
-                    deletedDetails.parentNode.removeChild(deletedDetails);
-                }
+        $.ajax({
+            url: "http://localhost:8000/api/task/" + tId,
+            method: "DELETE",
+            crossDomain: true,
+            success: function (issue) {
+                let deletedBlock = document.getElementById("element-block-" + tId);
+                deletedBlock.parentNode.removeChild(deletedBlock);
+                let deletedDetails = document.getElementById("details-block-" + tId);
+                deletedDetails.parentNode.removeChild(deletedDetails);
+            },
+            error: function (error) {
+                console.error(error);
             }
-        };
-        xmlhttp.send();
+        });
+
     }
 }
 
@@ -226,14 +197,14 @@ function updateTask() {
         "issue": 1
     }
 
-    const updateUrl = "http://localhost:8000/api/task/" + tId;
-
-    let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-    xmlhttp.open("PUT", updateUrl);
-    xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + nom ;
+    $.ajax({
+        url: "http://localhost:8000/api/task/" + tId,
+        method: "PUT",
+        dataType: 'json',
+        data: JSON.stringify(jsonData),
+        crossDomain: true,
+        success: function (issue) {
+            document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + nom;
             document.getElementById("T" + tId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
             document.getElementById("T" + tId + "-description").innerHTML = description;
             document.getElementById("T" + tId + "-workload-btn").value = workload;
@@ -243,9 +214,9 @@ function updateTask() {
 
 
             $("#modal").modal("hide");
-
+        },
+        error: function (error) {
+            console.error(error);
         }
-    };
-    xmlhttp.send(JSON.stringify(jsonData));
-
+    });
 }
