@@ -1,87 +1,81 @@
 
-var xmlhttp = new XMLHttpRequest();
-const url = "http://localhost:8000/api/projects";
+$(document).ready(function () {
+    startUp();
+    fillWithProjects();
+});
 
-xmlhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-        const projects = JSON.parse(this.responseText);
+function startUp() {
+    document.getElementById("add-btn").addEventListener("click", function () { emptyModal(); });
+    const modalConfirmBtn = document.getElementById("modal-mode");
+    modalConfirmBtn.addEventListener("click", function () {
+        if (modalConfirmBtn.value === "create") createProject();
+        else updateProject();
+    });
+}
 
-        let projectList = document.getElementById("projects");
+function fillWithProjects() {
+    $.ajax({
+        url: "http://localhost:8000/api/projects",
+        method: "GET",
+        dataType: 'json',
+        crossDomain: true,
+        success: function (projects) {
+            let projectList = document.getElementById("projects");
 
-        for (let i = 0; i < projects.length; i++) {
-            //for (i; i < i + 3; i++){
-                const project = projects[i];
-                displayProject(project);
-            //} 
+            for (let i = 0; i < projects.length; i++) {
+                displayProject(projectList, projects[i]);
+
+            }
+
+            const edit_el_btns = document.getElementsByClassName("edit-el");
+            const delete_el_btns = document.getElementsByClassName("delete-el");
+
+            for (let i = 0; i < edit_el_btns.length; i++) {
+                let edit_btn = edit_el_btns[i];
+                edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
+            }
+
+            for (let i = 0; i < delete_el_btns.length; i++) {
+                
+                let delete_btn = delete_el_btns[i];
+                delete_btn.addEventListener("click", function () { deleteProject(delete_btn.value); });
+            }
+        },
+        error: function (error) {
+            console.error(error);
         }
-
-        var add_el_btns = document.getElementsByClassName("add-el");
-        var edit_el_btns = document.getElementsByClassName("edit-el");
-        var delete_el_btns = document.getElementsByClassName("delete-el");
-
-        for (let i = 0; i < add_el_btns.length; i++) {
-            let add_btn = add_el_btns[i];
-            add_btn.addEventListener("click", function () { emptyModal(add_btn.value); });
-        }
-
-        for (let i = 0; i < edit_el_btns.length; i++) {
-            let edit_btn = edit_el_btns[i];
-            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
-        }
-
-        for (let i = 0; i < delete_el_btns.length; i++) {
-            console.log("oki");
-            let delete_btn = delete_el_btns[i];
-            delete_btn.addEventListener("click", function () { deleteProject(delete_btn.value); });
-        }
-
-    }
-
-   
-
-};
-
-xmlhttp.open("GET", url, true);
-xmlhttp.setRequestHeader("Content-Type", "application/json");
-xmlhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
-xmlhttp.send();
-
-
-
-function displayProject(project) {
-    let projectList = document.getElementById("projects");
-
-    const name = project.name;
-    const description = project.description;
-    const date = project.created_at;
-
-    projectList.innerHTML +=
-    "<div id=\"project-block-" + project.id + "\">\n" +
-    "<div class=\"col-sm-4  \">\n" +
-      "<div class=\"project\">\n" +
-        "<span class=\"glyphicon glyphicon-leaf logo-small\"></span>\n" + 
-            "<div id=\"project" + project.id + "-name\"><h4>" + name + "</h4></div>\n" +
-            "<div id=\"project" + project.id + "-description\">" + description + "</div>\n" +
-            "<div class=\"project-block\"><button class=\"btn btn-warning btn-block edit-el\" value=\"project" + project.id + "\">" +
-            "<span class=\"glyphicon glyphicon-pencil\"></span>\n" +
-            "</button>\n" +
-            "</div>\n" +
-            "<div class=\"project-block\"><button class=\"btn btn-danger btn-block delete-el\" value=\"project" + project.id + "\">" +
-            "<span class=\"glyphicon glyphicon-trash\"></span></button>" +
-            "</div>\n"+
-    "</div>\n" +
-    "</div>\n" +
-    "</div>\n";
+    });
+    return false;
 
 }
 
-const modalConfirmBtn = document.getElementById("modal-mode");
-modalConfirmBtn.addEventListener("click", function () {
-    if (modalConfirmBtn.value === "create") createProject();
-     else updateProject();
-});
+function displayProject(node, project) {
+    const name = project.name;
+    const description = project.description;
 
-function createProject(){
+    node.innerHTML +=
+        "<div id=\"project-block-" + project.id + "\">\n" +
+        "<div class=\"col-sm-4  \">\n" +
+        "<div class=\"project\">\n" +
+        "<div><span class=\"glyphicon glyphicon-leaf logo-small\"></span></div>\n" +
+        "<div id=\"project" + project.id + "-name\"><h4>" + name + "</h4></div>\n" +
+        "<div id=\"project" + project.id + "-description\">" + description + "</div>\n" +
+        "<div class=\"project-block\"><button id=\"edit-el-" + project.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"project" + project.id + "\">" +
+        "<span class=\"glyphicon glyphicon-pencil\"></span>\n" +
+        "</button>\n" +
+        "</div>\n" +
+        "<div class=\"project-block\"><button id=\"delete-el-" + project.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"project" + project.id + "\">" +
+        "<span class=\"glyphicon glyphicon-trash\"></span></button>" +
+        "</div>\n" +
+        "</div>\n" +
+        "</div>\n" +
+        "</div>\n";
+
+}
+
+
+
+function createProject() {
     const nom = document.getElementById("name").value;
     const description = document.getElementById("description").value;
 
@@ -90,42 +84,47 @@ function createProject(){
         "description": description
     }
 
-    const createUrl = "http://localhost:8000/api/project";
+    $.ajax({
+        url: "http://localhost:8000/api/project",
+        method: "POST",
+        dataType: 'json',
+        data: JSON.stringify(jsonData),
+        crossDomain: true,
+        success: function (project) {
+            const node = document.createElement("div");
+            displayProject(node, project);
+            document.getElementById("projects").appendChild(node);
 
-    let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
-    xmlhttp.open("POST", createUrl);
-    xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText);
+            const edit_btn = document.getElementById("edit-el-" + project.id);
+            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
+            const delete_btn = document.getElementById("delete-el-" + project.id);
+            delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); })
             $("#modal").modal("hide");
+        },
+        error: function (error) {
+            console.error(error);
         }
-    };
-    xmlhttp.send(JSON.stringify(jsonData));
-}       
+    });
+}
 
 
-function deleteProject(value){
+function deleteProject(value) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const id = value.substring(7);
 
-        const deleteUrl = "http://localhost:8000/api/project/" + id;
-
-        console.log(deleteUrl);
-
-        let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
-        xmlhttp.open("DELETE", deleteUrl);
-        xmlhttp.setRequestHeader("Content-Type", "application/json");
-        xmlhttp.onreadystatechange = function () {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
-                    let deletedProjectBlock = document.getElementById("project-block-" + id);
-                    deletedProjectBlock.parentNode.removeChild(deletedProjectBlock);
-                }
+        $.ajax({
+            url: "http://localhost:8000/api/project/" + id,
+            method: "DELETE",
+            crossDomain: true,
+            success: function (project) {
+                let deletedProjectBlock = document.getElementById("project-block-" + id);
+                deletedProjectBlock.parentNode.removeChild(deletedProjectBlock);
+            },
+            error: function (error) {
+                console.error(error);
             }
-        };
-        xmlhttp.send();
+        });
     }
 }
 
@@ -143,7 +142,7 @@ function fillModal(value) {
 
 }
 
-function emptyModal(status) {
+function emptyModal() {
     document.getElementById("id").value = 'project';
     document.getElementById("name").value = '';
     document.getElementById("description").value = '';
@@ -152,7 +151,7 @@ function emptyModal(status) {
     $("#modal").modal("show");
 }
 
-function updateProject(){
+function updateProject() {
     const id = document.getElementById("id").value.substring(2);
     const nom = document.getElementById("name").value;
     const description = document.getElementById("description").value;
@@ -162,18 +161,20 @@ function updateProject(){
         "description": description
     }
 
-    const createUrl = "http://localhost:8000/api/project/" + id;
+    $.ajax({
+        url: "http://localhost:8000/api/project/" + id,
+        method: "PUT",
+        dataType: 'json',
+        data: JSON.stringify(jsonData),
+        crossDomain: true,
+        success: function (project) {
+            document.getElementById("project" + id + "-name").innerHTML = "<h4>" + nom + "</h4>";
+            document.getElementById("project" + id + "-description").innerHTML = description;
 
-    let xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
-    xmlhttp.open("PUT", createUrl);
-    xmlhttp.setRequestHeader("Content-Type", "application/json");
-    xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4) {
-            console.log("ici");
-            console.log(this.responseText);
             $("#modal").modal("hide");
+        },
+        error: function (error) {
+            console.error(error);
         }
-    };
-    xmlhttp.send(JSON.stringify(jsonData));
-    console.log(jsonData);   
+    });
 }

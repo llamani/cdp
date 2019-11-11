@@ -4,14 +4,14 @@
 </div>
 <div class="container-fluid text-center">
 
-        <button type="button" class="btn btn-primary" data-toggle="modal" value= "create" data-target="#modal">
+        <button type="button" id="add-btn" class="btn btn-primary" value= "create">
             Ajouter un projet
         </button>
     <hr/>
     <div id="projects" class="container"></div>
 
     <!-- Modal -->
-    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="add-project-modal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -21,7 +21,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form  class= "form-signin" action="" id="add-project" method="POST">
+                    <form  class= "form-signin">
                         <div class="form-group">
                             <input type="hidden" class="form-control" id="id" value="">
                         </div>

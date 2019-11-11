@@ -24,7 +24,7 @@
             data: {
                 "login": "",
                 "password": "",
-            }
+            },
             crossDomain: true,
             success: function(data){
                 alert("AJAX SUCCESS")

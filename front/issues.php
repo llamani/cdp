@@ -54,7 +54,7 @@
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="modal-id">Id:</label>
+                            <label for="modal-id">ID:</label>
                             <input type="text" class="form-control" id="modal-id" value="US1">
                         </div>
                         <div class="form-group">
