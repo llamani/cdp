@@ -73,11 +73,11 @@ function fillListWithIssue(list, issue) {
         "<a href=\"#us" + issue.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
         "<span class=\"badge\">" + issue.id + "</span >   " + issue.name + "</a > \n" +
         "</div>\n" +
-        "<div class=\"col-sm-2 issue-block\"><button id=\"edit-el-" + issue.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"us" + issue.id + "\">" +
+        "<div class=\"col-sm-2 element-block\"><button id=\"edit-el-" + issue.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"us" + issue.id + "\">" +
         "<span class=\"glyphicon glyphicon-pencil\"></span>\n" +
         "</button>\n" +
         "</div>\n" +
-        "<div class=\"col-sm-2 issue-block\"><button id=\"delete-el-" + issue.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"us" + issue.id + "\">" +
+        "<div class=\"col-sm-2 element-block\"><button id=\"delete-el-" + issue.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"us" + issue.id + "\">" +
         "<span class=\"glyphicon glyphicon-trash\"></span></button>" +
         "</div>\n" +
         "</div>\n" +

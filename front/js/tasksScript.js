@@ -57,11 +57,11 @@ function fillListWithTask(list, task) {
         "<a href=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
         "<span class=\"badge\"> T" + task.id + "</span >   " + task.name + "</a > \n" +
         "</div>\n" +
-        "<div class=\"col-sm-2 issue-block\"><button id=\"edit-el-" + task.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"T" + task.id + "\">" +
+        "<div class=\"col-sm-2 element-block\"><button id=\"edit-el-" + task.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"T" + task.id + "\">" +
         "<span class=\"glyphicon glyphicon-pencil\"></span>\n" +
         "</button>\n" +
         "</div>\n" +
-        "<div class=\"col-sm-2 issue-block\"><button id=\"delete-el-" + task.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"T" + task.id + "\">" +
+        "<div class=\"col-sm-2 element-block\"><button id=\"delete-el-" + task.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"T" + task.id + "\">" +
         "<span class=\"glyphicon glyphicon-trash\"></span></button>" +
         "</div>\n" +
         "</div>\n" +
