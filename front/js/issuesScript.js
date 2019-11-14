@@ -21,6 +21,7 @@ function startUp() {
     });
 }
 
+
 function fillWithIssues() {
 
     $.ajax({
@@ -30,7 +31,7 @@ function fillWithIssues() {
         crossDomain: true,
         success: function (issues) {
             for (let i = 0; i < issues.length; i++) {
-                const issue = issues[i];
+                let issue = issues[i];
                 fillListWithIssue(getListAccordingToStatus(issue.status), issue);
             }
 
@@ -105,9 +106,7 @@ function fillListWithIssue(list, issue) {
 
 function fillModal(value) {
     let name = document.getElementById(value + "-name").textContent;
-    console.log(name);
     let description = document.getElementById(value + "-description").innerHTML;
-    console.log(description);
     let priority = document.getElementById(value + "-priority-btn").value;
     let difficulty = document.getElementById(value + "-difficulty-btn").value;
 

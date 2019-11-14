@@ -72,6 +72,14 @@
                             </div>
                             <div class="col-sm-4"></div>
                         </div>
+                        <div class="form-group row">
+                            <label for="modal-dependant-issues" class="col-sm-4">Issues correspondantes:</label>
+                            <div class="col-sm-8">
+                                <select id="modal-dependant-issues" class="selectpicker" data-live-search="true" multiple>
+                                   
+                                </select>
+                            </div>
+                        </div>
                         <button hidden id="modal-status" value="todo"></button>
                         <button type="button" id="modal-mode" class="btn btn-success" value="create">Confirmer</button>
                     </form>
