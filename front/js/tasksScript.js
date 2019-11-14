@@ -15,18 +15,46 @@ function startUp() {
         let add_btn = add_el_btns[i];
         add_btn.addEventListener("click", function () { emptyModal(add_btn.value); });
     }
+
+    fillModalWithIssueOptions();
+}
+
+function fillModalWithIssueOptions() {
+    let modalOptions = document.getElementById("modal-dependant-issues");
+
+    $.ajax({
+        url: "http://localhost:8000/api/issues/1",
+        method: "GET",
+        dataType: 'json',
+        crossDomain: true,
+        success: function (issues) {
+            for (let i = 0; i < issues.length; i++) {
+
+                issue = issues[i];
+                optionNode = document.createElement("option");
+                optionNode.innerHTML = issue.name;
+                optionNode.value = "u" + issue.id;
+                modalOptions.appendChild(optionNode);
+                $("#modal-dependant-issues").selectpicker("refresh");
+            }
+        },
+        error: function (error) {
+            console.error(error);
+        }
+    });
+    return false;
 }
 
 function fillWithTasks() {
     $.ajax({
         url: "http://localhost:8000/api/tasks/1",
         method: "GET",
-        dataType: 'json',
         crossDomain: true,
-        success: function (tasks) {
-
+        success: function (data) {
+            let tasks = JSON.parse(data);
+           
             for (let i = 0; i < tasks.length; i++) {
-                const task = tasks[i];
+                let task = tasks[i];
                 fillListWithTask(getListAccordingToStatus(task.status), task);
 
             }
@@ -75,12 +103,30 @@ function fillListWithTask(list, task) {
         "<span class=\"label label-default\">" + task.workload + " </span>" +
         "</h6>" +
         "</div >\n" +
+        "<div id=\"T" + task.id + "-issues\">\n" +
+        "</div>\n" +
         "</div>";
+
+    let issuesBlock = document.getElementById("T" + task.id + "-issues");
+    for (let i = 0; i < task.issues.length; i++) {
+        let dependantIssue = task.issues[i];
+        let issueName = document.createElement("code");
+        issueName.innerHTML += dependantIssue.name;
+        issuesBlock.appendChild(issueName);
+        let hiddenInput = document.createElement("button");
+        hiddenInput.hidden = true;
+
+        hiddenInput.classList.add("T" + task.id + "-hiddenIds");
+        hiddenInput.id = task.id + "-" + i;
+        hiddenInput.value = "u" + dependantIssue.id;
+        issuesBlock.appendChild(hiddenInput);
+    }
 
 }
 
 
 function fillModal(value) {
+    const tId = value.substring(1);
     let name = document.getElementById(value + "-name").textContent;
     let description = document.getElementById(value + "-description").innerHTML;
     let workload = document.getElementById(value + "-workload-btn").value;
@@ -91,8 +137,29 @@ function fillModal(value) {
     document.getElementById("modal-workload").value = workload;
     document.getElementById("modal-mode").value = "update";
 
+    let selectedValues = getDependantIssuesFromBlock(tId);
+
+    let modalOptions = document.getElementById("modal-dependant-issues").options;
+    for (let i = 0; i < modalOptions.length; i++) {
+        let option = modalOptions[i];
+        if (selectedValues.includes(option.value))
+            option.selected = true;
+        else
+            option.selected = false;
+    }
+    $("#modal-dependant-issues").selectpicker("refresh");
+
     $("#modal").modal("show");
 
+}
+
+function getDependantIssuesFromBlock(taskId) {
+    let classes = document.getElementsByClassName("T" + taskId + "-hiddenIds");
+    let issues = [];
+    for (let i = 0; i < classes.length; i++) {
+        issues.push(classes[i].value);
+    }
+    return issues;
 }
 
 function emptyModal(status) {
@@ -103,6 +170,13 @@ function emptyModal(status) {
     document.getElementById("modal-status").value = status;
     document.getElementById("modal-mode").value = "create";
 
+    let modalOptions = document.getElementById("modal-dependant-issues").options;
+
+    for (let i = 0; i < modalOptions.length; i++) {
+        modalOptions[i].selected = false;
+    }
+
+
     $("#modal").modal("show");
 }
 const modalConfirmBtn = document.getElementById("modal-mode");
@@ -112,27 +186,18 @@ modalConfirmBtn.addEventListener("click", function () {
 });
 
 function createTask() {
-    const nom = document.getElementById("modal-nom").value;
-    const description = document.getElementById("modal-description").value;
-    const workload = document.getElementById("modal-workload").value;
-    const status = document.getElementById("modal-status").value;
+    let jsonData = getJsonDataFromModal();
 
-    let jsonData = {
-        "name": nom,
-        "description": description,
-        "workload": workload,
-        "status": status,
-        "issue": 1
-    }
     $.ajax({
         url: "http://localhost:8000/api/task",
         method: "POST",
         dataType: 'json',
+        data: JSON.stringify(jsonData),
         crossDomain: true,
         success: function (task) {
             const node = document.createElement("div");
-            fillListWithTask(node, task);
             getListAccordingToStatus(task.status).appendChild(node);
+            fillListWithTask(node, task);
 
             const edit_btn = document.getElementById("edit-el-" + task.id);
             edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
@@ -146,6 +211,40 @@ function createTask() {
         }
     });
     return false;
+}
+
+
+function getJsonDataFromModal() {
+    $("#modal-dependant-issues").selectpicker("refresh");
+    const nom = document.getElementById("modal-nom").value;
+    const description = document.getElementById("modal-description").value;
+    const workload = document.getElementById("modal-workload").value;
+    const status = document.getElementById("modal-status").value;
+    const dependantIssues = getDependantIssuesFromModal();
+
+    let jsonData = {
+        "name": nom,
+        "description": description,
+        "workload": workload,
+        "status": status,
+        "issue": dependantIssues
+    }
+
+    return jsonData;
+}
+
+
+
+function getDependantIssuesFromModal() {
+    let select = document.getElementById("modal-dependant-issues");
+    let selectedValues = [];
+    for (let i = 0; i < select.length; i++) {
+        if (select.options[i].selected) {
+            let value = select.options[i].value;
+            selectedValues.push(value.substring(1));
+        }
+    }
+    return selectedValues;
 }
 
 function getListAccordingToStatus(status) {
@@ -185,38 +284,50 @@ function deleteTask(task) {
 
 function updateTask() {
     const tId = document.getElementById("modal-id").value.substring(1);
-    const nom = document.getElementById("modal-nom").value;
-    const description = document.getElementById("modal-description").value;
-    const workload = document.getElementById("modal-workload").value;
-
-    let jsonData = {
-        "name": nom,
-        "description": description,
-        "workload": workload,
-        "status": status,
-        "issue": 1
-    }
+    let jsonData = getJsonDataFromModal();
 
     $.ajax({
         url: "http://localhost:8000/api/task/" + tId,
         method: "PUT",
-        dataType: 'json',
+        dataType : "json",
         data: JSON.stringify(jsonData),
         crossDomain: true,
-        success: function (issue) {
-            document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + nom;
-            document.getElementById("T" + tId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
-            document.getElementById("T" + tId + "-description").innerHTML = description;
-            document.getElementById("T" + tId + "-workload-btn").value = workload;
+        success: function (task) {
+            document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + task.name;
+            document.getElementById("T" + tId + "-name").innerHTML = "<h4><strong>" + task.name + "</strong></h4>";
+            document.getElementById("T" + tId + "-description").innerHTML = task.description;
+            document.getElementById("T" + tId + "-workload-btn").value = task.workload;
             document.getElementById("T" + tId + "-workload").innerHTML = "<h6>Charge (en j/homme) :" +
-                "<span class=\"label label-default\">" + workload + " </span>" +
+                "<span class=\"label label-default\">" + task.workload + " </span>" +
                 "</h6>";
 
+            let issuesBlock = document.getElementById("T" + task.id + "-issues");
+            issuesBlock.querySelectorAll('*').forEach(n => n.remove());
+            let issues = Object.values(task.issues);
+
+            for (let i = 0; i < issues.length; i++) {
+                let dependantIssue = issues[i];
+
+                let issueName = document.createElement("code");
+                issueName.innerHTML += dependantIssue.name;
+                issuesBlock.appendChild(issueName);
+                let hiddenInput = document.createElement("button");
+                hiddenInput.hidden = true;
+
+                hiddenInput.classList.add("T" + task.id + "-hiddenIds");
+                hiddenInput.id = task.id + "-" + i;
+                hiddenInput.value = "u" + dependantIssue.id;
+                issuesBlock.appendChild(hiddenInput);
+            }
 
             $("#modal").modal("hide");
+
         },
+
         error: function (error) {
             console.error(error);
         }
     });
 }
+
+

@@ -24,13 +24,22 @@ class TaskController extends AbstractController
         try {
             $project = $this->getDoctrine()->getRepository(Project::class)->find($projectId);
             if ($project != null) {
-                $tasksList = new ArrayCollection();
-                foreach ($project->getIssues() as $issue) {
-                    $tasksList = new ArrayCollection((array) $tasksList->toArray() + (array) $issue->getTasks()->toArray());
+                $tasksList = [];
+                $issues = $project->getIssues();
+                foreach ($issues->getIterator() as $i => $issue) {
+                    //   $tasksList = array_merge($tasksList, (array) $issue->getTasks()->toArray());
+                    $tasksPerIssue = $issue->getTasks();
+                    foreach ($tasksPerIssue as $j => $task) {
+                        if (!in_array($task, $tasksList)) {
+                            array_push($tasksList, $task);
+                        }
+                    }
                 }
 
-                if (!empty($tasksList)) {
-                    $jsonContent = $serializer->serialize($tasksList, 'json', ['circular_reference_handler' => function ($object) {
+                $tasksCollection = new ArrayCollection($tasksList);
+
+                if (!empty($tasksCollection)) {
+                    $jsonContent = $serializer->serialize($tasksCollection, 'json', ['circular_reference_handler' => function ($object) {
                         return $object->getId();
                     }]);
                     $response->setStatusCode(Response::HTTP_OK);
@@ -82,14 +91,18 @@ class TaskController extends AbstractController
         $response = new Response();
         try {
             $content = $request->getContent();
-            $parametersAsArray = json_decode($content, true);
+            $data = json_decode($content, true);
             $task = new Task();
-            $task->setName($parametersAsArray['name']);
-            $task->setDescription($parametersAsArray['description']);
+            $task->setName($data['name']);
+            $task->setDescription($data['description']);
             $task->setCreatedAt(new \DateTime());
-            $task->setStatus($parametersAsArray['status']);
-            $task->setWorkload($parametersAsArray['workload']);
-            $task->addIssue($this->getDoctrine()->getRepository(Issue::class)->find($parametersAsArray['issue']));
+            $task->setStatus($data['status']);
+            $task->setWorkload($data['workload']);
+
+            $dependantIssues = $data['issue'];
+            foreach ($dependantIssues as $issue)
+                $task->addIssue($this->getDoctrine()->getRepository(Issue::class)->find($issue));
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($task);
             $em->flush();
@@ -118,7 +131,20 @@ class TaskController extends AbstractController
                 $task->setName($data['name']);
                 $task->setDescription($data['description']);
                 $task->setWorkload($data['workload']);
-                $task->addIssue($this->getDoctrine()->getRepository(Issue::class)->find($data['issue']));
+
+                $oldIssues = $task->getIssues();
+                $newIssues = $data['issue'];
+
+                //remove old issues
+                foreach ($oldIssues as $i => $oldIssue) {
+                    $task->removeIssue($oldIssue);
+                }
+                //insert new issues
+                foreach ($newIssues as $newIssueId) {
+                    $newIssue = $this->getDoctrine()->getRepository(Issue::class)->find($newIssueId);
+                    $task->addIssue($newIssue);
+                }
+
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($task);
                 $em->flush();
