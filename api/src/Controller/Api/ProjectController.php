@@ -18,6 +18,7 @@ class ProjectController extends AbstractController {
      */
     public function getAll(SerializerInterface $serializer)
     {
+        $userId = $this->getUser()->getId();
         $response = new Response();
         try {
             $projectsList = $this->getDoctrine()->getRepository(Project::class)->findAll();
