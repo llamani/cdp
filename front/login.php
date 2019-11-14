@@ -31,7 +31,6 @@
 </style>
 <script>
     $(document).ready(function () {
-        console.log(localStorage.getItem('user_token'))
         $("form").submit(function(e){
             e.preventDefault(e);
             auth();
@@ -41,26 +40,21 @@
     function auth() {
         const username = $("#login").val();
         const password = $("#password").val();
+        const data = JSON.stringify({
+            username: username,
+            password: password,
+        });
         $(".err-msg").fadeOut();
         $(".spinner-border").fadeIn();
-        $.ajax ( {
-            url : "http://127.0.0.1:8000/login_check",
-            method: "POST",
-            data: JSON.stringify({
-                username: username,
-                password: password,
-            }),
-            contentType: "application/json",
-            success: function(res){
-                console.log(res.token)
+
+        sendAjax('/login_check', 'POST', data)
+            .then(res => {
                 localStorage.setItem("user_token", res.token);
                 document.location.href="index.php?page=projects";
-            },
-            error: function(error){
-                console.error(error);
+            })
+            .catch(e => {
                 $(".err-msg").fadeIn();
                 $(".spinner-border").fadeOut();
-            }
-        });
+            })
     }
 </script>
