@@ -2,10 +2,10 @@ const API_URL = "http://localhost:8000";
 
 function checkIsLoggedIn() {
     if(localStorage.getItem("user_token") !== null && localStorage.getItem("user_token") !== "") {
-        sendAjax('/auth/user').then(res => {
-
+        sendAjax('/api/auth').then(res => {
+            console.log(res);
         }).catch(err => {
-           // document.location = "login.php";
+            document.location = "login.php";
         })
     } else {
         document.location = "login.php";
@@ -13,7 +13,9 @@ function checkIsLoggedIn() {
 }
 
 function redirecttToLogin() {
-    document.location = "login.php";
+    if(document.location.pathname !== "/login.php" && document.location.pathname !== "/register.php") {
+        document.location = "login.php";
+    }
 }
 
 function logout() {
