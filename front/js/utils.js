@@ -37,7 +37,7 @@ function sendAjax(url, method = 'GET', data = null) {
             console.error(err.statusText);
             if(err.status === 401) {
                 console.error(err.responseJSON.message);
-                redirecttToLogin();
+                //redirecttToLogin();
             }
         }
     });
