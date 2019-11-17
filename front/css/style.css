@@ -1,3 +1,21 @@
+.err-msg,
+.loader {
+    display: none;
+}
+
+.error-page {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    -ms-flex-align: center;
+    align-items: center;
+    background: #e9ecef;
+    display: -ms-flexbox;
+    display: flex;
+    height: 100vh;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
 .element-block {
     padding: 1%;
 }
@@ -14,27 +32,27 @@
     margin : 10px;
     transition: background-color 1s;
   }
-  
+
   .project:hover{
     background-color: #a2a2a2;
   }
-  
+
   .line{
     padding-bottom: 10px;
     margin : 0% 30%;
     border-bottom: 1px solid grey;
   }
-  
+
   #logo{
     margin : -15px -15px;
   }
-  
+
   .sign-up{
     background-color :#E6E6E6;
     border-radius: 8px;
     padding: 30px;
   }
-  
+
   .btn-block{
     margin-bottom : 5px;
   }

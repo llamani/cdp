@@ -33,7 +33,7 @@ class UserController extends AbstractController {
                 // Aucune catégorie enregistrée
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent(json_encode([]));
-               
+
             }
             $response->headers->set('Content-Type', 'text/html');
         } catch (Exception $e) {
@@ -69,4 +69,13 @@ class UserController extends AbstractController {
         return $response;
     }
 
+    /**
+     * @Route("/api/auth", name="api_auth_user", methods={"GET"})
+     */
+    public function getAuthUser() {
+        return new Response(json_encode([
+            "name" => $this->getUser()->getName(),
+            "email" => $this->getUser()->getEmail(),
+        ]));
+    }
 }
