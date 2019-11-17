@@ -27,7 +27,7 @@
 
             <form>
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Full name">
+                    <input id="full_name" type="text" class="form-control" placeholder="Full name" required>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-user"></span>
@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <div class="input-group mb-3">
-                    <input type="email" class="form-control" placeholder="Email">
+                    <input id="email" type="email" class="form-control" placeholder="Email" required>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-envelope"></span>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <div class="input-group mb-3">
-                    <input type="password" class="form-control" placeholder="Password">
+                    <input id="password" type="password" class="form-control" placeholder="Password" required>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-lock"></span>
@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <div class="input-group mb-3">
-                    <input type="password" class="form-control" placeholder="Confirmation password">
+                    <input id="confirmPassword" type="password" class="form-control" placeholder="Confirmation password" required>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-lock"></span>
@@ -64,7 +64,12 @@
                     </div>
                 </div>
             </form>
-            <br/>
+            <div class="d-flex justify-content-center">
+                <div class="loader spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div class="err-msg alert alert-danger"></div>
             <a href="login.php" class="text-center">Déjà membre ? Connectez-vous !</a>
         </div>
         <!-- /.form-box -->
@@ -79,6 +84,42 @@
 <!-- AdminLTE App -->
 <script src="js/adminlte.min.js"></script>
 <script defer src="js/utils.js"></script>
+<!--<script defer src="js/usersScript.js"></script>-->
+<script>
+    $(document).ready(function () {
+        $("form").submit(function(e){
+            e.preventDefault(e);
+            createUser();
+        });
+    });
 
+    function createUser(){
+        const name= $("#full_name").val();
+        const email= $("#email").val();
+        const password= $("#password").val();
+        const confirmPassword= $("#confirmPassword").val();
+
+        $(".err-msg").fadeOut();
+        $(".loader").fadeIn();
+        if(password === confirmPassword) {
+            let jsonData = {
+                "name": name,
+                "email": email,
+                "password": password
+            }
+            sendAjax('/signup', 'POST', JSON.stringify(jsonData))
+                .then(res => {
+                    console.log(res)
+                })
+                .catch(e => {
+                    $(".err-msg").empty().append("Erreur de création de compte").fadeIn();
+                    $(".spinner-border").fadeOut();
+                })
+        } else {
+            $(".err-msg").empty().append("Le mot de passe n'est pas identique à la confirmation").fadeIn();
+            $(".spinner-border").fadeOut();
+        }
+    }
+</script>
 </body>
 </html>
