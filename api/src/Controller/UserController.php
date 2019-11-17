@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
 class UserController extends AbstractController {
@@ -45,7 +46,7 @@ class UserController extends AbstractController {
     /**
      * @Route("/signup", name="api_signup", methods={"POST"})
      */
-    public function createUser(Request $request, SerializerInterface $serializer) {
+    public function createUser(Request $request, SerializerInterface $serializer, UserPasswordEncoderInterface $passwordEncoder) {
         $response = new Response();
         try {
             $content = $request->getContent();
@@ -53,7 +54,7 @@ class UserController extends AbstractController {
             $user = new User();
             $user->setName($parametersAsArray['name']);
             $user->setEmail($parametersAsArray['email']);
-            $user->setPassword($parametersAsArray['password']);
+            $user->setPassword($passwordEncoder->encodePassword($user,$parametersAsArray['password']));
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
