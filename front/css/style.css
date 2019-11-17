@@ -20,9 +20,14 @@
     padding: 1%;
 }
 
-.panel-body{
+.progress-list{
     height:600px;
     overflow-y:scroll;
+    transition: box-shadow .3s;
+}
+
+.progress-list:hover {
+  box-shadow: 0 0 11px rgba(33,33,33,.2); 
 }
 
 .project{

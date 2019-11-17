@@ -51,7 +51,7 @@ function fillWithIssues() {
             console.error(error);
         }
     });
-    return false;
+
 }
 
 

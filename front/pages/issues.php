@@ -1,43 +1,43 @@
-<div class="jumbotron text-center">
+<div class="jumbotron j-issues text-center">
     <h1>Issues</h1>
 </div>
 <div class="container">
     <div class="row">
         <div class="col-sm-4">
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">
+            <div class="card text-center">
+                <div class="card-header bg-danger">
                     <h3>TO DO</h3>
                 </div>
-                <div id="to-do" class="panel-body">
+                <div id="to-do" class="card-body progress-list">
                 </div>
-                <div class="panel-footer">
-                    <button type="button" class="btn btn-primary btn-block add-el" value="todo"><span class="glyphicon glyphicon-plus"></span></button>
+                <div class="card-footer">
+                    <button type="button" class="btn btn-primary btn-block add-el" value="todo"><span class="fa fa-plus"></span></button>
                 </div>
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">
+            <div class="card text-center">
+                <div class="card-header bg-warning">
                     <h3>IN PROGRESS</h3>
                 </div>
-                <div id="in-progress" class="panel-body">
+                <div id="in-progress" class="card-body progress-list">
 
                 </div>
-                <div class="panel-footer">
-                    <button class="btn btn-primary btn-block add-el" value="in progress"><span class="glyphicon glyphicon-plus"></span></button>
+                <div class="card-footer">
+                    <button class="btn btn-primary btn-block add-el" value="in progress"><span class="fa fa-plus"></span></button>
                 </div>
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">
+            <div class="card text-center">
+                <div class="card-header bg-success">
                     <h3>DONE</h3>
                 </div>
-                <div id="done" class="panel-body">
+                <div id="done" class="card-body progress-list">
 
                 </div>
-                <div class="panel-footer">
-                    <button class="btn btn-primary btn-block add-el" value="done"><span class="glyphicon glyphicon-plus"></span></button>
+                <div class="card-footer">
+                    <button class="btn btn-primary btn-block add-el" value="done"><span class="fa fa-plus"></span></button>
                 </div>
             </div>
         </div>
@@ -48,8 +48,8 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header text-center">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Nouvelle issue</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <form>
