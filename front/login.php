@@ -92,6 +92,8 @@
         $(".loader").fadeIn();
         sendAjax('/login_check', 'POST', data)
             .then(res => {
+                localStorage.removeItem("user_token");
+                localStorage.removeItem("user_projects");
                 localStorage.setItem("user_token", res.token);
                 document.location.href="app.php";
             })

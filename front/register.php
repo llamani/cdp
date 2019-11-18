@@ -84,7 +84,6 @@
 <!-- AdminLTE App -->
 <script src="js/adminlte.min.js"></script>
 <script defer src="js/utils.js"></script>
-<!--<script defer src="js/usersScript.js"></script>-->
 <script>
     $(document).ready(function () {
         $("form").submit(function(e){

@@ -20,6 +20,7 @@ function redirecttToLogin() {
 
 function logout() {
     localStorage.removeItem('user_token');
+    localStorage.removeItem("user_projects");
     redirecttToLogin();
 }
 
