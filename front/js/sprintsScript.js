@@ -17,7 +17,7 @@ $(document).ready(function () {
 function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
 
-    sendAjax("/api/issues/9").then(res => {
+    sendAjax("/api/issues/11").then(res => {
         let issues = JSON.parse(res);
         for (let i = 0; i < issues.length; i++) {
 
@@ -47,9 +47,8 @@ function emptyModal() {
 }
 
 function fillWithSprints() {
-    sendAjax("/api/sprints/9").then(res => {
+    sendAjax("/api/sprints/11").then(res => {
         let sprints = res;
-        console.log(sprints);
 
         let sprintsList = document.getElementById("sprints");
 
@@ -231,7 +230,7 @@ function getJsonDataFromModal() {
         "startDate": start,
         "endDate": end,
         "issue": dependantIssues,
-        "project": 9
+        "project": 11
 
     }
 

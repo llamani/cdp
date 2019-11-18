@@ -24,33 +24,30 @@ function startUp() {
 
 function fillWithIssues() {
 
-    $.ajax({
-        url: "http://localhost:8000/api/issues/1",
-        method: "GET",
-        dataType: 'json',
-        crossDomain: true,
-        success: function (issues) {
-            for (let i = 0; i < issues.length; i++) {
-                let issue = issues[i];
-                fillListWithIssue(getListAccordingToStatus(issue.status), issue);
-            }
-
-            let edit_el_btns = document.getElementsByClassName("edit-el");
-            let delete_el_btns = document.getElementsByClassName("delete-el");
-
-            for (let i = 0; i < edit_el_btns.length; i++) {
-                let edit_btn = edit_el_btns[i];
-                edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
-            }
-            for (let i = 0; i < delete_el_btns.length; i++) {
-                let delete_btn = delete_el_btns[i];
-                delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); });
-            }
-        },
-        error: function (error) {
-            console.error(error);
+    sendAjax("/api/issues/11").then(res => {
+        let issues = JSON.parse(res);
+        for (let i = 0; i < issues.length; i++) {
+            let issue = issues[i];
+            fillListWithIssue(getListAccordingToStatus(issue.status), issue);
         }
-    });
+
+        let edit_el_btns = document.getElementsByClassName("edit-el");
+        let delete_el_btns = document.getElementsByClassName("delete-el");
+
+        for (let i = 0; i < edit_el_btns.length; i++) {
+            let edit_btn = edit_el_btns[i];
+            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
+        }
+        for (let i = 0; i < delete_el_btns.length; i++) {
+            let delete_btn = delete_el_btns[i];
+            delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); });
+        }
+      
+    })
+    .catch(e => {
+        $(".err-msg").fadeIn();
+        $(".spinner-border").fadeOut();
+    })
 
 }
 
@@ -75,11 +72,11 @@ function fillListWithIssue(list, issue) {
         "<span class=\"badge\">" + issue.id + "</span >   " + issue.name + "</a > \n" +
         "</div>\n" +
         "<div class=\"col-sm-2 element-block\"><button id=\"edit-el-" + issue.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"us" + issue.id + "\">" +
-        "<span class=\"glyphicon glyphicon-pencil\"></span>\n" +
+        "<span class=\"fa fa-edit\"></span>\n" +
         "</button>\n" +
         "</div>\n" +
         "<div class=\"col-sm-2 element-block\"><button id=\"delete-el-" + issue.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"us" + issue.id + "\">" +
-        "<span class=\"glyphicon glyphicon-trash\"></span></button>" +
+        "<span class=\"fa fa-trash\"></span></button>" +
         "</div>\n" +
         "</div>\n" +
         "<div id=\"details-block-" + issue.id + "\" class=\"row\">" +
@@ -146,17 +143,12 @@ function createIssue() {
         "priority": priority,
         "difficulty": difficulty,
         "status": status,
-        "project": 1
+        "project": 11
     };
 
-    $.ajax({
-        url: "http://localhost:8000/api/issue",
-        method: "POST",
-        dataType: 'json',
-        data: JSON.stringify(jsonData),
-        crossDomain: true,
-        success: function (issue) {
-            const node = document.createElement("div");
+    sendAjax("/api/issue", 'POST', JSON.stringify(jsonData)).then(res => {
+        let issue = JSON.parse(res);
+        const node = document.createElement("div");
             fillListWithIssue(node, issue);
             getListAccordingToStatus(issue.status).appendChild(node);
 
@@ -165,12 +157,12 @@ function createIssue() {
             const delete_btn = document.getElementById("delete-el-" + issue.id);
             delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); })
             $("#modal").modal("hide");
-        },
-        error: function (error) {
-            console.error(error);
-        }
-    });
-    return false;
+      
+    })
+    .catch(e => {
+        $(".err-msg").fadeIn();
+        $(".spinner-border").fadeOut();
+    })
 }
 
 
@@ -178,20 +170,17 @@ function deleteIssue(us) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const usId = us.substring(2);
-        $.ajax({
-            url: "http://localhost:8000/api/issue/" + usId,
-            method: "DELETE",
-            crossDomain: true,
-            success: function (issue) {
-                let deletedIssueBlock = document.getElementById("issue-block-" + usId);
+        sendAjax("/api/issue/" + usId, 'DELETE').then(res => {
+            let deletedIssueBlock = document.getElementById("issue-block-" + usId);
                 deletedIssueBlock.parentNode.removeChild(deletedIssueBlock);
                 let deletedIssueDetails = document.getElementById("details-block-" + usId);
                 deletedIssueDetails.parentNode.removeChild(deletedIssueDetails);
-            },
-            error: function (error) {
-                console.error(error);
-            }
-        });
+          
+        })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
     }
 }
 
@@ -210,14 +199,8 @@ function updateIssue() {
         "difficulty": difficulty
     }
 
-    $.ajax({
-        url: "http://localhost:8000/api/issue/" + usId,
-        method: "PUT",
-        dataType: 'json',
-        data: JSON.stringify(jsonData),
-        crossDomain: true,
-        success: function (issue) {
-            document.getElementById("element-block-title-" + usId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> us" + usId + "</span >   " + nom;
+    sendAjax("/api/issue/" + usId, 'PUT', JSON.stringify(jsonData)).then(res => {
+        document.getElementById("element-block-title-" + usId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> us" + usId + "</span >   " + nom;
             document.getElementById("us" + usId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
             document.getElementById("us" + usId + "-description").innerHTML = description;
             document.getElementById("us" + usId + "-priority-btn").value = priority;
@@ -229,10 +212,9 @@ function updateIssue() {
                 "<span class=\"label label-default\">" + difficulty + " </span>" +
                 "</h6>";
             $("#modal").modal("hide");
-        },
-        error: function (error) {
-            console.error(error);
-        }
-    });
-    return false;
+    })
+    .catch(e => {
+        $(".err-msg").fadeIn();
+        $(".spinner-border").fadeOut();
+    })
 }

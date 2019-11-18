@@ -22,60 +22,48 @@ function startUp() {
 function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
 
-    $.ajax({
-        url: "http://localhost:8000/api/issues/1",
-        method: "GET",
-        dataType: 'json',
-        crossDomain: true,
-        success: function (issues) {
-            for (let i = 0; i < issues.length; i++) {
-
-                issue = issues[i];
-                optionNode = document.createElement("option");
-                optionNode.innerHTML = issue.name;
-                optionNode.value = "u" + issue.id;
-                modalOptions.appendChild(optionNode);
-                $("#modal-dependant-issues").selectpicker("refresh");
-            }
-        },
-        error: function (error) {
-            console.error(error);
+    sendAjax("/api/issues/11").then(res => {
+        let issues = JSON.parse(res);
+        for (let i = 0; i < issues.length; i++) {
+            issue = issues[i];
+            optionNode = document.createElement("option");
+            optionNode.innerHTML = issue.name;
+            optionNode.value = "u" + issue.id;
+            modalOptions.appendChild(optionNode);
+            $("#modal-dependant-issues").selectpicker("refresh");
         }
-    });
-    return false;
+      
+    })
+    .catch(e => {
+        $(".err-msg").fadeIn();
+        $(".spinner-border").fadeOut();
+    })
 }
 
 function fillWithTasks() {
-    $.ajax({
-        url: "http://localhost:8000/api/tasks/1",
-        method: "GET",
-        crossDomain: true,
-        success: function (data) {
-            let tasks = JSON.parse(data);
-           
-            for (let i = 0; i < tasks.length; i++) {
-                let task = tasks[i];
-                fillListWithTask(getListAccordingToStatus(task.status), task);
-
-            }
-            let edit_el_btns = document.getElementsByClassName("edit-el");
-            let delete_el_btns = document.getElementsByClassName("delete-el");
-
-            for (let i = 0; i < edit_el_btns.length; i++) {
-                let edit_btn = edit_el_btns[i];
-                edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
-            }
-
-            for (let i = 0; i < delete_el_btns.length; i++) {
-                let delete_btn = delete_el_btns[i];
-                delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); });
-            }
-        },
-        error: function (error) {
-            console.error(error);
+    sendAjax("/api/tasks/11").then(res => {
+        let tasks = JSON.parse(res);
+        for (let i = 0; i < tasks.length; i++) {
+            let task = tasks[i];
+            fillListWithTask(getListAccordingToStatus(task.status), task);
         }
-    });
-    return false;
+        let edit_el_btns = document.getElementsByClassName("edit-el");
+        let delete_el_btns = document.getElementsByClassName("delete-el");
+
+        for (let i = 0; i < edit_el_btns.length; i++) {
+            let edit_btn = edit_el_btns[i];
+            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
+        }
+
+        for (let i = 0; i < delete_el_btns.length; i++) {
+            let delete_btn = delete_el_btns[i];
+            delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); });
+        }
+    })
+    .catch(e => {
+        $(".err-msg").fadeIn();
+        $(".spinner-border").fadeOut();
+    })
 }
 
 function fillListWithTask(list, task) {
@@ -86,11 +74,11 @@ function fillListWithTask(list, task) {
         "<span class=\"badge\"> T" + task.id + "</span >   " + task.name + "</a > \n" +
         "</div>\n" +
         "<div class=\"col-sm-2 element-block\"><button id=\"edit-el-" + task.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"T" + task.id + "\">" +
-        "<span class=\"glyphicon glyphicon-pencil\"></span>\n" +
+        "<span class=\"fa fa-edit\"></span>\n" +
         "</button>\n" +
         "</div>\n" +
         "<div class=\"col-sm-2 element-block\"><button id=\"delete-el-" + task.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"T" + task.id + "\">" +
-        "<span class=\"glyphicon glyphicon-trash\"></span></button>" +
+        "<span class=\"fa fa-trash\"></span></button>" +
         "</div>\n" +
         "</div>\n" +
         "<div id=\"details-block-" + task.id + "\" class=\"row\">" +
@@ -188,14 +176,9 @@ modalConfirmBtn.addEventListener("click", function () {
 function createTask() {
     let jsonData = getJsonDataFromModal();
 
-    $.ajax({
-        url: "http://localhost:8000/api/task",
-        method: "POST",
-        dataType: 'json',
-        data: JSON.stringify(jsonData),
-        crossDomain: true,
-        success: function (task) {
-            const node = document.createElement("div");
+    sendAjax("/api/task", 'POST', JSON.stringify(jsonData)).then(res => {
+        let task = res;
+        const node = document.createElement("div");
             getListAccordingToStatus(task.status).appendChild(node);
             fillListWithTask(node, task);
 
@@ -204,13 +187,11 @@ function createTask() {
             const delete_btn = document.getElementById("delete-el-" + task.id);
             delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); })
             $("#modal").modal("hide");
-
-        },
-        error: function (error) {
-            console.error(error);
-        }
-    });
-    return false;
+    })
+    .catch(e => {
+        $(".err-msg").fadeIn();
+        $(".spinner-border").fadeOut();
+    })
 }
 
 
@@ -264,20 +245,16 @@ function deleteTask(task) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const tId = task.substring(1);
-        $.ajax({
-            url: "http://localhost:8000/api/task/" + tId,
-            method: "DELETE",
-            crossDomain: true,
-            success: function (issue) {
-                let deletedBlock = document.getElementById("element-block-" + tId);
-                deletedBlock.parentNode.removeChild(deletedBlock);
-                let deletedDetails = document.getElementById("details-block-" + tId);
-                deletedDetails.parentNode.removeChild(deletedDetails);
-            },
-            error: function (error) {
-                console.error(error);
-            }
-        });
+        sendAjax("/api/task/" + tId, 'DELETE').then(res => {
+            let deletedBlock = document.getElementById("element-block-" + tId);
+            deletedBlock.parentNode.removeChild(deletedBlock);
+            let deletedDetails = document.getElementById("details-block-" + tId);
+            deletedDetails.parentNode.removeChild(deletedDetails);
+        })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 
     }
 }
@@ -286,14 +263,9 @@ function updateTask() {
     const tId = document.getElementById("modal-id").value.substring(1);
     let jsonData = getJsonDataFromModal();
 
-    $.ajax({
-        url: "http://localhost:8000/api/task/" + tId,
-        method: "PUT",
-        dataType : "json",
-        data: JSON.stringify(jsonData),
-        crossDomain: true,
-        success: function (task) {
-            document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + task.name;
+    sendAjax("/api/task/" + tId, 'PUT', JSON.stringify(jsonData)).then(res => {
+        task = res;
+        document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + task.name;
             document.getElementById("T" + tId + "-name").innerHTML = "<h4><strong>" + task.name + "</strong></h4>";
             document.getElementById("T" + tId + "-description").innerHTML = task.description;
             document.getElementById("T" + tId + "-workload-btn").value = task.workload;
@@ -321,13 +293,11 @@ function updateTask() {
             }
 
             $("#modal").modal("hide");
-
-        },
-
-        error: function (error) {
-            console.error(error);
-        }
-    });
+    })
+    .catch(e => {
+        $(".err-msg").fadeIn();
+        $(".spinner-border").fadeOut();
+    })
 }
 
 
