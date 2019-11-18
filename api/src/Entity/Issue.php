@@ -60,6 +60,11 @@ class Issue
      */
     private $tasks;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Sprint", inversedBy="issues")
+     */
+    private $sprint;
+
     public function __construct()
     {
         $this->projects = new ArrayCollection();
@@ -177,6 +182,18 @@ class Issue
         if ($this->tasks->contains($task)) {
             $this->tasks->removeElement($task);
         }
+
+        return $this;
+    }
+
+    public function getSprint(): ?Sprint
+    {
+        return $this->sprint;
+    }
+
+    public function setSprint(?Sprint $sprint): self
+    {
+        $this->sprint = $sprint;
 
         return $this;
     }

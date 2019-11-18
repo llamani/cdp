@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -37,6 +39,16 @@ class Sprint
      * @ORM\OneToOne(targetEntity="App\Entity\Release", inversedBy="sprint", cascade={"persist", "remove"})
      */
     private $release_target;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Issue", mappedBy="sprint")
+     */
+    private $issues;
+
+    public function __construct()
+    {
+        $this->issues = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -79,14 +91,45 @@ class Sprint
         return $this;
     }
 
-    public function getRealeaseTarget(): ?Release
+    public function getReleaseTarget(): ?Release
     {
-        return $this->realease_target;
+        return $this->release_target;
     }
 
-    public function setRealeaseTarget(?Release $realease_target): self
+    public function setReleaseTarget(?Release $release_target): self
     {
-        $this->realease_target = $realease_target;
+        $this->release_target = $release_target;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Issue[]
+     */
+    public function getIssues(): Collection
+    {
+        return $this->issues;
+    }
+
+    public function addIssue(Issue $issue): self
+    {
+        if (!$this->issues->contains($issue)) {
+            $this->issues[] = $issue;
+            $issue->setSprint($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIssue(Issue $issue): self
+    {
+        if ($this->issues->contains($issue)) {
+            $this->issues->removeElement($issue);
+            // set the owning side to null (unless already changed)
+            if ($issue->getSprint() === $this) {
+                $issue->setSprint(null);
+            }
+        }
 
         return $this;
     }
