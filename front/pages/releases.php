@@ -41,5 +41,11 @@
             "info": true,
             "autoWidth": false,
         });
+        /*sendAjax('/api/releases/' + localStorage.getItem('user_project_selected'))
+            .then(res => {
+
+            }).catch(err => {
+
+        })*/
     });
 </script>

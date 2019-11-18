@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 
@@ -18,17 +19,15 @@ class ProjectController extends AbstractController {
      */
     public function getAll(SerializerInterface $serializer)
     {
-        $userId = $this->getUser()->getId();
+        //$userId = $this->getUser()->getId();
         $response = new Response();
         try {
             $projectsList = $this->getDoctrine()->getRepository(Project::class)->findAll();
-
             if(!empty($projectsList)) {
-                $jsonContent = $serializer->serialize($projectsList, 'json',['circular_reference_handler' => function ($object) {return $object->getId();}]);
+                $jsonContent = $serializer->serialize($projectsList, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at']]);
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
-                // Aucune catégorie enregistrées
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent(json_encode([]));
             }

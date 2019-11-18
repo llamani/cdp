@@ -30,12 +30,11 @@ class UserController extends AbstractController {
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
-                // Aucune catégorie enregistrée
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent(json_encode([]));
 
             }
-            $response->headers->set('Content-Type', 'text/html');
+            $response->headers->set('Content-Type', 'application/json');
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             $response->setContent($e->getMessage());
@@ -59,7 +58,7 @@ class UserController extends AbstractController {
             $em->persist($user);
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
-            $response->headers->set('Content-Type', 'application/json');
+            $response->headers->set('Content-Type', '/json');
             $jsonContent = $serializer->serialize($user, 'json');
             $response->setContent($jsonContent);
         } catch (Exception $e) {

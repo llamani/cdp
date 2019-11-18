@@ -26,7 +26,7 @@ class AppFixtures extends Fixture
         $projectRoot->setDescription("description_project_");
         $projectRoot->setCreatedAt(new \DateTime());
         $manager->persist($projectRoot);
-        // php bin/console doctrine:fixtures:load
+
         for($i=0; $i< 10; $i++ ) {
             $project = new Project();
             $project->setName("project_" . $i);
@@ -34,6 +34,7 @@ class AppFixtures extends Fixture
             $project->setCreatedAt(new \DateTime());
             $manager->persist($project);
         }
+
         for($i=0; $i< 100; $i++ ) {
             $issue = new Issue();
             $issue->setCreatedAt(new \DateTime());
@@ -46,7 +47,6 @@ class AppFixtures extends Fixture
             $manager->persist($issue);
         }
 
-       
         $user = new User();
         $user->setEmail("johndoe@example.com");
         $user->setName("John Doe");

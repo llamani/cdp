@@ -71,7 +71,7 @@ if (!is_readable($page)) {
     <script defer src="js/utils.js"></script>
     <script>
         $(document).ready(function() {
-            //checkIsLoggedIn();
+            checkIsLoggedIn();
             $('#logout').click(function() {
                 logout();
             })

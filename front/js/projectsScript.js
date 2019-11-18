@@ -20,7 +20,6 @@ function fillWithProjects() {
 
         for (let i = 0; i < projects.length; i++) {
             displayProject(projectList, projects[i]);
-            console.log(projects[i].id);
         }
 
         const edit_el_btns = document.getElementsByClassName("edit-el");
