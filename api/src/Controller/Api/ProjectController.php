@@ -80,6 +80,7 @@ class ProjectController extends AbstractController {
     public function createProject(Request $request, SerializerInterface $serializer) {
         $response = new Response();
         try {
+            $user = $this->getUser();
             $content = $request->getContent();
             $parametersAsArray = json_decode($content, true);
             $project = new Project();
@@ -88,7 +89,7 @@ class ProjectController extends AbstractController {
             $project->setCreatedAt(new \DateTime());
 
             $userProjRelation = new UserProjectRelation();
-            $userProjRelation->setUser($this->getUser()->getId());
+            $userProjRelation->setUser($user);
             $userProjRelation->setProject($project);
             $userProjRelation->setRole("owner");
 
@@ -114,7 +115,7 @@ class ProjectController extends AbstractController {
         $response = new Response();
         try {
             $userId = $this->getUser()->getId();
-            $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'projet' => $id]);
+            $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $id]);
             if(!empty($userProjectsRelations)) {
                 $data = json_decode($request->getContent(), true);
                 $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
@@ -126,7 +127,7 @@ class ProjectController extends AbstractController {
                     $em->persist($project);
                     $em->flush();
                     $response->setStatusCode(Response::HTTP_OK);
-                    $jsonContent = $serializer->serialize($project, 'json');
+                    $jsonContent = $serializer->serialize($project, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at']]);
                     $response->headers->set('Content-Type', 'application/json');
                     $response->setContent($jsonContent);
                 } else {
@@ -152,7 +153,7 @@ class ProjectController extends AbstractController {
         $response = new Response();
         try {
             $userId = $this->getUser()->getId();
-            $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'projet' => $id]);
+            $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $id]);
             if(!empty($userProjectsRelations)) {
                 $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
                 if ($project != null) {

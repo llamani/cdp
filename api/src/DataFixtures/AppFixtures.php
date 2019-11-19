@@ -49,6 +49,12 @@ class AppFixtures extends Fixture
             $project->setDescription("description_project_" . $i);
             $project->setCreatedAt(new \DateTime());
             $manager->persist($project);
+
+            $userProjRelation = new UserProjectRelation();
+            $userProjRelation->setUser($userMain);
+            $userProjRelation->setProject($project);
+            $userProjRelation->setRole("owner");
+            $manager->persist($userProjRelation);
         }
 
         for($i=0; $i< 10; $i++ ) {
@@ -73,6 +79,7 @@ class AppFixtures extends Fixture
             ));
             $manager->persist($user);
         }
+
         $manager->flush();
     }
 }

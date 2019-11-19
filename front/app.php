@@ -72,6 +72,7 @@ if (!is_readable($page)) {
     <script>
         $(document).ready(function() {
             checkIsLoggedIn();
+            displaySidebarProjects();
             $('#logout').click(function() {
                 logout();
             })
@@ -123,7 +124,7 @@ if (!is_readable($page)) {
                                     <span></span><i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
-                            <ul class="nav nav-treeview">
+                            <ul class="nav nav-treeview" id="project-list-sidebar">
                                 <li class="nav-item">
                                     <a href="app.php?page=projects" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>

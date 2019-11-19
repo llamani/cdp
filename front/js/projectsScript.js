@@ -15,32 +15,25 @@ function startUp() {
 }
 
 function fillWithProjects() {
-    sendAjax("/api/projects").then(res => {
-        let projects = res;
-        let projectList = document.getElementById("projects");
+    let projects = JSON.parse(localStorage.getItem("user_all_projects"));
+    let projectList = document.getElementById("projects");
 
-        for (let i = 0; i < projects.length; i++) {
-            displayProject(projectList, projects[i]);
-        }
+    for (let i = 0; i < projects.length; i++) {
+        displayProject(projectList, projects[i]);
+    }
 
-        const edit_el_btns = document.getElementsByClassName("edit-el");
-        const delete_el_btns = document.getElementsByClassName("delete-el");
+    const edit_el_btns = document.getElementsByClassName("edit-el");
+    const delete_el_btns = document.getElementsByClassName("delete-el");
 
-        for (let i = 0; i < edit_el_btns.length; i++) {
-            let edit_btn = edit_el_btns[i];
-            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
-        }
+    for (let i = 0; i < edit_el_btns.length; i++) {
+        let edit_btn = edit_el_btns[i];
+        edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
+    }
 
-        for (let i = 0; i < delete_el_btns.length; i++) {
-            let delete_btn = delete_el_btns[i];
-            delete_btn.addEventListener("click", function () { deleteProject(delete_btn.value); });
-        }
-    })
-        .catch(e => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
-    return false;
+    for (let i = 0; i < delete_el_btns.length; i++) {
+        let delete_btn = delete_el_btns[i];
+        delete_btn.addEventListener("click", function () { deleteProject(delete_btn.value); });
+    }
 }
 
 function displayProject(node, project) {
@@ -86,12 +79,7 @@ function fillWithUserOptions() {
         }
 
     })
-        .catch(e => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
-
 
 function createProject() {
     const nom = document.getElementById("name").value;
@@ -101,34 +89,49 @@ function createProject() {
         "name": nom,
         "description": description
     }
-    sendAjax("/api/project", 'POST', JSON.stringify(jsonData)).then(res => {
-        let project = res;
-        displayProject(document.getElementById("projects"), project);
+    sendAjax("/api/project", 'POST', JSON.stringify(jsonData))
+        .then(res => {
+            let project = res;
+            displayProject(document.getElementById("projects"), project);
 
-        const edit_btn = document.getElementById("edit-el-" + project.id);
-        edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
-        const delete_btn = document.getElementById("delete-el-" + project.id);
-        delete_btn.addEventListener("click", function () { deleteProject(delete_btn.value); })
-        $("#modal").modal("hide");
-    })
-        .catch(e => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
+            const edit_btn = document.getElementById("edit-el-" + project.id);
+            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
+            const delete_btn = document.getElementById("delete-el-" + project.id);
+            delete_btn.addEventListener("click", function () { deleteProject(delete_btn.value); })
+            $("#modal").modal("hide");
+
+            let all_projects = JSON.parse(localStorage.getItem('user_all_projects'));
+            all_projects.push(project);
+            localStorage.setItem('user_all_projects', JSON.stringify(all_projects));
+            displaySidebarProjects()
         })
 }
-
 
 function deleteProject(value) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const id = value.substring(7);
-        sendAjax("/api/project/" + id, 'DELETE').then(res => {
-            let deletedProjectBlock = document.getElementById("project-block-" + id);
-            deletedProjectBlock.parentNode.removeChild(deletedProjectBlock);
-        })
-            .catch(e => {
-                $(".err-msg").fadeIn();
-                $(".spinner-border").fadeOut();
+        sendAjax("/api/project/" + id, 'DELETE')
+            .then(res => {
+                let deletedProjectBlock = document.getElementById("project-block-" + id);
+                deletedProjectBlock.parentNode.removeChild(deletedProjectBlock);
+
+                let all_projects = JSON.parse(localStorage.getItem('user_all_projects'));
+                const index = all_projects.findIndex(p => parseInt(p.id) === parseInt(id));
+                if(index === -1) {
+                    console.error("Impossible")
+                }
+                all_projects.splice(index, 1);
+                localStorage.setItem('user_all_projects', JSON.stringify(all_projects));
+                if(parseInt(JSON.parse(localStorage.getItem("user_current_project")).id) === parseInt(id)) {
+                    if(all_projects.length > 0) {
+                        localStorage.setItem('user_current_project', JSON.stringify(all_projects[0]));
+                    } else {
+                        localStorage.removeItem("user_all_projects");
+                        logout();
+                    }
+                }
+                displaySidebarProjects()
             })
     }
 }
@@ -165,15 +168,25 @@ function updateProject() {
         "description": description
     }
 
-    sendAjax("/api/project/" + id, 'PUT', JSON.stringify(jsonData)).then(res => {
-        let project = res;
-        document.getElementById("project" + id + "-name").innerHTML = "<h4>" + project.name + "</h4>";
-        document.getElementById("project" + id + "-description").innerHTML = project.description;
+    sendAjax("/api/project/" + id, 'PUT', JSON.stringify(jsonData))
+        .then(res => {
+            let project = res;
+            document.getElementById("project" + id + "-name").innerHTML = "<h4>" + project.name + "</h4>";
+            document.getElementById("project" + id + "-description").innerHTML = project.description;
+            $("#modal").modal("hide");
 
-        $("#modal").modal("hide");
-    })
-        .catch(e => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
+            let all_projects = JSON.parse(localStorage.getItem('user_all_projects'));
+            let current_project = JSON.parse(localStorage.getItem('user_current_project'));
+
+            if(parseInt(id) === parseInt(current_project.id)) {
+                localStorage.setItem('user_current_project', JSON.stringify(project));
+            }
+            const index = all_projects.findIndex(p => parseInt(p.id) === parseInt(id));
+            if(index === -1) {
+                console.error("Impossible");
+            }
+            all_projects[index] = project;
+            localStorage.setItem('user_all_projects', JSON.stringify(all_projects));
+            displaySidebarProjects()
         })
 }

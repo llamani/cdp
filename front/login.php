@@ -26,7 +26,7 @@
         <div class="card-body login-card-body">
             <p class="login-box-msg">Connectez-vous !</p>
 
-            <form>
+            <form id="login-form">
                 <div class="input-group mb-3">
                     <input id="username" type="email" class="form-control" placeholder="Email" required>
                     <div class="input-group-append">
@@ -51,11 +51,11 @@
                 </div>
             </form>
             <div class="d-flex justify-content-center">
-                <div class="loader spinner-border text-primary" role="status">
+                <div id="login-loader" class="loader spinner-border text-primary" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
-            <div class="err-msg alert alert-danger">
+            <div id="login-err-msg" class="err-msg alert alert-danger">
                 Erreur de connexion
             </div>
             <p class="mb-0">
@@ -67,6 +67,38 @@
 </div>
 <!-- /.login-box -->
 
+<!-- Modal -->
+<div class="modal fade" id="modal-first-project" tabindex="-1" role="dialog" aria-labelledby="add-project-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Créez votre premier projet !</h5>
+            </div>
+            <div class="modal-body">
+                <form id="modal-form" class="form-signin">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name-project" placeholder="Nom" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" rows="5" cols="60" id="desc-project" placeholder="Description" required></textarea><br>
+                    </div>
+                </form>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div id="modal-loader" class="loader spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div id="modal-err-msg" class="err-msg alert alert-danger">
+                Erreur de création
+            </div>
+            <div class="modal-footer">
+                <button type="button" form="add-project" id="modal-submit" class="btn btn-primary" value="create">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
@@ -77,9 +109,16 @@
 
 <script>
     $(document).ready(function () {
-        $("form").submit(function(e){
+        $("#login-form").submit(function(e){
             e.preventDefault(e);
             auth();
+        });
+        $("#modal-submit").click(function(e){
+            $("#modal-form").submit();
+        });
+        $("#modal-form").submit(function(e){
+            e.preventDefault(e);
+            addFirstProject();
         });
     });
 
@@ -90,18 +129,58 @@
             username: username,
             password: password,
         });
-        $(".err-msg").fadeOut();
-        $(".loader").fadeIn();
+        $("#login-err-msg").fadeOut();
+        $("#login-loader").fadeIn();
         sendAjax('/login_check', 'POST', data)
             .then(res => {
                 localStorage.removeItem("user_token");
-                localStorage.removeItem("user_projects");
+                localStorage.removeItem("user_all_projects");
+                localStorage.removeItem("user_current_project");
                 localStorage.setItem("user_token", res.token);
-                document.location.href="app.php";
+                sendAjax('/api/projects')
+                    .then(response => {
+                        console.log(response);
+                        if(response.length > 0) { //projets existants
+                            localStorage.setItem('user_all_projects', JSON.stringify(response));
+                            localStorage.setItem('user_current_project', JSON.stringify(response[0]))
+                            document.location.href = "app.php";
+                        } else {
+                            $('#modal-first-project').modal({
+                                show: true,
+                                keyboard: false,
+                                backdrop: false
+                            });
+                        }
+                    })
             })
             .catch(e => {
-                $(".err-msg").fadeIn();
-                $(".spinner-border").fadeOut();
+                $("#login-err-msg").fadeIn();
+                $("#login-loader").fadeOut();
+            })
+    }
+
+    function addFirstProject() {
+        const nom = $("#name-project").val();
+        const description = $("#desc-project").val();
+        let jsonData = {
+            "name": nom,
+            "description": description
+        };
+
+        $("#modal-err-msg").fadeOut();
+        $("#modal-loader").fadeIn();
+        sendAjax("/api/project", 'POST', JSON.stringify(jsonData))
+            .then(res => {
+                console.log(res);
+                const projects = [];
+                projects.push(res);
+                localStorage.setItem('user_all_projects', JSON.stringify(projects));
+                localStorage.setItem('user_current_project', JSON.stringify(res));
+                document.location.href = "app.php";
+            })
+            .catch(e => {
+                $("#modal-err-msg").fadeIn();
+                $("#modal-loader").fadeOut();
             })
     }
 </script>
