@@ -4,14 +4,14 @@ namespace App\Controller\Api;
 
 use App\Entity\Test;
 use App\Entity\Project;
-//use App\Entity\User;
+use App\Entity\User;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-//use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 
 class TestController extends AbstractController {
@@ -87,10 +87,9 @@ class TestController extends AbstractController {
             $test->setTestDate( new \DateTime($data['testDate']));
             $test->setStatus($data['status']);
             $test->setProject($this->getDoctrine()->getRepository(Project::class)->find($data['project']));
-            //$testManagers = $data['testManagers'];
-            //foreach ($testManagers as $manager)
-                //$test->addManager($this->getDoctrine()->getRepository(User::class)->find($manager));
-            //$test->addManager($this->getDoctrine()->getRepository(User::class)->find($data["testManagers"]));
+            $testManagers = $data['testManagers'];
+            foreach($testManagers as $manager)
+                $test->addTestManager($this->getDoctrine()->getRepository(User::class)->find($manager));
             $em = $this->getDoctrine()->getManager();
             $em->persist($test);
             $em->flush();
@@ -122,21 +121,21 @@ class TestController extends AbstractController {
                 $test->setExpectedResult($data['expectedResult']);
                 $test->setObtainedResult($data['obtainedResult']);
                 $format = "d-m-Y";
-                $test->setTestDate(date_create_from_format($format, $data['date']));
+                $test->setTestDate(date_create_from_format($format, $data['testDate']));
                 $test->setStatus($data['status']);
 
-                /*$oldTestManagers = $test->getManagers();
+                $oldTestManagers = $test->getTestManagers();
                 $newTestManagers = $data['testManagers'];
 
                  //remove old test managers
                  foreach ($oldTestManagers as $i => $oldManager) {
-                    $test->removeIssue($oldManager);
+                    $test->removeTestManager($oldManager);
                 }
                 //insert new test managers
                 foreach ($newTestManagers as $newManagerId) {
                     $newManager = $this->getDoctrine()->getRepository(User::class)->find($newManagerId);
-                    $test->addManager($newManager);
-                }*/
+                    $test->addTestManager($newManager);
+                }
 
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($test);

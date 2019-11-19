@@ -5,8 +5,7 @@ $(document).ready(function () {
     fillWithTests();
 });
 
-
-function startUp() { //OK
+function startUp() { 
     const add_el_btns = document.getElementsByClassName("btn btn-primary add");
 
     for (let i = 0; i < add_el_btns.length; i++) {
@@ -20,38 +19,34 @@ function startUp() { //OK
         else updateTest();
     });
 
-    //fillModalWithManagerOptions();
+    fillModalWithManagerOptions();
 }
 
-function fillModalWithIManagerOptions() {
-  /* let modalOptions = document.getElementById("modal-test-managers");
+function fillModalWithManagerOptions() {
+    let modalOptions = document.getElementById("modal-test-managers");
+ 
+    sendAjax("/api/project/" + projectId).then(res => {
+     let project = res;
+     let users = project.userProjectRelations;
+ 
+     for(let i = 0; i < users.length; i++){
+         user = users[i].user;
+         optionNode = document.createElement("option");
+         optionNode.innerHTML = user.name;
+         optionNode.value = user.id;
+         modalOptions.appendChild(optionNode);
+         $("#modal-test-managers").selectpicker("refresh");
+     }
+ })
+ .catch(e => {
+     $(".err-msg").fadeIn();
+     $(".spinner-border").fadeOut();
+ })
+ }
 
-    $.ajax({
-        url: "http://localhost:8000/users",
-        method: "GET",
-        dataType: 'json',
-        crossDomain: true,
-        success: function (users) {
-            for (let i = 0; i < users.length; i++) {
-
-                user = users[i];
-                optionNode = document.createElement("option");
-                optionNode.innerHTML = user.name;
-                optionNode.value = user.id;
-                modalOptions.appendChild(optionNode);
-                $("#test-managers").selectpicker("refresh");
-            }
-        },
-        error: function (error) {
-            console.error(error);
-        }
-    });
-    return false;*/
-}
-
-function fillWithTests() { //OK
+ function fillWithTests() { 
     sendAjax("/api/tests/" + projectId).then(res => {
-        let tests = JSON.parse(res);
+        let tests = res;
         let testsTable = document.getElementById("tests");
            
             for (let i = 0; i < tests.length; i++) {
@@ -78,15 +73,15 @@ function fillWithTests() { //OK
     })
 }
 
-function displayTest(test, node) { //OK
+function displayTest(test, node) { 
     const date = extractDate(test.testDate);
     node.innerHTML += 
-    "<tr id=\"test-block" + test.id + "\" colspan=\"8\" data-toggle=\"collapse\" data-target=\"#test-data" + test.id + "\" class=\"accordion-toggle\">" +
+    "<tr id=\"test-block" + test.id + "\" colspan=\"8\" data-toggle=\"collapse\" data-target=\"#test-data" + test.id + "\" class=\"accordion-toggle\" >" +
     "<th scope=\"row\">" + test.id + "</th>" +
     "<td id=\"test" + test.id + "-name\" >" + test.name + "</td>" +
     "<td id=\"test" + test.id + "-type\">" + test.type + "</td>" +
     "<td id=\"test" + test.id + "-date\">" + date + "</td>" +
-    "<td id=\"test" + test.id + "-managers\">Responsable TODO</td>" +
+    "<td id=\"test" + test.id + "-managers\"></td>" +
     "<td id=\"test" + test.id + "-status\">" + test.status + "</td>" +
     "<td>" +
     "<button id=\"edit-el-" + test.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"test" + test.id + "\">" +
@@ -106,10 +101,26 @@ function displayTest(test, node) { //OK
         "</div>" +
 	"</td>"
   "</tr>";
+
+  let managersBlock = document.getElementById("test" + test.id + "-managers");
+    for (let i = 0; i < test.testManagers.length; i++) {
+        let manager = test.testManagers[i];
+        let managerName = document.createElement("test");
+        managerName.innerHTML += manager.name + "\n";
+        managersBlock.appendChild(managerName);
+        let hiddenInput = document.createElement("button");
+        hiddenInput.hidden = true;
+
+        hiddenInput.classList.add("test" + test.id + "-hiddenIds");
+        hiddenInput.id = test.id + "-" + i;
+        hiddenInput.value = "user" + manager.id;
+        managersBlock.appendChild(hiddenInput);
+    }
 }
 
 
 function fillModal(value) {
+    const testId = value.substring(4);
     let name = document.getElementById(value + "-name").textContent;
     let description = document.getElementById(value + "-description").innerHTML;
     let type = document.getElementById(value + "-type").textContent;
@@ -131,31 +142,30 @@ function fillModal(value) {
     document.getElementById("modal-status").value = status;
     document.getElementById("modal-modal-mode").value = "update";
 
-   // let selectedValues = getTestManagersFromBlock(tId);
+    let selectedValues = getTestManagersFromBlock(testId);
 
-    /*let modalOptions = document.getElementById("modal-test-managers").options;
+    let modalOptions = document.getElementById("modal-test-managers").options;
 
     for (let i = 0; i < modalOptions.length; i++) {
         let option = modalOptions[i];
-        if (selectedValues.includes(option.value))
+        if (selectedValues.includes("user" + option.value))
             option.selected = true;
         else
             option.selected = false;
     }
-    $("#test-managers").selectpicker("refresh");*/
+    $("#modal-test-managers").selectpicker("refresh");
 
     $("#modal").modal("show");
-
 }
 
-/*function getTestManagersFromBlock(taskId) {
-    let classes = document.getElementsByClassName("T" + taskId + "-hiddenIds");
-    let issues = [];
+function getTestManagersFromBlock(testId) {
+    let classes = document.getElementsByClassName("test" + testId + "-hiddenIds");
+    let managers = [];
     for (let i = 0; i < classes.length; i++) {
-        issues.push(classes[i].value);
+        managers.push(classes[i].value);
     }
-    return issues;
-}*/
+    return managers;
+}
 
 function emptyModal(status) {
     document.getElementById("modal-id").value = '';
@@ -165,11 +175,11 @@ function emptyModal(status) {
     document.getElementById("modal-obtainedResult").value = '';
     document.getElementById("modal-modal-mode").value = "create";
 
-    /*let modalOptions = document.getElementById("modal-testManagers").options;
+    let modalOptions = document.getElementById("modal-test-managers").options;
 
     for (let i = 0; i < modalOptions.length; i++) {
         modalOptions[i].selected = false;
-    }*/
+    }
 
 
     $("#modal").modal("show");
@@ -181,7 +191,7 @@ function createTest() {
         let test = res;
 
         let testsTable = document.getElementById("tests");
-            displayTest(testsTable, test);
+            displayTest(test, testsTable);
 
             const edit_btn = document.getElementById("edit-el-" + test.id);
             edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
@@ -204,7 +214,7 @@ function getJsonDataFromModal() {
     const obtainedResult = document.getElementById("modal-obtainedResult").value;
     const status = document.getElementById("modal-status").value;
     const date = document.getElementById("modal-testDate").value;
-    //const testManagers= getTestManagersFromModal();
+    const testManagers = getTestManagersFromModal();
 
     let jsonData = {
         "name": name,
@@ -214,7 +224,7 @@ function getJsonDataFromModal() {
         "expectedResult": expectedResult, 
         "obtainedResult": obtainedResult,
         "testDate": date,
-        "testManagers": 1,
+        "testManagers": testManagers,
         "project": projectId
     }
     return jsonData;
@@ -227,20 +237,20 @@ function extractDate(date) {
 
 
 
-function getTestsManagersFromModal() {
-    /*let select = document.getElementById("modal-test-managers");
+function getTestManagersFromModal() {
+    let select = document.getElementById("modal-test-managers");
     let selectedValues = [];
     for (let i = 0; i < select.length; i++) {
         if (select.options[i].selected) {
             let value = select.options[i].value;
-            selectedValues.push(value.substring(1));
+            selectedValues.push(value);
         }
     }
-    return selectedValues;*/
+    return selectedValues;
 }
 
 
-function deleteTest(test) { //OK
+function deleteTest(test) { 
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const tId = test.substring(4);
@@ -274,23 +284,23 @@ function updateTest() {
         document.getElementById("test" + test.id + "-status").textContent = test.status;
     
 
-      /*  let managersBlock = document.getElementById("test" + test.id + "-managers");
+       let managersBlock = document.getElementById("test" + test.id + "-managers");
         managersBlock.querySelectorAll('*').forEach(n => n.remove());
-        let managers = Object.values(test.testManagers);
+        let managers = Object.values(test.testManagers);       
 
         for (let i = 0; i < managers.length; i++) {
-            let testManager =managers[i];
-            let managerName = document.createElement("code");
-            issueName.innerHTML += dependantIssue.name;
-            issuesBlock.appendChild(issueName);
+            let testManager = managers[i];
+            let managerName = document.createElement("text");
+            managerName.innerHTML += testManager.name + "\n";
+            managersBlock.appendChild(managerName);
             let hiddenInput = document.createElement("button");
             hiddenInput.hidden = true;
-
-            hiddenInput.classList.add("S" + sprint.id + "-hiddenIds");
-            hiddenInput.id = sprint.id + "-" + i;
-            hiddenInput.value = "u" + dependantIssue.id;
-            issuesBlock.appendChild(hiddenInput);
-        }*/
+    
+            hiddenInput.classList.add("test" + test.id + "-hiddenIds");
+            hiddenInput.id = test.id + "-" + i;
+            hiddenInput.value = "user" + testManager.id;
+            managersBlock.appendChild(hiddenInput);
+        }
 
         $("#modal").modal("hide");
     })

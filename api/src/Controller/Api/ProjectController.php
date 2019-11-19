@@ -60,7 +60,9 @@ class ProjectController extends AbstractController {
             if($project != null) {
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize($project, 'json');
+                $jsonContent = $serializer->serialize($project, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]);
                 $response->setContent($jsonContent);
             }
             else {
