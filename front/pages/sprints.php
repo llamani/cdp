@@ -20,7 +20,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div id="sprints" class="container"></div>
+                    <div class="container">
+                        <div id="sprints" class="row">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

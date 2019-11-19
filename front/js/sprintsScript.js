@@ -157,9 +157,12 @@ function displaySprint(sprintsList, sprint) {
     const startDate = extractDate(sprint.startDate);
     const endDate = extractDate(sprint.endDate);
 
-    sprintsList.innerHTML +=
-        "<div id=\"sprint-block-" + sprint.id + "\">\n" +
-        "<div class=\"col-sm-4  \">\n" +
+    let sprintBlock = document.createElement("div");
+    sprintBlock.id = "sprint-block-" + sprint.id;
+    sprintBlock.classList.add("col-4");
+    sprintsList.appendChild(sprintBlock);
+
+    sprintBlock.innerHTML +=
         "<div class=\"sprint\">\n" +
         "<div><span class=\"fa fa-pushpin logo-small\"></span></div>\n" +
         "<div id=\"sprint" + sprint.id + "-dates\"><h4>" + startDate + " à " + endDate + "</h4></div>\n" +
@@ -173,8 +176,6 @@ function displaySprint(sprintsList, sprint) {
         "</div>\n" +
         "<div class=\"sprint-block\"><button id=\"delete-el-" + sprint.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"sprint" + sprint.id + "\">" +
         "<span class=\"fa fa-trash\"></span></button>" +
-        "</div>\n" +
-        "</div>\n" +
         "</div>\n" +
         "</div>\n";
 
@@ -205,9 +206,7 @@ function createSprint() {
 
     sendAjax("/api/sprint", 'POST', JSON.stringify(jsonData)).then(res => {
         let sprint = res;
-        const node = document.createElement("div");
-        document.getElementById("sprints").appendChild(node);
-        displaySprint(node, sprint);
+        displaySprint(document.getElementById("sprints"), sprint);
 
         const edit_btn = document.getElementById("edit-el-" + sprint.id);
         edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })

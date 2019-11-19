@@ -11,6 +11,7 @@ function startUp() {
         if (modalConfirmBtn.value === "create") createProject();
         else updateProject();
     });
+    fillWithUserOptions();
 }
 
 function fillWithProjects() {
@@ -35,10 +36,10 @@ function fillWithProjects() {
             delete_btn.addEventListener("click", function () { deleteProject(delete_btn.value); });
         }
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
     return false;
 }
 
@@ -46,9 +47,12 @@ function displayProject(node, project) {
     const name = project.name;
     const description = project.description;
 
-    node.innerHTML +=
-        "<div id=\"project-block-" + project.id + "\">\n" +
-        "<div class=\"col-sm-4  \">\n" +
+    let projectBlock = document.createElement("div");
+    projectBlock.id = "project-block-" + project.id;
+    projectBlock.classList.add("col-4");
+    node.appendChild(projectBlock);
+
+    projectBlock.innerHTML +=
         "<div class=\"project\">\n" +
         "<div><span class=\"fa fa-leaf logo-small\"></span></div>\n" +
         "<div id=\"project" + project.id + "-name\"><h4>" + name + "</h4></div>\n" +
@@ -60,12 +64,33 @@ function displayProject(node, project) {
         "<div class=\"project-block\"><button id=\"delete-el-" + project.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"project" + project.id + "\">" +
         "<span class=\"fa fa-trash\"></span></button>" +
         "</div>\n" +
-        "</div>\n" +
-        "</div>\n" +
-        "</div>\n";
-
+        "</div>\n" ;
 }
 
+function fillWithUserOptions() {
+    let modalOptions = document.getElementById("modal-users");
+
+    sendAjax("/users").then(res => {
+        let users = JSON.parse(JSON.stringify(res));
+        //let users = res;
+        console.log("users : " + users);
+        console.log("users length : " + users.length);
+        for (let i = 0; i < users.length; i++) {
+            let user = users[i];
+            console.log("user : " + user);
+            let optionNode = document.createElement("option");
+            optionNode.innerHTML = user.name;
+            optionNode.value = "u" + user.id;
+            modalOptions.appendChild(optionNode);
+            $("#modal-users").selectpicker("refresh");
+        }
+
+    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
+}
 
 
 function createProject() {
@@ -78,21 +103,18 @@ function createProject() {
     }
     sendAjax("/api/project", 'POST', JSON.stringify(jsonData)).then(res => {
         let project = res;
-        const node = document.createElement("div");
-        displayProject(node, project);
-        document.getElementById("projects").appendChild(node);
+        displayProject(document.getElementById("projects"), project);
 
         const edit_btn = document.getElementById("edit-el-" + project.id);
         edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
         const delete_btn = document.getElementById("delete-el-" + project.id);
         delete_btn.addEventListener("click", function () { deleteProject(delete_btn.value); })
         $("#modal").modal("hide");
-       
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
 
@@ -100,14 +122,14 @@ function deleteProject(value) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const id = value.substring(7);
-        sendAjax("/api/project/" + id , 'DELETE').then(res => {
+        sendAjax("/api/project/" + id, 'DELETE').then(res => {
             let deletedProjectBlock = document.getElementById("project-block-" + id);
             deletedProjectBlock.parentNode.removeChild(deletedProjectBlock);
         })
-        .catch(e => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
+            .catch(e => {
+                $(".err-msg").fadeIn();
+                $(".spinner-border").fadeOut();
+            })
     }
 }
 
@@ -143,15 +165,15 @@ function updateProject() {
         "description": description
     }
 
-    sendAjax("/api/project/" + id , 'PUT', JSON.stringify(jsonData)).then(res => {
+    sendAjax("/api/project/" + id, 'PUT', JSON.stringify(jsonData)).then(res => {
         let project = res;
         document.getElementById("project" + id + "-name").innerHTML = "<h4>" + project.name + "</h4>";
         document.getElementById("project" + id + "-description").innerHTML = project.description;
 
         $("#modal").modal("hide");
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
