@@ -66,11 +66,11 @@ function fillWithUserOptions() {
     sendAjax("/users").then(res => {
         let users = JSON.parse(JSON.stringify(res));
         //let users = res;
-        console.log("users : " + users);
-        console.log("users length : " + users.length);
+        //console.log("users : " + users);
+        //console.log("users length : " + users.length);
         for (let i = 0; i < users.length; i++) {
             let user = users[i];
-            console.log("user : " + user);
+            //console.log("user : " + user);
             let optionNode = document.createElement("option");
             optionNode.innerHTML = user.name;
             optionNode.value = "u" + user.id;

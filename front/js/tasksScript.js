@@ -1,8 +1,4 @@
-/*
-const projectId = localStorage.getItem("project"); 
-*/
-
-const projectId = 1;
+const projectId = JSON.parse(localStorage.getItem("user_current_project")).id;
 
 $(document).ready(function () {
     startUp();

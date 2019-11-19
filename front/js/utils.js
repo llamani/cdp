@@ -4,7 +4,7 @@ function checkIsLoggedIn() {
     if(localStorage.getItem("user_token") !== null && localStorage.getItem("user_token") !== "" &&
         localStorage.getItem("user_all_projects") !== null && localStorage.getItem("user_all_projects") !== "") {
         sendAjax('/api/auth').then(res => {
-            console.log(res);
+            //console.log(res);
         }).catch(err => {
             document.location = "login.php";
         })
