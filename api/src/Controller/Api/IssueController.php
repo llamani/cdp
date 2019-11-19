@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class IssueController extends AbstractController
 {
+    
     /**
      * @Route("/issues/{projectId}", name="api_get_all_issues", methods={"GET"})
      */

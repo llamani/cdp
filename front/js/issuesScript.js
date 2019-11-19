@@ -1,6 +1,8 @@
 /*
 const projectId = localStorage.getItem("project"); 
 */
+const projectId = 1;
+
 $(document).ready(function () {
     startUp();
     fillWithIssues();
@@ -24,7 +26,7 @@ function startUp() {
 
 function fillWithIssues() {
 
-    sendAjax("/api/issues/11").then(res => {
+    sendAjax("/api/issues/" + projectId).then(res => {
         let issues = JSON.parse(res);
         for (let i = 0; i < issues.length; i++) {
             let issue = issues[i];
@@ -42,12 +44,11 @@ function fillWithIssues() {
             let delete_btn = delete_el_btns[i];
             delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); });
         }
-      
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 
 }
 
@@ -143,26 +144,25 @@ function createIssue() {
         "priority": priority,
         "difficulty": difficulty,
         "status": status,
-        "project": 11
+        "project": projectId
     };
 
     sendAjax("/api/issue", 'POST', JSON.stringify(jsonData)).then(res => {
-        let issue = JSON.parse(res);
+        let issue = res;
         const node = document.createElement("div");
-            fillListWithIssue(node, issue);
-            getListAccordingToStatus(issue.status).appendChild(node);
+        fillListWithIssue(node, issue);
+        getListAccordingToStatus(issue.status).appendChild(node);
 
-            const edit_btn = document.getElementById("edit-el-" + issue.id);
-            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
-            const delete_btn = document.getElementById("delete-el-" + issue.id);
-            delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); })
-            $("#modal").modal("hide");
-      
+        const edit_btn = document.getElementById("edit-el-" + issue.id);
+        edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
+        const delete_btn = document.getElementById("delete-el-" + issue.id);
+        delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); })
+        $("#modal").modal("hide");
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
 
@@ -172,15 +172,14 @@ function deleteIssue(us) {
         const usId = us.substring(2);
         sendAjax("/api/issue/" + usId, 'DELETE').then(res => {
             let deletedIssueBlock = document.getElementById("issue-block-" + usId);
-                deletedIssueBlock.parentNode.removeChild(deletedIssueBlock);
-                let deletedIssueDetails = document.getElementById("details-block-" + usId);
-                deletedIssueDetails.parentNode.removeChild(deletedIssueDetails);
-          
+            deletedIssueBlock.parentNode.removeChild(deletedIssueBlock);
+            let deletedIssueDetails = document.getElementById("details-block-" + usId);
+            deletedIssueDetails.parentNode.removeChild(deletedIssueDetails);
         })
-        .catch(e => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
+            .catch(e => {
+                $(".err-msg").fadeIn();
+                $(".spinner-border").fadeOut();
+            })
     }
 }
 
@@ -201,20 +200,20 @@ function updateIssue() {
 
     sendAjax("/api/issue/" + usId, 'PUT', JSON.stringify(jsonData)).then(res => {
         document.getElementById("element-block-title-" + usId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> us" + usId + "</span >   " + nom;
-            document.getElementById("us" + usId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
-            document.getElementById("us" + usId + "-description").innerHTML = description;
-            document.getElementById("us" + usId + "-priority-btn").value = priority;
-            document.getElementById("us" + usId + "-priority").innerHTML = "<h6>Priorité :" +
-                "<span class=\"label label-default\">" + priority + " </span>" +
-                "</h6>";
-            document.getElementById("us" + usId + "-difficulty-btn").value = difficulty;
-            document.getElementById("us" + usId + "-difficulty").innerHTML = "<h6>Difficulté :" +
-                "<span class=\"label label-default\">" + difficulty + " </span>" +
-                "</h6>";
-            $("#modal").modal("hide");
+        document.getElementById("us" + usId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
+        document.getElementById("us" + usId + "-description").innerHTML = description;
+        document.getElementById("us" + usId + "-priority-btn").value = priority;
+        document.getElementById("us" + usId + "-priority").innerHTML = "<h6>Priorité :" +
+            "<span class=\"label label-default\">" + priority + " </span>" +
+            "</h6>";
+        document.getElementById("us" + usId + "-difficulty-btn").value = difficulty;
+        document.getElementById("us" + usId + "-difficulty").innerHTML = "<h6>Difficulté :" +
+            "<span class=\"label label-default\">" + difficulty + " </span>" +
+            "</h6>";
+        $("#modal").modal("hide");
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }

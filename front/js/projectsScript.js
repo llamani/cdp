@@ -144,7 +144,7 @@ function updateProject() {
     }
 
     sendAjax("/api/project/" + id , 'PUT', JSON.stringify(jsonData)).then(res => {
-        project = res;
+        let project = res;
         document.getElementById("project" + id + "-name").innerHTML = "<h4>" + project.name + "</h4>";
         document.getElementById("project" + id + "-description").innerHTML = project.description;
 

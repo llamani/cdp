@@ -2,6 +2,8 @@
 const projectId = localStorage.getItem("project"); 
 */
 
+const projectId = 1;
+
 $(document).ready(function () {
     startUp();
     fillWithTasks();
@@ -22,11 +24,11 @@ function startUp() {
 function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
 
-    sendAjax("/api/issues/11").then(res => {
+    sendAjax("/api/issues/" + projectId).then(res => {
         let issues = JSON.parse(res);
         for (let i = 0; i < issues.length; i++) {
-            issue = issues[i];
-            optionNode = document.createElement("option");
+            let issue = issues[i];
+            let optionNode = document.createElement("option");
             optionNode.innerHTML = issue.name;
             optionNode.value = "u" + issue.id;
             modalOptions.appendChild(optionNode);
@@ -41,7 +43,7 @@ function fillModalWithIssueOptions() {
 }
 
 function fillWithTasks() {
-    sendAjax("/api/tasks/11").then(res => {
+    sendAjax("/api/tasks/" + projectId).then(res => {
         let tasks = JSON.parse(res);
         for (let i = 0; i < tasks.length; i++) {
             let task = tasks[i];
@@ -203,15 +205,13 @@ function getJsonDataFromModal() {
     const status = document.getElementById("modal-status").value;
     const dependantIssues = getDependantIssuesFromModal();
 
-    let jsonData = {
+    return {
         "name": nom,
         "description": description,
         "workload": workload,
         "status": status,
         "issue": dependantIssues
-    }
-
-    return jsonData;
+    };
 }
 
 
@@ -264,7 +264,7 @@ function updateTask() {
     let jsonData = getJsonDataFromModal();
 
     sendAjax("/api/task/" + tId, 'PUT', JSON.stringify(jsonData)).then(res => {
-        task = res;
+        let task = res;
         document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + task.name;
             document.getElementById("T" + tId + "-name").innerHTML = "<h4><strong>" + task.name + "</strong></h4>";
             document.getElementById("T" + tId + "-description").innerHTML = task.description;

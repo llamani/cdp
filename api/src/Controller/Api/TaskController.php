@@ -27,7 +27,6 @@ class TaskController extends AbstractController
                 $tasksList = [];
                 $issues = $project->getIssues();
                 foreach ($issues->getIterator() as $i => $issue) {
-                    //   $tasksList = array_merge($tasksList, (array) $issue->getTasks()->toArray());
                     $tasksPerIssue = $issue->getTasks();
                     foreach ($tasksPerIssue as $j => $task) {
                         if (!in_array($task, $tasksList)) {
@@ -57,32 +56,8 @@ class TaskController extends AbstractController
         }
         return $response;
     }
-    /**
-     * @Route("/task/{id}", name="api_get_issue_by_id", methods={"GET"})
-     */
-    /*
-    public function getIssueByID(SerializerInterface $serializer, $id) {
-        $response = new Response();
-        try {
-            $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
-            if($issue != null) {
-                $response->setStatusCode(Response::HTTP_OK);
-                $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
-                $response->setContent($jsonContent);
-            }
-            else {
-                $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown issue with id ' . $id);
-            }
-        } catch (Exception $exception) {
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-            $response->setContent($exception->getMessage());
-        }
-        return $response;
-    }*/
+
+   
     /**
      * @Route("/task", name="api_create_task", methods={"POST"})
      */
