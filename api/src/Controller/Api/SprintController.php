@@ -31,7 +31,6 @@ class SprintController extends AbstractController
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
-                s
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent(json_encode([]));
             }
