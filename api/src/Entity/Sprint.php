@@ -41,9 +41,10 @@ class Sprint
     private $release_target;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Issue", mappedBy="sprint")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Issue", inversedBy="sprints")
      */
     private $issues;
+
 
     public function __construct()
     {
@@ -115,7 +116,6 @@ class Sprint
     {
         if (!$this->issues->contains($issue)) {
             $this->issues[] = $issue;
-            $issue->setSprint($this);
         }
 
         return $this;
@@ -125,10 +125,6 @@ class Sprint
     {
         if ($this->issues->contains($issue)) {
             $this->issues->removeElement($issue);
-            // set the owning side to null (unless already changed)
-            if ($issue->getSprint() === $this) {
-                $issue->setSprint(null);
-            }
         }
 
         return $this;

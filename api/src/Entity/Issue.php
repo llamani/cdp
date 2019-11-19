@@ -61,14 +61,16 @@ class Issue
     private $tasks;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Sprint", inversedBy="issues")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Sprint", mappedBy="issues")
      */
-    private $sprint;
+    private $sprints;
+
 
     public function __construct()
     {
         $this->projects = new ArrayCollection();
         $this->tasks = new ArrayCollection();
+        $this->sprints = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -186,14 +188,30 @@ class Issue
         return $this;
     }
 
-    public function getSprint(): ?Sprint
+    /**
+     * @return Collection|Sprint[]
+     */
+    public function getSprints(): Collection
     {
-        return $this->sprint;
+        return $this->sprints;
     }
 
-    public function setSprint(?Sprint $sprint): self
+    public function addSprint(Sprint $sprint): self
     {
-        $this->sprint = $sprint;
+        if (!$this->sprints->contains($sprint)) {
+            $this->sprints[] = $sprint;
+            $sprint->addIssue($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSprint(Sprint $sprint): self
+    {
+        if ($this->sprints->contains($sprint)) {
+            $this->sprints->removeElement($sprint);
+            $sprint->removeIssue($this);
+        }
 
         return $this;
     }

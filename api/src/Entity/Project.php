@@ -50,7 +50,7 @@ class Project
     private $sprints;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\UserProjectRelation", mappedBy="project_id", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\UserProjectRelation", mappedBy="project", orphanRemoval=true)
      */
     private $userProjectRelations;
 
@@ -208,7 +208,7 @@ class Project
     {
         if (!$this->userProjectRelations->contains($userProjectRelation)) {
             $this->userProjectRelations[] = $userProjectRelation;
-            $userProjectRelation->setProjectId($this);
+            $userProjectRelation->setProject($this);
         }
 
         return $this;
@@ -219,11 +219,16 @@ class Project
         if ($this->userProjectRelations->contains($userProjectRelation)) {
             $this->userProjectRelations->removeElement($userProjectRelation);
             // set the owning side to null (unless already changed)
-            if ($userProjectRelation->getProjectId() === $this) {
-                $userProjectRelation->setProjectId(null);
+            if ($userProjectRelation->getProject() === $this) {
+                $userProjectRelation->setProject(null);
             }
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 class UserController extends AbstractController {
@@ -45,7 +46,7 @@ class UserController extends AbstractController {
     /**
      * @Route("/signup", name="api_signup", methods={"POST"})
      */
-    public function createUser(Request $request, SerializerInterface $serializer, UserPasswordEncoderInterface $passwordEncoder) {
+    public function createUser(Request $request, SerializerInterface $serializer, UserPasswordEncoderInterface $passwordEncoder, ValidatorInterface $validator) {
         $response = new Response();
         try {
             $content = $request->getContent();
@@ -54,6 +55,12 @@ class UserController extends AbstractController {
             $user->setName($parametersAsArray['name']);
             $user->setEmail($parametersAsArray['email']);
             $user->setPassword($passwordEncoder->encodePassword($user,$parametersAsArray['password']));
+
+            $errors = $validator->validate($user);
+            if (count($errors) > 0) {
+                return new Response((string) $errors, 400);
+            }
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();

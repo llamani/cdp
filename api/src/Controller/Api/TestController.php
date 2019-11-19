@@ -84,7 +84,7 @@ class TestController extends AbstractController {
             $test->setType($data['type']);
             $test->setExpectedResult($data['expectedResult']);
             $test->setObtainedResult($data['obtainedResult']);
-            $test->setTestDate( new \DateTime($data['date']));
+            $test->setTestDate( new \DateTime($data['testDate']));
             $test->setStatus($data['status']);
             $test->setProject($this->getDoctrine()->getRepository(Project::class)->find($data['project']));
             //$testManagers = $data['testManagers'];

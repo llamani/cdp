@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Project;
+use App\Entity\UserProjectRelation;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,12 +20,13 @@ class ProjectController extends AbstractController {
      */
     public function getAll(SerializerInterface $serializer)
     {
-        //$userId = $this->getUser()->getId();
         $response = new Response();
         try {
-            $projectsList = $this->getDoctrine()->getRepository(Project::class)->findAll();
-            if(!empty($projectsList)) {
-                $jsonContent = $serializer->serialize($projectsList, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at']]);
+            $userId = $this->getUser()->getId();
+            $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findBy(['user' => $userId]);
+            $projects = $this->getProjectsByRelations($userProjectsRelations);
+            if(!empty($projects)) {
+                $jsonContent = $serializer->serialize($projects, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at']]);
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
@@ -37,6 +39,15 @@ class ProjectController extends AbstractController {
             $response->setContent($e->getMessage());
         }
         return $response;
+    }
+
+    private function getProjectsByRelations($userProjectsRelations)
+    {
+        $p = [];
+        foreach ($userProjectsRelations as $u) {
+            $p[] = $u->getProject();
+        }
+        return $p;
     }
 
     /**
@@ -75,8 +86,15 @@ class ProjectController extends AbstractController {
             $project->setName($parametersAsArray['name']);
             $project->setDescription($parametersAsArray['description']);
             $project->setCreatedAt(new \DateTime());
+
+            $userProjRelation = new UserProjectRelation();
+            $userProjRelation->setUser($this->getUser()->getId());
+            $userProjRelation->setProject($project);
+            $userProjRelation->setRole("owner");
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($project);
+            $em->persist($userProjRelation);
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
             $response->headers->set('Content-Type', 'application/json');
@@ -95,22 +113,29 @@ class ProjectController extends AbstractController {
     public function updateProject(Request $request, SerializerInterface $serializer, $id) {
         $response = new Response();
         try {
-            $data = json_decode($request->getContent(), true);
-            $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
+            $userId = $this->getUser()->getId();
+            $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'projet' => $id]);
+            if(!empty($userProjectsRelations)) {
+                $data = json_decode($request->getContent(), true);
+                $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
 
-            if ($project != null) {
-                $project->setName($data['name']);
-                $project->setDescription($data['description']);
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($project);
-                $em->flush();
-                $response->setStatusCode(Response::HTTP_OK);
-                $jsonContent = $serializer->serialize($project, 'json');
-                $response->headers->set('Content-Type', 'application/json');
-                $response->setContent($jsonContent);
+                if ($project != null) {
+                    $project->setName($data['name']);
+                    $project->setDescription($data['description']);
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($project);
+                    $em->flush();
+                    $response->setStatusCode(Response::HTTP_OK);
+                    $jsonContent = $serializer->serialize($project, 'json');
+                    $response->headers->set('Content-Type', 'application/json');
+                    $response->setContent($jsonContent);
+                } else {
+                    $response->setStatusCode(Response::HTTP_NOT_FOUND);
+                    $response->setContent('Unknown project with id ' . $id);
+                }
             } else {
-                $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown project with id ' . $id);
+                $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+                $response->setContent("You can't update this project." );
             }
 
         } catch (Exception $e) {
@@ -126,17 +151,24 @@ class ProjectController extends AbstractController {
     public function deleteProject($id) {
         $response = new Response();
         try {
-            $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
-            if($project != null) {
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->remove($project);
-                $entityManager->flush();
-                $response->setStatusCode(Response::HTTP_OK);
-                $response->setContent(null);
+            $userId = $this->getUser()->getId();
+            $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'projet' => $id]);
+            if(!empty($userProjectsRelations)) {
+                $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
+                if ($project != null) {
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->remove($project);
+                    $entityManager->flush();
+                    $response->setStatusCode(Response::HTTP_OK);
+                    $response->setContent(null);
+                } else {
+                    $response->setStatusCode(Response::HTTP_NOT_FOUND);
+                    $response->setContent('Unknown project with id ' . $id);
+                }
             }
             else {
-                $response->setStatusCode(Response::HTTP_NOT_FOUND);
-                $response->setContent( 'Unknown project with id ' . $id);
+                $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+                $response->setContent("You can't delete this project." );
             }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);

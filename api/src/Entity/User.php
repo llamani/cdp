@@ -36,7 +36,7 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\UserProjectRelation", mappedBy="user_id", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\UserProjectRelation", mappedBy="user", orphanRemoval=true)
      */
     private $userProjectRelations;
 
@@ -98,7 +98,7 @@ class User implements UserInterface
     {
         if (!$this->userProjectRelations->contains($userProjectRelation)) {
             $this->userProjectRelations[] = $userProjectRelation;
-            $userProjectRelation->setUserId($this);
+            $userProjectRelation->setUser($this);
         }
 
         return $this;
@@ -109,8 +109,8 @@ class User implements UserInterface
         if ($this->userProjectRelations->contains($userProjectRelation)) {
             $this->userProjectRelations->removeElement($userProjectRelation);
             // set the owning side to null (unless already changed)
-            if ($userProjectRelation->getUserId() === $this) {
-                $userProjectRelation->setUserId(null);
+            if ($userProjectRelation->getUser() === $this) {
+                $userProjectRelation->setUser(null);
             }
         }
 

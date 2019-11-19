@@ -6,6 +6,7 @@ use App\Controller\UserController;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\User;
+use App\Entity\UserProjectRelation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -27,6 +28,21 @@ class AppFixtures extends Fixture
         $projectRoot->setCreatedAt(new \DateTime());
         $manager->persist($projectRoot);
 
+        $userMain = new User();
+        $userMain->setEmail("johndoe@example.com");
+        $userMain->setName("John Doe");
+        $userMain->setPassword($this->passwordEncoder->encodePassword(
+            $userMain,
+            'test'
+        ));
+        $manager->persist($userMain);
+
+        $userProjRelation = new UserProjectRelation();
+        $userProjRelation->setUser($userMain);
+        $userProjRelation->setProject($projectRoot);
+        $userProjRelation->setRole("owner");
+        $manager->persist($userProjRelation);
+
         for($i=0; $i< 10; $i++ ) {
             $project = new Project();
             $project->setName("project_" . $i);
@@ -35,7 +51,7 @@ class AppFixtures extends Fixture
             $manager->persist($project);
         }
 
-        for($i=0; $i< 100; $i++ ) {
+        for($i=0; $i< 10; $i++ ) {
             $issue = new Issue();
             $issue->setCreatedAt(new \DateTime());
             $issue->setName("isuue test".$i);
@@ -47,14 +63,16 @@ class AppFixtures extends Fixture
             $manager->persist($issue);
         }
 
-        $user = new User();
-        $user->setEmail("johndoe@example.com");
-        $user->setName("John Doe");
-        $user->setPassword($this->passwordEncoder->encodePassword(
-            $user,
-            'test'
-        ));
-        $manager->persist($user);
+        for($i=0; $i< 10; $i++ ) {
+            $user = new User();
+            $user->setEmail("test@test.fr".$i);
+            $user->setName("Test n".$i);
+            $user->setPassword($this->passwordEncoder->encodePassword(
+                $user,
+                'test'
+            ));
+            $manager->persist($user);
+        }
         $manager->flush();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -57,6 +59,16 @@ class Test
      * @ORM\JoinColumn(nullable=false)
      */
     private $project;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User")
+     */
+    private $testManagers;
+
+    public function __construct()
+    {
+        $this->testManagers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -155,6 +167,32 @@ class Test
     public function setProject(?Project $project): self
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getTestManagers(): Collection
+    {
+        return $this->testManagers;
+    }
+
+    public function addTestManager(User $testManager): self
+    {
+        if (!$this->testManagers->contains($testManager)) {
+            $this->testManagers[] = $testManager;
+        }
+
+        return $this;
+    }
+
+    public function removeTestManager(User $testManager): self
+    {
+        if ($this->testManagers->contains($testManager)) {
+            $this->testManagers->removeElement($testManager);
+        }
 
         return $this;
     }

@@ -21,13 +21,13 @@ class UserProjectRelation
      * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="userProjectRelations")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $project_id;
+    private $project;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userProjectRelations")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user_id;
+    private $user;
 
     /**
      * @ORM\Column(type="string", length=255, columnDefinition="enum('owner', 'collaborator')")
@@ -39,26 +39,26 @@ class UserProjectRelation
         return $this->id;
     }
 
-    public function getProjectId(): ?Project
+    public function getProject(): ?Project
     {
-        return $this->project_id;
+        return $this->project;
     }
 
-    public function setProjectId(?Project $project_id): self
+    public function setProject(?Project $project): self
     {
-        $this->project_id = $project_id;
+        $this->project = $project;
 
         return $this;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(?User $user_id): self
+    public function setUser(?User $user): self
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
 
         return $this;
     }
