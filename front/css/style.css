@@ -61,3 +61,25 @@
   .btn-block{
     margin-bottom : 5px;
   }
+
+  .accordian-body p {
+    text-align : left;
+    font-size: small;
+    font-weight: bold;
+  }
+
+  .accordian-body span{
+    font-weight: lighter;
+  }
+
+  button.add {
+    margin-bottom : 20px;
+  }
+
+  .hiddenRow {
+    padding: 0 4px !important;
+}
+
+.table tr {
+  cursor: pointer;
+}
