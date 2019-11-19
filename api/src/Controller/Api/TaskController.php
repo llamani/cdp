@@ -44,11 +44,11 @@ class TaskController extends AbstractController
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->setContent($jsonContent);
                 } else {
-                    // Aucune catégorie enregistrée
+
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->setContent(json_encode([]));
                 }
-                $response->headers->set('Content-Type', 'text/html');
+                $response->headers->set('Content-Type', 'application/json');
             }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
