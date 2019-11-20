@@ -64,7 +64,7 @@ function fillWithUserOptions() {
     let modalOptions = document.getElementById("modal-users");
 
     sendAjax("/users").then(res => {
-        let users = JSON.parse(JSON.stringify(res));
+        let users = res;
         //let users = res;
         //console.log("users : " + users);
         //console.log("users length : " + users.length);

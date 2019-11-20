@@ -16,7 +16,7 @@ function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
 
     sendAjax("/api/issues/" + projectId).then(res => {
-        let issues = JSON.parse(res);
+        let issues = res;
         for (let i = 0; i < issues.length; i++) {
 
             issue = issues[i];

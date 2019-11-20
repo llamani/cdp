@@ -21,7 +21,7 @@ function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
 
     sendAjax("/api/issues/" + projectId).then(res => {
-        let issues = JSON.parse(res);
+        let issues = res;
         for (let i = 0; i < issues.length; i++) {
             let issue = issues[i];
             let optionNode = document.createElement("option");
@@ -40,7 +40,7 @@ function fillModalWithIssueOptions() {
 
 function fillWithTasks() {
     sendAjax("/api/tasks/" + projectId).then(res => {
-        let tasks = JSON.parse(res);
+        let tasks = res;
         for (let i = 0; i < tasks.length; i++) {
             let task = tasks[i];
             fillListWithTask(getListAccordingToStatus(task.status), task);

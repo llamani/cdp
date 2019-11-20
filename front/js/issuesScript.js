@@ -24,7 +24,7 @@ function startUp() {
 function fillWithIssues() {
 
     sendAjax("/api/issues/" + projectId).then(res => {
-        let issues = JSON.parse(res);
+        let issues = res;
         for (let i = 0; i < issues.length; i++) {
             let issue = issues[i];
             fillListWithIssue(getListAccordingToStatus(issue.status), issue);
