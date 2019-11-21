@@ -120,13 +120,9 @@ function setDragAndDrop(){
     let done = document.getElementById('done');
 
     Sortable.create(todo, {
-        animation: 100,
         group: 'list-1',
-        draggable: '.draggableblock',
         handle: '.draggableblock',
         sort: false,
-        filter: '.sortable-disabled',
-        chosenClass: 'active',
         onEnd: function (/**Event*/evt) {
             updateStatus(evt.item.id, evt.to.id);
 	    }
