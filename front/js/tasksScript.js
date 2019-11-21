@@ -3,6 +3,7 @@ const projectId = JSON.parse(localStorage.getItem("user_current_project")).id;
 $(document).ready(function () {
     startUp();
     fillWithTasks();
+    initializeDragAndDrop();
 });
 
 
@@ -108,6 +109,64 @@ function fillListWithTask(list, task) {
         issuesBlock.appendChild(hiddenInput);
     }
 
+}
+
+function initializeDragAndDrop(){
+    let todo = document.getElementById('to-do');
+    let inprogress = document.getElementById('in-progress');
+    let done = document.getElementById('done');
+
+    Sortable.create(todo, {
+        animation: 100,
+        group: 'list-1',
+        draggable: '.row',
+        handle: '.row',
+        sort: false,
+        filter: '.sortable-disabled',
+        chosenClass: 'active',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+
+    Sortable.create(inprogress, {
+        group: 'list-1',
+        sort: false,
+        handle: '.row',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+
+    Sortable.create(done, {
+        group: 'list-1',
+        sort: false,
+        handle: '.row',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+}
+
+function updateStatus(task, new_status){
+    let id = task.substring(1);
+    let status = new_status;
+    if (new_status === "to-do"){
+        status = "todo";
+    }
+    else if(new_status = "in-progress"){
+        status = status.replace("-", " ");
+    }
+    let jsonData = {
+        id : id,
+        status : status
+    }
+
+    sendAjax("/api/slide-issue", 'PUT', JSON.stringify(jsonData))
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
 
