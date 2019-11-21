@@ -67,7 +67,7 @@ function fillWithTasks() {
 
 function fillListWithTask(list, task) {
     list.innerHTML +=
-        "<div class=\"draggableblock\">" +
+        "<div class=\"draggableblock\" id=\"drag-" + task.id + "\">" +
         "<div id=\"element-block-" + task.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + task.id + "\" class=\"col-sm-8 element-block\">\n" +
         "<a href=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
@@ -148,7 +148,7 @@ function setDragAndDrop(){
 }
 
 function updateStatus(task, new_status){
-    let id = task.substring(1);
+    let id = task.substring(5);
     let status = new_status;
     if (new_status === "to-do"){
         status = "todo";
@@ -157,11 +157,12 @@ function updateStatus(task, new_status){
         status = status.replace("-", " ");
     }
     let jsonData = {
-        id : id,
         status : status
     }
 
-    sendAjax("/api/slide-issue", 'PUT', JSON.stringify(jsonData))
+    console.log("task : " + id);
+
+    sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
         .catch(e => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();

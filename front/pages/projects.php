@@ -21,9 +21,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="container">
-                        <div id="projects" class="row">
-                        </div>
+                    <div id="projects" class="container">
+
                     </div>
                 </div>
             </div>

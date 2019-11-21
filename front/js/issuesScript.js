@@ -84,7 +84,7 @@ function setDragAndDrop(){
 }
 
 function updateStatus(issue, new_status){
-    let id = issue.substring(12);
+    let id = issue.substring(5);
     let status = new_status;
     if (new_status === "to-do"){
         status = "todo";
@@ -93,11 +93,13 @@ function updateStatus(issue, new_status){
         status = status.replace("-", " ");
     }
     let jsonData = {
-        id : id,
         status : status
     }
 
-    sendAjax("/api/slide-issue", 'PUT', JSON.stringify(jsonData))
+    console.log("issue : " + issue);
+    console.log("status : " + status);
+
+    sendAjax("/api/slide-issue/" + id, 'PUT', JSON.stringify(jsonData))
         .catch(e => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
@@ -119,7 +121,7 @@ function getListAccordingToStatus(status) {
 
 function fillListWithIssue(list, issue) {
     list.innerHTML +=
-        "<div class=\"draggableblock\">" +
+        "<div class=\"draggableblock\" id=\"drag-" + issue.id + "\">" +
         "<div id=\"issue-block-" + issue.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + issue.id + "\" class=\"col-sm-8 issue-block\">\n" +
         "<a href=\"#us" + issue.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
