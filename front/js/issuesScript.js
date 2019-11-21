@@ -3,7 +3,7 @@ const projectId = JSON.parse(localStorage.getItem("user_current_project")).id;
 $(document).ready(function () {
     startUp();
     fillWithIssues();
-    initializeDragAndDrop();
+    setDragAndDrop();
 });
 
 function startUp() {
@@ -50,7 +50,7 @@ function fillWithIssues() {
 
 }
 
-function initializeDragAndDrop(){
+function setDragAndDrop(){
     let todo = document.getElementById('to-do');
     let inprogress = document.getElementById('in-progress');
     let done = document.getElementById('done');
@@ -58,8 +58,8 @@ function initializeDragAndDrop(){
     Sortable.create(todo, {
         animation: 100,
         group: 'list-1',
-        draggable: '.row',
-        handle: '.row',
+        draggable: '.draggableblock',
+        handle: '.draggableblock',
         sort: false,
         filter: '.sortable-disabled',
         chosenClass: 'active',
@@ -71,7 +71,7 @@ function initializeDragAndDrop(){
     Sortable.create(inprogress, {
         group: 'list-1',
         sort: false,
-        handle: '.row',
+        handle: '.draggableblock',
         onEnd: function (/**Event*/evt) {
             updateStatus(evt.item.id, evt.to.id);
 	    }
@@ -80,7 +80,7 @@ function initializeDragAndDrop(){
     Sortable.create(done, {
         group: 'list-1',
         sort: false,
-        handle: '.row',
+        handle: '.draggableblock',
         onEnd: function (/**Event*/evt) {
             updateStatus(evt.item.id, evt.to.id);
 	    }
@@ -123,6 +123,7 @@ function getListAccordingToStatus(status) {
 
 function fillListWithIssue(list, issue) {
     list.innerHTML +=
+        "<div class=\"draggableblock\">" +
         "<div id=\"issue-block-" + issue.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + issue.id + "\" class=\"col-sm-8 issue-block\">\n" +
         "<a href=\"#us" + issue.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
@@ -152,7 +153,10 @@ function fillListWithIssue(list, issue) {
         "<span class=\"label label-default\">" + issue.difficulty + "</span>" +
         "</h6>" +
         "</div>\n" +
+        "</div>" +
         "</div>";
+
+        setDragAndDrop();
 
 }
 

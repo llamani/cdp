@@ -3,7 +3,7 @@ const projectId = JSON.parse(localStorage.getItem("user_current_project")).id;
 $(document).ready(function () {
     startUp();
     fillWithTasks();
-    initializeDragAndDrop();
+    setDragAndDrop();
 });
 
 
@@ -67,6 +67,7 @@ function fillWithTasks() {
 
 function fillListWithTask(list, task) {
     list.innerHTML +=
+        "<div class=\"draggableblock\">" +
         "<div id=\"element-block-" + task.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + task.id + "\" class=\"col-sm-8 element-block\">\n" +
         "<a href=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
@@ -92,6 +93,7 @@ function fillListWithTask(list, task) {
         "</div >\n" +
         "<div id=\"T" + task.id + "-issues\">\n" +
         "</div>\n" +
+        "</div>" +
         "</div>";
 
     let issuesBlock = document.getElementById("T" + task.id + "-issues");
@@ -108,10 +110,11 @@ function fillListWithTask(list, task) {
         hiddenInput.value = "u" + dependantIssue.id;
         issuesBlock.appendChild(hiddenInput);
     }
+    setDragAndDrop();
 
 }
 
-function initializeDragAndDrop(){
+function setDragAndDrop(){
     let todo = document.getElementById('to-do');
     let inprogress = document.getElementById('in-progress');
     let done = document.getElementById('done');
@@ -119,8 +122,8 @@ function initializeDragAndDrop(){
     Sortable.create(todo, {
         animation: 100,
         group: 'list-1',
-        draggable: '.row',
-        handle: '.row',
+        draggable: '.draggableblock',
+        handle: '.draggableblock',
         sort: false,
         filter: '.sortable-disabled',
         chosenClass: 'active',
@@ -132,7 +135,7 @@ function initializeDragAndDrop(){
     Sortable.create(inprogress, {
         group: 'list-1',
         sort: false,
-        handle: '.row',
+        handle: '.draggableblock',
         onEnd: function (/**Event*/evt) {
             updateStatus(evt.item.id, evt.to.id);
 	    }
@@ -141,7 +144,7 @@ function initializeDragAndDrop(){
     Sortable.create(done, {
         group: 'list-1',
         sort: false,
-        handle: '.row',
+        handle: '.draggableblock',
         onEnd: function (/**Event*/evt) {
             updateStatus(evt.item.id, evt.to.id);
 	    }
