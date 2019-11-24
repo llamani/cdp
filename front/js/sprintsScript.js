@@ -122,21 +122,7 @@ function updateSprint() {
 
         let issuesBlock = document.getElementById("S" + sprint.id + "-issues");
         issuesBlock.querySelectorAll('*').forEach(n => n.remove());
-        let issues = Object.values(sprint.issues);
-
-        for (let i = 0; i < issues.length; i++) {
-            let dependantIssue = issues[i];
-            let issueName = document.createElement("code");
-            issueName.innerHTML += dependantIssue.name;
-            issuesBlock.appendChild(issueName);
-            let hiddenInput = document.createElement("button");
-            hiddenInput.hidden = true;
-
-            hiddenInput.classList.add("S" + sprint.id + "-hiddenIds");
-            hiddenInput.id = sprint.id + "-" + i;
-            hiddenInput.value = "u" + dependantIssue.id;
-            issuesBlock.appendChild(hiddenInput);
-        }
+        fillWithSprintIssues(sprint.id,  Object.values(sprint.issues));
 
         $("#modal").modal("hide");
 
@@ -152,45 +138,61 @@ function updateSprint() {
 function displaySprint(sprintsList, sprint) {
     const startDate = extractDate(sprint.startDate);
     const endDate = extractDate(sprint.endDate);
+    const sprintId = sprint.id;
 
     let sprintBlock = document.createElement("div");
     sprintBlock.id = "sprint-block-" + sprint.id;
-    sprintBlock.classList.add("col-4");
+    sprintBlock.classList.add("row");
     sprintsList.appendChild(sprintBlock);
 
     sprintBlock.innerHTML +=
-        "<div class=\"sprint\">\n" +
-        "<div><span class=\"fa fa-pushpin logo-small\"></span></div>\n" +
-        "<div id=\"sprint" + sprint.id + "-dates\"><h4>" + startDate + " à " + endDate + "</h4></div>\n" +
-        "<button hidden id=\"sprint" + sprint.id + "-start\" value=\"" + startDate + "\"></button>" +
-        "<button hidden id=\"sprint" + sprint.id + "-end\" value=\"" + endDate + "\"></button>" +
-        "<div class=\"sprint-issues\" id=\"S" + sprint.id + "-issues\">\n" +
-        "</div>\n" +
-        "<div class=\"sprint-block\"><button id=\"edit-el-" + sprint.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"sprint" + sprint.id + "\">" +
+        "<div class=\"col-8\" id=\"accordion-" + sprintId + "\">" +
+        "<a data-toggle=\"collapse\" data-target=\"#collapse-" + sprintId + "\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapse-" + sprintId + "\">" +
+        "<div id=\"sprint" + sprintId + "-dates\"><h4>" + startDate + " à " + endDate + "</h4></div>\n" +
+        "<button hidden id=\"sprint" + sprintId + "-start\" value=\"" + startDate + "\"></button>" +
+        "<button hidden id=\"sprint" + sprintId + "-end\" value=\"" + endDate + "\"></button>" +
+        "</a>" +
+        "</div>" +
+        "<div class=\"col-2\">" +
+        "<button id=\"edit-el-" + sprintId + "\" class=\"btn btn-warning btn-block edit-el\" value=\"sprint" + sprintId + "\">" +
         "<span class=\"fa fa-edit\"></span>\n" +
         "</button>\n" +
-        "</div>\n" +
-        "<div class=\"sprint-block\"><button id=\"delete-el-" + sprint.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"sprint" + sprint.id + "\">" +
+        "</div>" +
+        "<div class=\"col-2\">" +
+        "<button id=\"delete-el-" + sprintId + "\" class=\"btn btn-danger btn-block delete-el\" value=\"sprint" + sprintId + "\">" +
         "<span class=\"fa fa-trash\"></span></button>" +
-        "</div>\n" +
-        "</div>\n";
+        "</div>" +
+        "<div id=\"collapse-" + sprintId + "\" class=\"collapse col-8\" aria-labelledby=\"sprint" + sprintId + "\" >" +
+        "<div class=\"card card-body\">" +
+        "<div class=\"sprint-issues\" id=\"S" + sprintId + "-issues\">\n" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "</div>";
+    fillWithSprintIssues(sprint.id, sprint.issues);
 
-    let issuesBlock = document.getElementById("S" + sprint.id + "-issues");
-    for (let i = 0; i < sprint.issues.length; i++) {
-        let dependantIssue = sprint.issues[i];
-        let issueName = document.createElement("code");
-        issueName.innerHTML += dependantIssue.name;
-        issuesBlock.appendChild(issueName);
-        let hiddenInput = document.createElement("button");
-        hiddenInput.hidden = true;
-
-        hiddenInput.classList.add("S" + sprint.id + "-hiddenIds");
-        hiddenInput.id = sprint.id + "-" + i;
-        hiddenInput.value = "u" + dependantIssue.id;
-        issuesBlock.appendChild(hiddenInput);
-    }
 }
 
+function fillWithSprintIssues(sprintId, issuesList) {
+    let issuesBlock = document.getElementById("S" + sprintId + "-issues");
+    let title = document.createElement("h5");
+    title.innerHTML = "Issues du sprint : ";
+    issuesBlock.appendChild(title);
+    let ul = document.createElement("ul");
+    for (let i = 0; i < issuesList.length; i++) {
+        let dependantIssue = issuesList[i];
+        let issueName = document.createElement("li");
+        issueName.innerHTML += dependantIssue.name;
+        ul.appendChild(issueName);
+        let hiddenInput = document.createElement("button");
+        hiddenInput.hidden = true;
+        hiddenInput.classList.add("S" + sprintId + "-hiddenIds");
+        hiddenInput.id = sprintId + "-" + i;
+        hiddenInput.value = "u" + dependantIssue.id;
+        ul.appendChild(hiddenInput);
+    }
+    issuesBlock.appendChild(ul);
+}
 function extractDate(date) {
     const formattedDate = date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
     return formattedDate;
