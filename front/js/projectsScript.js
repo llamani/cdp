@@ -44,21 +44,7 @@ function displayProject(node, project) {
     projectBlock.id = "project-block-" + project.id;
     projectBlock.classList.add("row");
     node.appendChild(projectBlock);
-    /*
-        projectBlock.innerHTML +=
-            "<div class=\"project\">\n" +
-            "<div class=\"text-center\"><span class=\"fa fa-leaf logo-small\"></span></div>\n" +
-            "<div id=\"project" + project.id + "-name\" class=\"text-center\"><h4>" + name + "</h4></div>\n" +
-            "<div id=\"project" + project.id + "-description\">" + description + "</div>\n" +
-            "<div class=\"project-block\"><button id=\"edit-el-" + project.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"project" + project.id + "\">" +
-            "<span class=\"fa fa-edit\"></span>\n" +
-            "</button>\n" +
-            "</div>\n" +
-            "<div class=\"project-block\"><button id=\"delete-el-" + project.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"project" + project.id + "\">" +
-            "<span class=\"fa fa-trash\"></span></button>" +
-            "</div>\n" +
-            "</div>\n" ;
-    */
+
 
     projectBlock.innerHTML +=
 
@@ -79,6 +65,7 @@ function displayProject(node, project) {
         "<div id=\"collapse-" + projectId + "\" class=\"collapse col-8\" aria-labelledby=\"project" + projectId + "\" >" +
         "<div class=\"card card-body\">" +
         "<div id=\"project" + projectId + "-description\">" + description + "</div>" +
+        "<hr>" +
         "<div id=\"project" + projectId + "-members\"></div>" +
         "</div>" +
         "</div>" +
@@ -97,18 +84,23 @@ function fillProjectWithMembers(projectId) {
 
 function fillProjectWithMembersHtml(members, projectId) {
     let membersBlock = document.getElementById("project" + projectId + "-members");
+    let title = document.createElement("h5");
+    title.innerHTML = "Membres du projet : ";
+    membersBlock.appendChild(title);
+    let ul = document.createElement("ul");
     for (let i = 0; i < members.length; i++) {
         let member = members[i];
-        let memberName = document.createElement("kbd");
+        let memberName = document.createElement("li");
         memberName.innerHTML += member.user.name;
-        membersBlock.appendChild(memberName);
+        ul.appendChild(memberName);
         let hiddenInput = document.createElement("button");
         hiddenInput.hidden = true;
         hiddenInput.classList.add("members" + projectId + "-hiddenIds");
         hiddenInput.id = projectId + "-" + i;
         hiddenInput.value = "m" + member.user.id;
-        membersBlock.appendChild(hiddenInput);
+        ul.appendChild(hiddenInput);
     }
+    membersBlock.appendChild(ul);
 }
 
 function fillWithUserOptions() {

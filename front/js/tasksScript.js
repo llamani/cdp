@@ -70,7 +70,7 @@ function fillListWithTask(list, task) {
         "<div class=\"draggableblock\" id=\"drag-" + task.id + "\">" +
         "<div id=\"element-block-" + task.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + task.id + "\" class=\"col-sm-8 element-block\">\n" +
-        "<a href=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
+        "<a data-target=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
         "<span class=\"badge\"> T" + task.id + "</span >   " + task.name + "</a > \n" +
         "</div>\n" +
         "<div class=\"col-sm-2 element-block\"><button id=\"edit-el-" + task.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"T" + task.id + "\">" +
@@ -82,34 +82,42 @@ function fillListWithTask(list, task) {
         "</div>\n" +
         "</div>\n" +
         "<div id=\"details-block-" + task.id + "\" class=\"row\">" +
-        "<div id=\"T" + task.id + "\" class=\"collapse well text-justify\">\n" +
-        "<div id=\"T" + task.id + "-name\"><h4><strong>" + task.name + "</strong></h4></div>\n" +
+        "<div id=\"T" + task.id + "\" class=\"collapse card card-body text-justify\">\n" +
+        "<div id=\"T" + task.id + "-name\" class=\"text-center\"><h4><strong>" + task.name + "</strong></h4></div>\n" +
         "<div id=\"T" + task.id + "-description\">" + task.description + "</div>\n" +
+        "<hr>" +
         "<button hidden id=\"T" + task.id + "-workload-btn\" value=\"" + task.workload + "\"></button>" +
         "<div id=\"T" + task.id + "-workload\">\n" +
         "<h6>Charge (en j/homme) :" +
         "<span class=\"label label-default\">" + task.workload + " </span>" +
         "</h6>" +
         "</div >\n" +
+        "<hr>" +
         "<div id=\"T" + task.id + "-issues\">\n" +
         "</div>\n" +
         "</div>" +
         "</div>";
 
     let issuesBlock = document.getElementById("T" + task.id + "-issues");
+    let title = document.createElement("h5");
+    title.innerHTML = "Issues : ";
+    issuesBlock.appendChild(title);
+    let ul = document.createElement("ul");
+
     for (let i = 0; i < task.issues.length; i++) {
         let dependantIssue = task.issues[i];
-        let issueName = document.createElement("code");
+        let issueName = document.createElement("li");
         issueName.innerHTML += dependantIssue.name;
-        issuesBlock.appendChild(issueName);
+        ul.appendChild(issueName);
         let hiddenInput = document.createElement("button");
         hiddenInput.hidden = true;
 
         hiddenInput.classList.add("T" + task.id + "-hiddenIds");
         hiddenInput.id = task.id + "-" + i;
         hiddenInput.value = "u" + dependantIssue.id;
-        issuesBlock.appendChild(hiddenInput);
+        ul.appendChild(hiddenInput);
     }
+    issuesBlock.appendChild(ul);
     setDragAndDrop();
 
 }
