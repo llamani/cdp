@@ -1,4 +1,4 @@
-# Sprint 2 - 12/12/19 au 22/11/19
+# Sprint 2 - 12/11/19 au 22/11/19
 
 | ID | User Story | Priorité | Difficulté |
 | -- | ---------- | -------- | ---------- |
