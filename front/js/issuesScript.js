@@ -3,6 +3,7 @@ const projectId = JSON.parse(localStorage.getItem("user_current_project")).id;
 $(document).ready(function () {
     startUp();
     fillWithIssues();
+    setDragAndDrop();
 });
 
 function startUp() {
@@ -49,6 +50,62 @@ function fillWithIssues() {
 
 }
 
+function setDragAndDrop(){
+    let todo = document.getElementById('to-do');
+    let inprogress = document.getElementById('in-progress');
+    let done = document.getElementById('done');
+
+    Sortable.create(todo, {
+        group: 'list-1',
+        handle: '.draggableblock',
+        sort: false,
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+
+    Sortable.create(inprogress, {
+        group: 'list-1',
+        sort: false,
+        handle: '.draggableblock',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+
+    Sortable.create(done, {
+        group: 'list-1',
+        sort: false,
+        handle: '.draggableblock',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+}
+
+function updateStatus(issue, new_status){
+    let id = issue.substring(5);
+    let status = new_status;
+    if (new_status === "to-do"){
+        status = "todo";
+    }
+    else if(new_status = "in-progress"){
+        status = status.replace("-", " ");
+    }
+    let jsonData = {
+        status : status
+    }
+
+    console.log("issue : " + issue);
+    console.log("status : " + status);
+
+    sendAjax("/api/slide-issue/" + id, 'PUT', JSON.stringify(jsonData))
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
+}
+
 
 function getListAccordingToStatus(status) {
     const todoListEl = document.getElementById("to-do");
@@ -64,6 +121,7 @@ function getListAccordingToStatus(status) {
 
 function fillListWithIssue(list, issue) {
     list.innerHTML +=
+        "<div class=\"draggableblock\" id=\"drag-" + issue.id + "\">" +
         "<div id=\"issue-block-" + issue.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + issue.id + "\" class=\"col-sm-8 issue-block\">\n" +
         "<a href=\"#us" + issue.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
@@ -93,7 +151,10 @@ function fillListWithIssue(list, issue) {
         "<span class=\"label label-default\">" + issue.difficulty + "</span>" +
         "</h6>" +
         "</div>\n" +
+        "</div>" +
         "</div>";
+
+        setDragAndDrop();
 
 }
 

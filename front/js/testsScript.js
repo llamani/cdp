@@ -5,7 +5,7 @@ $(document).ready(function () {
     fillWithTests();
 });
 
-function startUp() { 
+function startUp() {
     const add_el_btns = document.getElementsByClassName("btn btn-primary add");
 
     for (let i = 0; i < add_el_btns.length; i++) {
@@ -27,15 +27,15 @@ function fillModalWithManagerOptions() {
  
     sendAjax("/api/project/" + projectId).then(res => {
      let project = res;
+     console.log(project);
      let users = project.userProjectRelations;
- 
      for(let i = 0; i < users.length; i++){
-         user = users[i].user;
-         optionNode = document.createElement("option");
-         optionNode.innerHTML = user.name;
-         optionNode.value = user.id;
-         modalOptions.appendChild(optionNode);
-         $("#modal-test-managers").selectpicker("refresh");
+        let user = users[i].user;
+        let optionNode = document.createElement("option");
+        optionNode.innerHTML = user.name;
+        optionNode.value = user.id;
+        modalOptions.appendChild(optionNode);
+        $("#modal-test-managers").selectpicker("refresh");
      }
  })
  .catch(e => {
@@ -44,11 +44,11 @@ function fillModalWithManagerOptions() {
  })
  }
 
- function fillWithTests() { 
+ function fillWithTests() {
     sendAjax("/api/tests/" + projectId).then(res => {
         let tests = res;
         let testsTable = document.getElementById("tests");
-           
+        
             for (let i = 0; i < tests.length; i++) {
                 let test = tests[i];
                 displayTest(test, testsTable);
@@ -73,10 +73,10 @@ function fillModalWithManagerOptions() {
     })
 }
 
-function displayTest(test, node) { 
+function displayTest(test, node) {
     const date = extractDate(test.testDate);
-    node.innerHTML += 
-    "<tr id=\"test-block" + test.id + "\" colspan=\"8\" data-toggle=\"collapse\" data-target=\"#test-data" + test.id + "\" class=\"accordion-toggle\" >" +
+    node.innerHTML +=
+    "<tr id=\"test-block" + test.id + "\" colspan=\"8\" data-toggle=\"collapse\" data-target=\"#test-data" + test.id + "\" class=\"accordion-toggle "+ test.status +"\" >" +
     "<th scope=\"row\">" + test.id + "</th>" +
     "<td id=\"test" + test.id + "-name\" >" + test.name + "</td>" +
     "<td id=\"test" + test.id + "-type\">" + test.type + "</td>" +
@@ -301,6 +301,18 @@ function updateTest() {
             hiddenInput.value = "user" + testManager.id;
             managersBlock.appendChild(hiddenInput);
         }
+
+        let row = document.getElementById("test-block" + test.id);
+        if(test.status == "SUCCESS"){
+            row.style.backgroundColor = "#D3FECE";
+        }
+        else if(test.status == "FAIL"){
+            row.style.backgroundColor = "#FEDADA";
+        }
+        else {
+            row.style.backgroundColor = "#E1E1E1";
+        }
+        
 
         $("#modal").modal("hide");
     })

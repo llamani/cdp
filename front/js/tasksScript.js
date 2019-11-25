@@ -3,6 +3,7 @@ const projectId = JSON.parse(localStorage.getItem("user_current_project")).id;
 $(document).ready(function () {
     startUp();
     fillWithTasks();
+    setDragAndDrop();
 });
 
 
@@ -66,6 +67,7 @@ function fillWithTasks() {
 
 function fillListWithTask(list, task) {
     list.innerHTML +=
+        "<div class=\"draggableblock\" id=\"drag-" + task.id + "\">" +
         "<div id=\"element-block-" + task.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + task.id + "\" class=\"col-sm-8 element-block\">\n" +
         "<a href=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
@@ -91,6 +93,7 @@ function fillListWithTask(list, task) {
         "</div >\n" +
         "<div id=\"T" + task.id + "-issues\">\n" +
         "</div>\n" +
+        "</div>" +
         "</div>";
 
     let issuesBlock = document.getElementById("T" + task.id + "-issues");
@@ -107,7 +110,63 @@ function fillListWithTask(list, task) {
         hiddenInput.value = "u" + dependantIssue.id;
         issuesBlock.appendChild(hiddenInput);
     }
+    setDragAndDrop();
 
+}
+
+function setDragAndDrop(){
+    let todo = document.getElementById('to-do');
+    let inprogress = document.getElementById('in-progress');
+    let done = document.getElementById('done');
+
+    Sortable.create(todo, {
+        group: 'list-1',
+        handle: '.draggableblock',
+        sort: false,
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+
+    Sortable.create(inprogress, {
+        group: 'list-1',
+        sort: false,
+        handle: '.draggableblock',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+
+    Sortable.create(done, {
+        group: 'list-1',
+        sort: false,
+        handle: '.draggableblock',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+}
+
+function updateStatus(task, new_status){
+    let id = task.substring(5);
+    let status = new_status;
+    if (new_status === "to-do"){
+        status = "todo";
+    }
+    else if(new_status = "in-progress"){
+        status = status.replace("-", " ");
+    }
+    let jsonData = {
+        status : status
+    }
+
+    console.log("task : " + id);
+
+    sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
 

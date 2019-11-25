@@ -24,7 +24,7 @@ class IssueController extends AbstractController
         try {
             $userId = $this->getUser()->getId();
             $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $projectId]);
-            if(!empty($userProjectsRelations)) {
+            if (!empty($userProjectsRelations)) {
                 $issuesList = $this->getDoctrine()->getRepository(Issue::class)->findBy(array('project' => $projectId));
                 if (!empty($issuesList)) {
                     $jsonContent = $serializer->serialize($issuesList, 'json', ['circular_reference_handler' => function ($object) {
@@ -37,10 +37,9 @@ class IssueController extends AbstractController
                     $response->setContent(json_encode([]));
                 }
                 $response->headers->set('Content-Type', 'application/json');
-            }
-            else {
+            } else {
                 $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                $response->setContent("You can't access to this project." );
+                $response->setContent("You can't access to this project.");
             }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -59,17 +58,16 @@ class IssueController extends AbstractController
             if ($issue != null) {
                 $userId = $this->getUser()->getId();
                 $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $issue->getProject()->getId()]);
-                if(!empty($userProjectsRelations)) {
+                if (!empty($userProjectsRelations)) {
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->headers->set('Content-Type', 'application/json');
                     $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
                         return $object->getId();
                     }]);
                     $response->setContent($jsonContent);
-                }
-                else {
+                } else {
                     $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                    $response->setContent("You can't access to this project." );
+                    $response->setContent("You can't access to this project.");
                 }
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
@@ -92,7 +90,7 @@ class IssueController extends AbstractController
             $parametersAsArray = json_decode($content, true);
             $userId = $this->getUser()->getId();
             $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $parametersAsArray['project']]);
-            if(!empty($userProjectsRelations)) {
+            if (!empty($userProjectsRelations)) {
                 $issue = new Issue();
                 $issue->setName($parametersAsArray['name']);
                 $issue->setDescription($parametersAsArray['description']);
@@ -110,10 +108,9 @@ class IssueController extends AbstractController
                     return $object->getId();
                 }]);
                 $response->setContent($jsonContent);
-            }
-            else {
+            } else {
                 $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                $response->setContent("You can't access to this project." );
+                $response->setContent("You can't access to this project.");
             }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -121,6 +118,7 @@ class IssueController extends AbstractController
         }
         return $response;
     }
+
     /**
      * @Route("/issue/{id}", name="api_update_issue", methods={"PUT"})
      */
@@ -133,7 +131,7 @@ class IssueController extends AbstractController
             if ($issue != null) {
                 $userId = $this->getUser()->getId();
                 $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $issue->getProject()->getId()]);
-                if(!empty($userProjectsRelations)) {
+                if (!empty($userProjectsRelations)) {
                     $issue->setName($data['name']);
                     $issue->setDescription($data['description']);
                     $issue->setPriority($data['priority']);
@@ -147,10 +145,9 @@ class IssueController extends AbstractController
                     }]);
                     $response->headers->set('Content-Type', 'application/json');
                     $response->setContent($jsonContent);
-                }
-                else {
+                } else {
                     $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                    $response->setContent("You can't access to this project." );
+                    $response->setContent("You can't access to this project.");
                 }
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
@@ -162,6 +159,47 @@ class IssueController extends AbstractController
         }
         return $response;
     }
+
+    /**
+     * @Route("/slide-issue/{id}", name="api_update_issue_status", methods={"PUT"})
+     */
+    function updateIssueStatus(Request $request, SerializerInterface $serializer, $id)
+    {
+        $response = new Response();
+        try {
+            $data = json_decode($request->getContent(), true);
+            $issue = $this->getDoctrine()->getRepository(Issue::class)->find($id);
+            if ($issue != null) {
+                $userId = $this->getUser()->getId();
+                $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $issue->getProject()->getId()]);
+                if (!empty($userProjectsRelations)) {
+                    $issue->setStatus($data['status']);
+                    $em = $this->getDoctrine()->getManager();
+                    $em->persist($issue);
+                    $em->flush();
+                    $response->setStatusCode(Response::HTTP_OK);
+                    $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]);
+                    $response->headers->set('Content-Type', 'application/json');
+                    $response->setContent($jsonContent);
+                } else {
+                    $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
+                    $response->setContent("You can't access to this project.");
+                }
+            } else {
+                $response->setStatusCode(Response::HTTP_NOT_FOUND);
+                $response->setContent('Unknown issue with id ' . $id);
+            }
+        } catch (Exception $e) {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $response->setContent($e->getMessage());
+        }
+        return $response;
+    }
+
+
+
     /**
      * @Route("/issue/{id}", name="api_delete_issue", methods={"DELETE"})
      */
@@ -173,16 +211,15 @@ class IssueController extends AbstractController
             if ($issue != null) {
                 $userId = $this->getUser()->getId();
                 $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $issue->getProject()->getId()]);
-                if(!empty($userProjectsRelations)) {
+                if (!empty($userProjectsRelations)) {
                     $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->remove($issue);
                     $entityManager->flush();
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->setContent(null);
-                }
-                else {
+                } else {
                     $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                    $response->setContent("You can't access to this project." );
+                    $response->setContent("You can't access to this project.");
                 }
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
@@ -204,7 +241,7 @@ class IssueController extends AbstractController
         try {
             $userId = $this->getUser()->getId();
             $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $projectId]);
-            if(!empty($userProjectsRelations)) {
+            if (!empty($userProjectsRelations)) {
                 $query = $this->getDoctrine()->getRepository(Issue::class)->createQueryBuilder("t");
                 $issueIdsList = $query->select('t.id')
                     ->getQuery()
@@ -222,7 +259,7 @@ class IssueController extends AbstractController
                 }
             } else {
                 $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                $response->setContent("You can't access to this project." );
+                $response->setContent("You can't access to this project.");
             }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
