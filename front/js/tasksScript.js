@@ -6,7 +6,6 @@ $(document).ready(function () {
     setDragAndDrop();
 });
 
-
 function startUp() {
     const add_el_btns = document.getElementsByClassName("add-el");
 
@@ -30,8 +29,7 @@ function fillModalWithIssueOptions() {
             optionNode.value = "u" + issue.id;
             modalOptions.appendChild(optionNode);
             $("#modal-dependant-issues").selectpicker("refresh");
-        }
-      
+        }    
     })
     .catch(e => {
         $(".err-msg").fadeIn();
@@ -119,7 +117,6 @@ function fillListWithTask(list, task) {
     }
     issuesBlock.appendChild(ul);
     setDragAndDrop();
-
 }
 
 function setDragAndDrop(){
@@ -161,14 +158,12 @@ function updateStatus(task, new_status){
     if (new_status === "to-do"){
         status = "todo";
     }
-    else if(new_status = "in-progress"){
+    else if(new_status === "in-progress"){
         status = status.replace("-", " ");
     }
     let jsonData = {
         status : status
     }
-
-    console.log("task : " + id);
 
     sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
         .catch(e => {
@@ -176,7 +171,6 @@ function updateStatus(task, new_status){
             $(".spinner-border").fadeOut();
         })
 }
-
 
 function fillModal(value) {
     const tId = value.substring(1);
@@ -201,9 +195,7 @@ function fillModal(value) {
             option.selected = false;
     }
     $("#modal-dependant-issues").selectpicker("refresh");
-
     $("#modal").modal("show");
-
 }
 
 function getDependantIssuesFromBlock(taskId) {
@@ -228,8 +220,6 @@ function emptyModal(status) {
     for (let i = 0; i < modalOptions.length; i++) {
         modalOptions[i].selected = false;
     }
-
-
     $("#modal").modal("show");
 }
 const modalConfirmBtn = document.getElementById("modal-mode");
@@ -318,7 +308,6 @@ function deleteTask(task) {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
-
     }
 }
 

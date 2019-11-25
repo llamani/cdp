@@ -22,7 +22,6 @@ function startUp() {
 
 
 function fillWithIssues() {
-
     sendAjax("/api/issues/" + projectId).then(res => {
         let issues = res;
         let issuesList = document.getElementById("issues");
@@ -59,7 +58,6 @@ function displayIssue(node, issue) {
     issueBlock.classList.add("row");
     node.appendChild(issueBlock);
     issueBlock.innerHTML +=
-
         "<div class=\"col-8\" id=\"accordion-" + issueId + "\">" +
         "<a data-toggle=\"collapse\" data-target=\"#collapse-" + issueId + "\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapse-" + issueId + "\">" +
         "<div id=\"issue" + issueId + "-name\" class=\"text-center\"><h4>" + name + "</h4></div>" +
@@ -109,7 +107,6 @@ function displayIssue(node, issue) {
     fillProgressBar(pBDone, donePercentage);
     fillProgressBar(pBIP, inProgressPercentage);
     fillProgressBar(pBToDo, todoPercentage);
-
 }
 
 function fillProgressBar(progressBar, percentage) {
@@ -163,7 +160,6 @@ function fillModal(value) {
     document.getElementById("modal-mode").value = "update";
 
     $("#modal").modal("show");
-
 }
 
 function emptyModal(status) {
@@ -172,7 +168,6 @@ function emptyModal(status) {
     document.getElementById("modal-description").value = '';
     document.getElementById("modal-priority").value = 'low';
     document.getElementById("modal-difficulty").value = 'easy';
-    // document.getElementById("modal-status").value = status;
     document.getElementById("modal-mode").value = "create";
 
     $("#modal").modal("show");
@@ -183,7 +178,6 @@ function createIssue() {
     const description = document.getElementById("modal-description").value;
     const priority = document.getElementById("modal-priority").value;
     const difficulty = document.getElementById("modal-difficulty").value;
-    //const status = document.getElementById("modal-status").value;
 
     let jsonData = {
         "name": nom,
