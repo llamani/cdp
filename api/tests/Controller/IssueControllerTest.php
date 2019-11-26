@@ -22,19 +22,19 @@ class IssueControllerTest extends WebTestCase
     public function testUnauthorizedAccess()
     {
         $unauthClient = static::createClient();
-        $unauthClient->request('GET', 'api/issues/3');
+        $unauthClient->request('GET', 'api/issues/1');
         $this->assertEquals(Response::HTTP_UNAUTHORIZED, $unauthClient->getResponse()->getStatusCode());
     }
 
     public function testAuthorizedAccess()
     {
-        $this->client->request('GET', 'api/issues/3');
+        $this->client->request('GET', 'api/issues/1');
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
     public function testAddIssue()
     {
-        $arr = array('name' => 'test', 'description' => 'test', 'priority' => 'low', 'difficulty' => 'easy', 'status' => 'done', 'project' => '3');
+        $arr = array('name' => 'test', 'description' => 'test', 'priority' => 'low', 'difficulty' => 'easy', 'status' => 'done', 'project' => '1');
         $jsonData = json_encode($arr);
 
         $this->client->request(
