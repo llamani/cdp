@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class IssueControllerTest extends WebTestCase
+class TaskControllerTest extends WebTestCase
 {
     private $client = null;
 
@@ -32,14 +32,14 @@ class IssueControllerTest extends WebTestCase
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testAddIssue()
+    public function testAddTask()
     {
-        $arr = array('name' => 'test', 'description' => 'test', 'priority' => 'low', 'difficulty' => 'easy', 'status' => 'done', 'project' => '3');
+        $arr = array('name' => 'test', 'description' => 'test', 'workload' => '1.0', 'status' => 'done', 'issue' => ['4', '6']);
         $jsonData = json_encode($arr);
 
         $this->client->request(
             'POST',
-            '/api/issue',
+            '/api/task',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -51,18 +51,18 @@ class IssueControllerTest extends WebTestCase
 
         $this->assertEquals(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
         $this->checkArrays($arr, $parametersAsArray);
-        $this->updateIssue($parametersAsArray['id']);
-        $this->removeIssue($parametersAsArray['id']);
+        $this->updateTask($parametersAsArray['id']);
+        $this->removeTask($parametersAsArray['id']);
     }
 
-    private function updateIssue($id)
-    { 
-        $arr = array('name' => 'test2', 'description' => 'test2', 'priority' => 'high', 'difficulty' => 'difficult');
+    private function updateTask($id)
+    {
+        $arr = array('name' => 'test2', 'description' => 'test2', 'workload' => '2.0', 'status' => 'todo', 'issue' => ['4']);
         $jsonData = json_encode($arr);
 
         $this->client->request(
             'PUT',
-            "/api/issue/{$id}",
+            "/api/task/{$id}",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -76,21 +76,24 @@ class IssueControllerTest extends WebTestCase
         $parametersAsArray = json_decode($responseContent, true);
     }
 
-    private function removeIssue($id)
+    private function removeTask($id)
     {
-        $this->client->request('DELETE', "/api/issue/{$id}");
+        $this->client->request('DELETE', "/api/task/{$id}");
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
-    private function checkArrays($arr, $parametersAsArray){
+    private function checkArrays($arr, $parametersAsArray)
+    {
         $this->assertEquals($arr['name'], $parametersAsArray['name']);
         $this->assertEquals($arr['description'], $parametersAsArray['description']);
-        $this->assertEquals($arr['priority'], $parametersAsArray['priority']);
-        $this->assertEquals($arr['difficulty'], $parametersAsArray['difficulty']);
-        $dependantIssues = $parametersAsArray['issues'];
+        $this->assertEquals($arr['workload'], $parametersAsArray['workload']);
+        $responseIssues = $parametersAsArray['issues'];
+        $arrIssues = $arr['issue'];
+        $this->assertEquals(count($arrIssues), count($responseIssues ));
         $i = 0;
-        foreach ($dependantIssues as $issue){
+        foreach ($responseIssues  as $issue) {
             $this->assertEquals($arr['issue'][$i], $issue['id']);
+            $i++;
         }
     }
 }
