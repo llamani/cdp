@@ -6,7 +6,7 @@
             </div>
             <div class="col-sm-6">
                 <div class="float-sm-right">
-                    <button type="button" id="add-btn" class="btn btn-primary" data-toggle="modal" data-target="#modal-release">
+                    <button type="button" id="add-btn-release" class="btn btn-primary">
                         Ajouter une release
                     </button>
                 </div>
@@ -26,12 +26,13 @@
                         <tr>
                             <th>Titre</th>
                             <th>Date</th>
+                            <th>Sprint</th>
                             <th>Description</th>
                             <th>Sources</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="release-table-body">
                         </tbody>
                     </table>
                 </div>
@@ -53,29 +54,34 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <input type="hidden" class="form-control" id="id" value="">
+                        <input type="hidden" class="form-control" id="modal-id" value="">
                     </div>
                     <div class="form-group">
                         <label for="name">Titre:</label>
-                        <input type="text" class="form-control" id="name" placeholder="Titre" required>
+                        <input type="text" class="form-control" id="modal-name" placeholder="Titre" required>
+                    </div>
+                    <div id="modal-date-group" class="form-group">
+                        <label for="date">Date de la release:</label>
+                        <input type="date" class="form-control" id="modal-date"/>
                     </div>
                     <div class="form-group">
-                        <label for="version">Version:</label>
-                        <input type="text" class="form-control" id="version" placeholder="1.0.0" required>
+                        <label for="sprint">Sprint:</label>
+                        <select class="form-control" id="modal-sprint" required>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="description">Description:</label>
-                        <textarea class="form-control" rows="5" cols="60" id="description" placeholder="Description"></textarea><br>
+                        <textarea class="form-control" rows="5" cols="60" id="modal-description" placeholder="Description"></textarea><br>
                     </div>
                     <div class="form-group">
                         <label for="src_link">Sources:</label>
-                        <input type="text" class="form-control" id="src_link" placeholder="Lien vers les sources" required>
+                        <input type="text" class="form-control" id="modal-src_link" placeholder="Lien vers les sources" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button type="button" form="add-project" id="modal-mode" class="btn btn-primary" value="create">Enregistrer</button>
+                <button type="button" id="modal-mode" class="btn btn-primary" value="create">Enregistrer</button>
             </div>
         </div>
     </div>

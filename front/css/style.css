@@ -3,6 +3,10 @@
     display: none;
 }
 
+.hidden {
+    display: none;
+}
+
 .error-page {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
@@ -27,7 +31,7 @@
 }
 
 .progress-list:hover {
-  box-shadow: 0 0 11px rgba(33,33,33,.2); 
+  box-shadow: 0 0 11px rgba(33,33,33,.2);
 }
 
 .project{
