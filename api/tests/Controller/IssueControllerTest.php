@@ -87,10 +87,6 @@ class IssueControllerTest extends WebTestCase
         $this->assertEquals($arr['description'], $parametersAsArray['description']);
         $this->assertEquals($arr['priority'], $parametersAsArray['priority']);
         $this->assertEquals($arr['difficulty'], $parametersAsArray['difficulty']);
-        $dependantIssues = $parametersAsArray['issues'];
-        $i = 0;
-        foreach ($dependantIssues as $issue){
-            $this->assertEquals($arr['issue'][$i], $issue['id']);
-        }
+        
     }
 }
