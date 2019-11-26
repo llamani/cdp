@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class TaskControllerTest extends WebTestCase
+class SprintControllerTest extends WebTestCase
 {
     private $client = null;
 
@@ -22,24 +22,24 @@ class TaskControllerTest extends WebTestCase
     public function testUnauthorizedAccess()
     {
         $unauthClient = static::createClient();
-        $unauthClient->request('GET', 'api/issues/1');
+        $unauthClient->request('GET', 'api/sprints/1');
         $this->assertEquals(Response::HTTP_UNAUTHORIZED, $unauthClient->getResponse()->getStatusCode());
     }
 
     public function testAuthorizedAccess()
     {
-        $this->client->request('GET', 'api/issues/1');
+        $this->client->request('GET', 'api/sprints/1');
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testAddTask()
+    public function testAddSprint()
     {
-        $arr = array('name' => 'test', 'description' => 'test', 'workload' => '1.0', 'status' => 'done', 'issue' => ['1', '2']);
+        $arr = array("startDate" => "25-11-2019", "endDate" => "06-12-2019", "issue" => ["1", "2"], "project" => "1");
         $jsonData = json_encode($arr);
 
         $this->client->request(
             'POST',
-            '/api/task',
+            '/api/sprint',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -49,20 +49,21 @@ class TaskControllerTest extends WebTestCase
         $responseContent = $this->client->getResponse()->getContent();
         $parametersAsArray = json_decode($responseContent, true);
 
+
         $this->assertEquals(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
         $this->checkArrays($arr, $parametersAsArray);
-        $this->updateTask($parametersAsArray['id']);
-        $this->removeTask($parametersAsArray['id']);
+        $this->updateSprint($parametersAsArray['id']);
+        $this->removeSprint($parametersAsArray['id']);
     }
 
-    private function updateTask($id)
+    private function updateSprint($id)
     {
-        $arr = array('name' => 'test2', 'description' => 'test2', 'workload' => '2.0', 'status' => 'todo', 'issue' => ['4']);
+        $arr = array("startDate" => "11-11-2019", "endDate" => "23-11-2019", "issue" => ["1"], "project" => "1");
         $jsonData = json_encode($arr);
 
         $this->client->request(
             'PUT',
-            "/api/task/{$id}",
+            "/api/sprint/{$id}",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -75,24 +76,35 @@ class TaskControllerTest extends WebTestCase
         $this->checkArrays($arr, $parametersAsArray);
     }
 
-    private function removeTask($id)
+    private function removeSprint($id)
     {
-        $this->client->request('DELETE', "/api/task/{$id}");
+        $this->client->request('DELETE', "/api/sprint/{$id}");
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
     private function checkArrays($arr, $parametersAsArray)
     {
-        $this->assertEquals($arr['name'], $parametersAsArray['name']);
-        $this->assertEquals($arr['description'], $parametersAsArray['description']);
-        $this->assertEquals($arr['workload'], $parametersAsArray['workload']);
+        $startDateResponse =  substr($parametersAsArray['startDate'], 0, 10);
+        $startDateArray = $this->createDate($arr['startDate']);
+        $this->assertEquals($startDateResponse, $startDateArray);
+
+        $endDateResponse =  substr($parametersAsArray['endDate'], 0, 10);
+        $endDateArray = $this->createDate($arr['endDate']);
+        $this->assertEquals($endDateResponse, $endDateArray);
+
         $responseIssues = $parametersAsArray['issues'];
         $arrIssues = $arr['issue'];
-        $this->assertEquals(count($arrIssues), count($responseIssues ));
+        $this->assertEquals(count($arrIssues), count($responseIssues));
         $i = 0;
         foreach ($responseIssues  as $issue) {
             $this->assertEquals($arr['issue'][$i], $issue['id']);
             $i++;
         }
+    }
+
+    private function createDate($date)
+    {
+        $dateDF = \date_create_from_format('d-m-Y', $date);
+        return date_format($dateDF, 'Y-m-d');
     }
 }
