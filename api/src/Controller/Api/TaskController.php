@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Task;
 use App\Entity\Issue;
 use App\Entity\Project;
+use App\Entity\UserProjectRelation;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,7 +58,7 @@ class TaskController extends AbstractController
         return $response;
     }
 
-   
+
     /**
      * @Route("/task", name="api_create_task", methods={"POST"})
      */
@@ -139,6 +140,41 @@ class TaskController extends AbstractController
         }
         return $response;
     }
+
+    /**
+     * @Route("/slide-task/{id}", name="api_update_task_status", methods={"PUT"})
+     */
+    function updateTaskStatus(Request $request, SerializerInterface $serializer, $id)
+    {
+        $response = new Response();
+        try {
+            $data = json_decode($request->getContent(), true);
+            $task = $this->getDoctrine()->getRepository(Task::class)->find($id);
+            if ($task != null) {
+                $task->setStatus($data['status']);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($task);
+                $em->flush();
+                $response->setStatusCode(Response::HTTP_OK);
+                $jsonContent = $serializer->serialize($task, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]);
+                $response->headers->set('Content-Type', 'application/json');
+                $response->setContent($jsonContent);
+            } else {
+                $response->setStatusCode(Response::HTTP_NOT_FOUND);
+                $response->setContent('Unknown task with id ' . $id);
+            }
+        } catch (Exception $e) {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $response->setContent($e->getMessage());
+        }
+        return $response;
+    }
+
+
+
+
     /**
      * @Route("/task/{id}", name="api_delete_task", methods={"DELETE"})
      */

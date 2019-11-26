@@ -5,7 +5,7 @@ $(document).ready(function () {
     fillWithTests();
 });
 
-function startUp() { 
+function startUp() {
     const add_el_btns = document.getElementsByClassName("btn btn-primary add");
 
     for (let i = 0; i < add_el_btns.length; i++) {
@@ -24,85 +24,83 @@ function startUp() {
 
 function fillModalWithManagerOptions() {
     let modalOptions = document.getElementById("modal-test-managers");
- 
-    sendAjax("/api/project/" + projectId).then(res => {
-     let project = res;
-     let users = project.userProjectRelations;
- 
-     for(let i = 0; i < users.length; i++){
-         user = users[i].user;
-         optionNode = document.createElement("option");
-         optionNode.innerHTML = user.name;
-         optionNode.value = user.id;
-         modalOptions.appendChild(optionNode);
-         $("#modal-test-managers").selectpicker("refresh");
-     }
- })
- .catch(e => {
-     $(".err-msg").fadeIn();
-     $(".spinner-border").fadeOut();
- })
- }
 
- function fillWithTests() { 
+    sendAjax("/api/project/" + projectId).then(res => {
+        let project = res;
+        let users = project.userProjectRelations;
+        for (let i = 0; i < users.length; i++) {
+            let user = users[i].user;
+            let optionNode = document.createElement("option");
+            optionNode.innerHTML = user.name;
+            optionNode.value = user.id;
+            modalOptions.appendChild(optionNode);
+            $("#modal-test-managers").selectpicker("refresh");
+        }
+    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
+}
+
+function fillWithTests() {
     sendAjax("/api/tests/" + projectId).then(res => {
         let tests = res;
         let testsTable = document.getElementById("tests");
-           
-            for (let i = 0; i < tests.length; i++) {
-                let test = tests[i];
-                displayTest(test, testsTable);
-            }
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
+            displayTest(test, testsTable);
+        }
 
-            let edit_el_btns = document.getElementsByClassName("edit-el");
-            let delete_el_btns = document.getElementsByClassName("delete-el");
+        let edit_el_btns = document.getElementsByClassName("edit-el");
+        let delete_el_btns = document.getElementsByClassName("delete-el");
 
-            for (let i = 0; i < edit_el_btns.length; i++) {
-                let edit_btn = edit_el_btns[i];
-                edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
-            }
+        for (let i = 0; i < edit_el_btns.length; i++) {
+            let edit_btn = edit_el_btns[i];
+            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
+        }
 
-            for (let i = 0; i < delete_el_btns.length; i++) {
-                let delete_btn = delete_el_btns[i];
-                delete_btn.addEventListener("click", function () { deleteTest(delete_btn.value); });
-            }
+        for (let i = 0; i < delete_el_btns.length; i++) {
+            let delete_btn = delete_el_btns[i];
+            delete_btn.addEventListener("click", function () { deleteTest(delete_btn.value); });
+        }
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
-function displayTest(test, node) { 
+function displayTest(test, node) {
     const date = extractDate(test.testDate);
-    node.innerHTML += 
-    "<tr id=\"test-block" + test.id + "\" colspan=\"8\" data-toggle=\"collapse\" data-target=\"#test-data" + test.id + "\" class=\"accordion-toggle\" >" +
-    "<th scope=\"row\">" + test.id + "</th>" +
-    "<td id=\"test" + test.id + "-name\" >" + test.name + "</td>" +
-    "<td id=\"test" + test.id + "-type\">" + test.type + "</td>" +
-    "<td id=\"test" + test.id + "-date\">" + date + "</td>" +
-    "<td id=\"test" + test.id + "-managers\"></td>" +
-    "<td id=\"test" + test.id + "-status\">" + test.status + "</td>" +
-    "<td>" +
-    "<button id=\"edit-el-" + test.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"test" + test.id + "\">" +
-    "<span class=\"fa fa-edit\"></span>\n" +
-    "</td>" +
-    "<td>" +
-    "<button id=\"delete-el-" + test.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"test" + test.id + "\">" +
+    node.innerHTML +=
+        "<tr id=\"test-block" + test.id + "\" colspan=\"8\" data-toggle=\"collapse\" data-target=\"#test-data" + test.id + "\" class=\"accordion-toggle " + test.status + "\" >" +
+        "<th scope=\"row\">" + test.id + "</th>" +
+        "<td id=\"test" + test.id + "-name\" >" + test.name + "</td>" +
+        "<td id=\"test" + test.id + "-type\">" + test.type + "</td>" +
+        "<td id=\"test" + test.id + "-date\">" + date + "</td>" +
+        "<td id=\"test" + test.id + "-managers\"></td>" +
+        "<td id=\"test" + test.id + "-status\">" + test.status + "</td>" +
+        "<td>" +
+        "<button id=\"edit-el-" + test.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"test" + test.id + "\">" +
+        "<span class=\"fa fa-edit\"></span>\n" +
+        "</td>" +
+        "<td>" +
+        "<button id=\"delete-el-" + test.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"test" + test.id + "\">" +
         "<span class=\"fa fa-trash\"></span></button>" +
-  "</td>" +
- "</tr>" +
- "<tr id=\"test-hiddenblock" + test.id + "\">" +
-    "<td  colspan=\"8\" class= \"hiddenRow\">" +
+        "</td>" +
+        "</tr>" +
+        "<tr id=\"test-hiddenblock" + test.id + "\">" +
+        "<td  colspan=\"8\" class= \"hiddenRow\">" +
         "<div class=\"accordian-body collapse p-3\" id=\"test-data" + test.id + "\">" +
-            "<p>Description :"+ "<span id=\"test" + test.id + "-description\">" + test.description + "</span></p>" +
-            "<p>Résultat attendu :" + "<span id=\"test" + test.id + "-expectedResult\">" + test.expectedResult + "</span></p>" +
-            "<p>Résultat obtenu :" + "<span id=\"test" + test.id + "-obtainedResult\">" + test.obtainedResult + "</span></p>" +
+        "<p>Description :" + "<span id=\"test" + test.id + "-description\">" + test.description + "</span></p>" +
+        "<p>Résultat attendu :" + "<span id=\"test" + test.id + "-expectedResult\">" + test.expectedResult + "</span></p>" +
+        "<p>Résultat obtenu :" + "<span id=\"test" + test.id + "-obtainedResult\">" + test.obtainedResult + "</span></p>" +
         "</div>" +
-	"</td>"
-  "</tr>";
+        "</td>"
+    "</tr>";
 
-  let managersBlock = document.getElementById("test" + test.id + "-managers");
+    let managersBlock = document.getElementById("test" + test.id + "-managers");
     for (let i = 0; i < test.testManagers.length; i++) {
         let manager = test.testManagers[i];
         let managerName = document.createElement("test");
@@ -191,18 +189,18 @@ function createTest() {
         let test = res;
 
         let testsTable = document.getElementById("tests");
-            displayTest(test, testsTable);
+        displayTest(test, testsTable);
 
-            const edit_btn = document.getElementById("edit-el-" + test.id);
-            edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
-            const delete_btn = document.getElementById("delete-el-" + test.id);
-            delete_btn.addEventListener("click", function () { deleteTest(delete_btn.value); })
-            $("#modal").modal("hide");
+        const edit_btn = document.getElementById("edit-el-" + test.id);
+        edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
+        const delete_btn = document.getElementById("delete-el-" + test.id);
+        delete_btn.addEventListener("click", function () { deleteTest(delete_btn.value); })
+        $("#modal").modal("hide");
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
 
@@ -215,27 +213,22 @@ function getJsonDataFromModal() {
     const status = document.getElementById("modal-status").value;
     const date = document.getElementById("modal-testDate").value;
     const testManagers = getTestManagersFromModal();
-
-    let jsonData = {
+    return {
         "name": name,
         "description": description,
         "type": type,
         "status": status,
-        "expectedResult": expectedResult, 
+        "expectedResult": expectedResult,
         "obtainedResult": obtainedResult,
         "testDate": date,
         "testManagers": testManagers,
         "project": projectId
     }
-    return jsonData;
 }
 
 function extractDate(date) {
-    const formattedDate = date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
-    return formattedDate;
+    return date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
 }
-
-
 
 function getTestManagersFromModal() {
     let select = document.getElementById("modal-test-managers");
@@ -250,7 +243,7 @@ function getTestManagersFromModal() {
 }
 
 
-function deleteTest(test) { 
+function deleteTest(test) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const tId = test.substring(4);
@@ -260,10 +253,10 @@ function deleteTest(test) {
             let deletedDetails = document.getElementById("test-hiddenblock" + tId);
             deletedDetails.parentNode.removeChild(deletedDetails);
         })
-        .catch(e => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
+            .catch(e => {
+                $(".err-msg").fadeIn();
+                $(".spinner-border").fadeOut();
+            })
     }
 }
 
@@ -274,7 +267,6 @@ function updateTest() {
     sendAjax("/api/test/" + tId, 'PUT', JSON.stringify(jsonData)).then(res => {
         let test = res;
         const date = extractDate(test.testDate);
-
         document.getElementById("test" + test.id + "-name").textContent = test.name;
         document.getElementById("test" + test.id + "-description").innerHTML = test.description;
         document.getElementById("test" + test.id + "-type").textContent = test.type;
@@ -282,12 +274,9 @@ function updateTest() {
         document.getElementById("test" + test.id + "-obtainedResult").innerHTML = test.obtainedResult;
         document.getElementById("test" + test.id + "-date").textContent = date;
         document.getElementById("test" + test.id + "-status").textContent = test.status;
-    
-
-       let managersBlock = document.getElementById("test" + test.id + "-managers");
+        let managersBlock = document.getElementById("test" + test.id + "-managers");
         managersBlock.querySelectorAll('*').forEach(n => n.remove());
-        let managers = Object.values(test.testManagers);       
-
+        let managers = Object.values(test.testManagers);
         for (let i = 0; i < managers.length; i++) {
             let testManager = managers[i];
             let managerName = document.createElement("text");
@@ -295,18 +284,27 @@ function updateTest() {
             managersBlock.appendChild(managerName);
             let hiddenInput = document.createElement("button");
             hiddenInput.hidden = true;
-    
+
             hiddenInput.classList.add("test" + test.id + "-hiddenIds");
             hiddenInput.id = test.id + "-" + i;
             hiddenInput.value = "user" + testManager.id;
             managersBlock.appendChild(hiddenInput);
         }
-
+        let row = document.getElementById("test-block" + test.id);
+        if (test.status == "SUCCESS") {
+            row.style.backgroundColor = "#D3FECE";
+        }
+        else if (test.status == "FAIL") {
+            row.style.backgroundColor = "#FEDADA";
+        }
+        else {
+            row.style.backgroundColor = "#E1E1E1";
+        }
         $("#modal").modal("hide");
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 

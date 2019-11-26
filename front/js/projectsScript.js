@@ -39,25 +39,68 @@ function fillWithProjects() {
 function displayProject(node, project) {
     const name = project.name;
     const description = project.description;
-
+    const projectId = project.id;
     let projectBlock = document.createElement("div");
     projectBlock.id = "project-block-" + project.id;
-    projectBlock.classList.add("col-4");
+    projectBlock.classList.add("row");
     node.appendChild(projectBlock);
 
+
     projectBlock.innerHTML +=
-        "<div class=\"project\">\n" +
-        "<div><span class=\"fa fa-leaf logo-small\"></span></div>\n" +
-        "<div id=\"project" + project.id + "-name\"><h4>" + name + "</h4></div>\n" +
-        "<div id=\"project" + project.id + "-description\">" + description + "</div>\n" +
-        "<div class=\"project-block\"><button id=\"edit-el-" + project.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"project" + project.id + "\">" +
+
+        "<div class=\"col-8\" id=\"accordion-" + projectId + "\">" +
+        "<a data-toggle=\"collapse\" data-target=\"#collapse-" + projectId + "\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapse-" + project.id + "\">" +
+        "<div id=\"project" + projectId + "-name\" class=\"text-center\"><h4>" + name + "</h4></div>" +
+        "</a>" +
+        "</div>" +
+        "<div class=\"col-2\">" +
+        "<button id=\"edit-el-" + projectId + "\" class=\"btn btn-warning btn-block edit-el\" value=\"project" + projectId + "\">" +
         "<span class=\"fa fa-edit\"></span>\n" +
         "</button>\n" +
-        "</div>\n" +
-        "<div class=\"project-block\"><button id=\"delete-el-" + project.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"project" + project.id + "\">" +
+        "</div>" +
+        "<div class=\"col-2\">" +
+        "<button id=\"delete-el-" + projectId + "\" class=\"btn btn-danger btn-block delete-el\" value=\"project" + projectId + "\">" +
         "<span class=\"fa fa-trash\"></span></button>" +
-        "</div>\n" +
-        "</div>\n" ;
+        "</div>" +
+        "<div id=\"collapse-" + projectId + "\" class=\"collapse col-8\" aria-labelledby=\"project" + projectId + "\" >" +
+        "<div class=\"card card-body\">" +
+        "<div id=\"project" + projectId + "-description\">" + description + "</div>" +
+        "<hr>" +
+        "<div id=\"project" + projectId + "-members\"></div>" +
+        "</div>" +
+        "</div>" +
+        "</div>" +
+        "</div>";
+
+    fillProjectWithMembers(projectId);
+}
+
+function fillProjectWithMembers(projectId) {
+    sendAjax("/api/members/" + projectId).then(res => {
+        let members = res;
+        fillProjectWithMembersHtml(members, projectId);
+    });
+}
+
+function fillProjectWithMembersHtml(members, projectId) {
+    let membersBlock = document.getElementById("project" + projectId + "-members");
+    let title = document.createElement("h5");
+    title.innerHTML = "Membres du projet : ";
+    membersBlock.appendChild(title);
+    let ul = document.createElement("ul");
+    for (let i = 0; i < members.length; i++) {
+        let member = members[i];
+        let memberName = document.createElement("li");
+        memberName.innerHTML += member.user.name;
+        ul.appendChild(memberName);
+        let hiddenInput = document.createElement("button");
+        hiddenInput.hidden = true;
+        hiddenInput.classList.add("members" + projectId + "-hiddenIds");
+        hiddenInput.id = projectId + "-" + i;
+        hiddenInput.value = "m" + member.user.id;
+        ul.appendChild(hiddenInput);
+    }
+    membersBlock.appendChild(ul);
 }
 
 function fillWithUserOptions() {
@@ -65,30 +108,20 @@ function fillWithUserOptions() {
 
     sendAjax("/users").then(res => {
         let users = res;
-        //let users = res;
-        //console.log("users : " + users);
-        //console.log("users length : " + users.length);
         for (let i = 0; i < users.length; i++) {
             let user = users[i];
-            //console.log("user : " + user);
             let optionNode = document.createElement("option");
             optionNode.innerHTML = user.name;
-            optionNode.value = "u" + user.id;
+            optionNode.value = "m" + user.id;
             modalOptions.appendChild(optionNode);
             $("#modal-users").selectpicker("refresh");
         }
-
     })
 }
 
 function createProject() {
-    const nom = document.getElementById("name").value;
-    const description = document.getElementById("description").value;
+    let jsonData = getJsonDataFromModal();
 
-    let jsonData = {
-        "name": nom,
-        "description": description
-    }
     sendAjax("/api/project", 'POST', JSON.stringify(jsonData))
         .then(res => {
             let project = res;
@@ -118,13 +151,13 @@ function deleteProject(value) {
 
                 let all_projects = JSON.parse(localStorage.getItem('user_all_projects'));
                 const index = all_projects.findIndex(p => parseInt(p.id) === parseInt(id));
-                if(index === -1) {
+                if (index === -1) {
                     console.error("Impossible")
                 }
                 all_projects.splice(index, 1);
                 localStorage.setItem('user_all_projects', JSON.stringify(all_projects));
-                if(parseInt(JSON.parse(localStorage.getItem("user_current_project")).id) === parseInt(id)) {
-                    if(all_projects.length > 0) {
+                if (parseInt(JSON.parse(localStorage.getItem("user_current_project")).id) === parseInt(id)) {
+                    if (all_projects.length > 0) {
                         localStorage.setItem('user_current_project', JSON.stringify(all_projects[0]));
                     } else {
                         localStorage.removeItem("user_all_projects");
@@ -137,7 +170,8 @@ function deleteProject(value) {
 }
 
 function fillModal(value) {
-    let id = value.substring(5);
+    let id = value.substring(7);
+    console.log(id);
     let name = document.getElementById(value + "-name").textContent;
     let description = document.getElementById(value + "-description").innerHTML;
 
@@ -146,8 +180,30 @@ function fillModal(value) {
     document.getElementById("description").value = description;
     document.getElementById("modal-mode").value = "update";
 
-    $("#modal").modal("show");
+    let selectedValues = getUsersFromBlock(id);
+    console.log("selected values : " + selectedValues);
 
+    let modalOptions = document.getElementById("modal-users").options;
+    for (let i = 0; i < modalOptions.length; i++) {
+        let option = modalOptions[i];
+        if (selectedValues.includes(option.value))
+            option.selected = true;
+        else
+            option.selected = false;
+    }
+
+    $("#modal").modal("show");
+}
+
+function getUsersFromBlock(id) {
+    let classes = document.getElementsByClassName("members" + id + "-hiddenIds");
+    console.log("className : " + "members" + id + "-hiddenIds");
+    let issues = [];
+    for (let i = 0; i < classes.length; i++) {
+        console.log("value : " + classes[i].value);
+        issues.push(classes[i].value);
+    }
+    return issues;
 }
 
 function emptyModal() {
@@ -156,17 +212,19 @@ function emptyModal() {
     document.getElementById("description").value = '';
     document.getElementById("modal-mode").value = "create";
 
+    let modalOptions = document.getElementById("modal-users").options;
+
+    for (let i = 0; i < modalOptions.length; i++) {
+        modalOptions[i].selected = false;
+    }
+
     $("#modal").modal("show");
 }
 
 function updateProject() {
-    const id = document.getElementById("id").value.substring(2);
-    const nom = document.getElementById("name").value;
-    const description = document.getElementById("description").value;
-    let jsonData = {
-        "name": nom,
-        "description": description
-    }
+    const id = document.getElementById("id").value;
+    let jsonData = getJsonDataFromModal();
+    console.log(jsonData);
 
     sendAjax("/api/project/" + id, 'PUT', JSON.stringify(jsonData))
         .then(res => {
@@ -178,15 +236,44 @@ function updateProject() {
             let all_projects = JSON.parse(localStorage.getItem('user_all_projects'));
             let current_project = JSON.parse(localStorage.getItem('user_current_project'));
 
-            if(parseInt(id) === parseInt(current_project.id)) {
+            if (parseInt(id) === parseInt(current_project.id)) {
                 localStorage.setItem('user_current_project', JSON.stringify(project));
             }
             const index = all_projects.findIndex(p => parseInt(p.id) === parseInt(id));
-            if(index === -1) {
+            if (index === -1) {
                 console.error("Impossible");
             }
             all_projects[index] = project;
             localStorage.setItem('user_all_projects', JSON.stringify(all_projects));
             displaySidebarProjects()
+
+            let membersBlock = document.getElementById("project" + id + "-members");
+            membersBlock.querySelectorAll('*').forEach(n => n.remove());
+            fillProjectWithMembers(id);
+
+
         })
+}
+
+function getUsersFromModal() {
+    let select = document.getElementById("modal-users");
+    let selectedValues = [];
+    for (let i = 0; i < select.length; i++) {
+        if (select.options[i].selected) {
+            let value = select.options[i].value;
+            selectedValues.push(value.substring(1));
+        }
+    }
+    return selectedValues;
+}
+
+function getJsonDataFromModal() {
+    const nom = document.getElementById("name").value;
+    const description = document.getElementById("description").value;
+    const users = getUsersFromModal();
+    return {
+        "name": nom,
+        "description": description,
+        "users": users
+    }
 }

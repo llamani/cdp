@@ -164,7 +164,8 @@
         const description = $("#desc-project").val();
         let jsonData = {
             "name": nom,
-            "description": description
+            "description": description,
+            "users" : []
         };
 
         $("#modal-err-msg").fadeOut();

@@ -3,8 +3,8 @@ const projectId = JSON.parse(localStorage.getItem("user_current_project")).id;
 $(document).ready(function () {
     startUp();
     fillWithTasks();
+    setDragAndDrop();
 });
-
 
 function startUp() {
     const add_el_btns = document.getElementsByClassName("add-el");
@@ -29,8 +29,7 @@ function fillModalWithIssueOptions() {
             optionNode.value = "u" + issue.id;
             modalOptions.appendChild(optionNode);
             $("#modal-dependant-issues").selectpicker("refresh");
-        }
-      
+        }    
     })
     .catch(e => {
         $(".err-msg").fadeIn();
@@ -66,9 +65,10 @@ function fillWithTasks() {
 
 function fillListWithTask(list, task) {
     list.innerHTML +=
+        "<div class=\"draggableblock\" id=\"drag-" + task.id + "\">" +
         "<div id=\"element-block-" + task.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + task.id + "\" class=\"col-sm-8 element-block\">\n" +
-        "<a href=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
+        "<a data-target=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
         "<span class=\"badge\"> T" + task.id + "</span >   " + task.name + "</a > \n" +
         "</div>\n" +
         "<div class=\"col-sm-2 element-block\"><button id=\"edit-el-" + task.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"T" + task.id + "\">" +
@@ -80,36 +80,97 @@ function fillListWithTask(list, task) {
         "</div>\n" +
         "</div>\n" +
         "<div id=\"details-block-" + task.id + "\" class=\"row\">" +
-        "<div id=\"T" + task.id + "\" class=\"collapse well text-justify\">\n" +
-        "<div id=\"T" + task.id + "-name\"><h4><strong>" + task.name + "</strong></h4></div>\n" +
+        "<div id=\"T" + task.id + "\" class=\"collapse card card-body text-justify\">\n" +
+        "<div id=\"T" + task.id + "-name\" class=\"text-center\"><h4><strong>" + task.name + "</strong></h4></div>\n" +
         "<div id=\"T" + task.id + "-description\">" + task.description + "</div>\n" +
+        "<hr>" +
         "<button hidden id=\"T" + task.id + "-workload-btn\" value=\"" + task.workload + "\"></button>" +
         "<div id=\"T" + task.id + "-workload\">\n" +
         "<h6>Charge (en j/homme) :" +
         "<span class=\"label label-default\">" + task.workload + " </span>" +
         "</h6>" +
         "</div >\n" +
+        "<hr>" +
         "<div id=\"T" + task.id + "-issues\">\n" +
         "</div>\n" +
+        "</div>" +
         "</div>";
 
     let issuesBlock = document.getElementById("T" + task.id + "-issues");
+    let title = document.createElement("h5");
+    title.innerHTML = "Issues : ";
+    issuesBlock.appendChild(title);
+    let ul = document.createElement("ul");
+
     for (let i = 0; i < task.issues.length; i++) {
         let dependantIssue = task.issues[i];
-        let issueName = document.createElement("code");
+        let issueName = document.createElement("li");
         issueName.innerHTML += dependantIssue.name;
-        issuesBlock.appendChild(issueName);
+        ul.appendChild(issueName);
         let hiddenInput = document.createElement("button");
         hiddenInput.hidden = true;
 
         hiddenInput.classList.add("T" + task.id + "-hiddenIds");
         hiddenInput.id = task.id + "-" + i;
         hiddenInput.value = "u" + dependantIssue.id;
-        issuesBlock.appendChild(hiddenInput);
+        ul.appendChild(hiddenInput);
     }
-
+    issuesBlock.appendChild(ul);
+    setDragAndDrop();
 }
 
+function setDragAndDrop(){
+    let todo = document.getElementById('to-do');
+    let inprogress = document.getElementById('in-progress');
+    let done = document.getElementById('done');
+
+    Sortable.create(todo, {
+        group: 'list-1',
+        handle: '.draggableblock',
+        sort: false,
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+
+    Sortable.create(inprogress, {
+        group: 'list-1',
+        sort: false,
+        handle: '.draggableblock',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+
+    Sortable.create(done, {
+        group: 'list-1',
+        sort: false,
+        handle: '.draggableblock',
+        onEnd: function (/**Event*/evt) {
+            updateStatus(evt.item.id, evt.to.id);
+	    }
+    });
+}
+
+function updateStatus(task, new_status){
+    let id = task.substring(5);
+    let status = new_status;
+    if (new_status === "to-do"){
+        status = "todo";
+    }
+    else if(new_status === "in-progress"){
+        status = status.replace("-", " ");
+    }
+    let jsonData = {
+        status : status
+    }
+
+    sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
+}
 
 function fillModal(value) {
     const tId = value.substring(1);
@@ -134,9 +195,7 @@ function fillModal(value) {
             option.selected = false;
     }
     $("#modal-dependant-issues").selectpicker("refresh");
-
     $("#modal").modal("show");
-
 }
 
 function getDependantIssuesFromBlock(taskId) {
@@ -161,8 +220,6 @@ function emptyModal(status) {
     for (let i = 0; i < modalOptions.length; i++) {
         modalOptions[i].selected = false;
     }
-
-
     $("#modal").modal("show");
 }
 const modalConfirmBtn = document.getElementById("modal-mode");
@@ -251,7 +308,6 @@ function deleteTask(task) {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
-
     }
 }
 
