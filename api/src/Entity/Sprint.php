@@ -36,19 +36,20 @@ class Sprint
     private $project;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Release", inversedBy="sprint", cascade={"persist", "remove"})
-     */
-    private $release_target;
-
-    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Issue", inversedBy="sprints")
      */
     private $issues;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Release", mappedBy="sprint", orphanRemoval=true)
+     */
+    private $releases;
 
 
     public function __construct()
     {
         $this->issues = new ArrayCollection();
+        $this->releases = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,18 +93,6 @@ class Sprint
         return $this;
     }
 
-    public function getReleaseTarget(): ?Release
-    {
-        return $this->release_target;
-    }
-
-    public function setReleaseTarget(?Release $release_target): self
-    {
-        $this->release_target = $release_target;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Issue[]
      */
@@ -125,6 +114,37 @@ class Sprint
     {
         if ($this->issues->contains($issue)) {
             $this->issues->removeElement($issue);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Release[]
+     */
+    public function getReleases(): Collection
+    {
+        return $this->releases;
+    }
+
+    public function addRelease(Release $release): self
+    {
+        if (!$this->releases->contains($release)) {
+            $this->releases[] = $release;
+            $release->setSprint($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRelease(Release $release): self
+    {
+        if ($this->releases->contains($release)) {
+            $this->releases->removeElement($release);
+            // set the owning side to null (unless already changed)
+            if ($release->getSprint() === $this) {
+                $release->setSprint(null);
+            }
         }
 
         return $this;

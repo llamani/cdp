@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Project;
 use App\Entity\Release;
 use App\Entity\Sprint;
 use App\Entity\UserProjectRelation;
@@ -17,18 +18,21 @@ use Symfony\Component\Serializer\SerializerInterface;
 class ReleaseController extends AbstractController {
 
     /**
-     * @Route("/releases/{sprintId}", name="api_get_all_releases", methods={"GET"})
+     * @Route("/releases/{projectId}", name="api_get_all_releases", methods={"GET"})
      */
-    public function getAll(SerializerInterface $serializer, $sprintId)
+    public function getAll(SerializerInterface $serializer, $projectId)
     {
         $response = new Response();
         try {
             $userId = $this->getUser()->getId();
-            $sprint = $this->getDoctrine()->getRepository(Sprint::class)->find($sprintId);
-            $userReleasesRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $sprint->getProject()->getId()]);
+            $project = $this->getDoctrine()->getRepository(Project::class)->find($projectId);
+            $userReleasesRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => ($project!= null)?$project->getId(): "-1"]);
             if(!empty($userReleasesRelations)) {
+                $releases = $this->getReleasesFromProject($project);
                 if (!empty($releases)) {
-                    $jsonContent = $serializer->serialize($releases, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at']]);
+                    $jsonContent = $serializer->serialize($releases, 'json', ['circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]);
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->setContent($jsonContent);
                 } else {
@@ -48,6 +52,18 @@ class ReleaseController extends AbstractController {
         return $response;
     }
 
+    private function getReleasesFromProject(Project $project)
+    {
+        $releasesList = [];
+        $sprints = $project->getSprints();
+        foreach ($sprints as $sprint) {
+            foreach ($sprint->getReleases() as $release) {
+                array_push($releasesList, $release);
+            }
+        }
+        return $releasesList;
+    }
+
 
     /**
      * @Route("/release", name="api_create_release", methods={"POST"})
@@ -58,21 +74,24 @@ class ReleaseController extends AbstractController {
             $content = $request->getContent();
             $data = json_decode($content, true);
             $userId = $this->getUser()->getId();
-            $sprint = $this->getDoctrine()->getRepository(Sprint::class)->find($data["sprint"]);
-            $userReleasesRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $sprint->getProject()->getId()]);
+            $sprint = $this->getDoctrine()->getRepository(Sprint::class)->find(intval($data["sprint"]));
+            $userReleasesRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => ($sprint!= null)?$sprint->getProject()->getId(): "-1"]);
             if(!empty($userReleasesRelations)) {
                 $release = new Release();
                 $release->setName($data['name']);
                 $release->setDescription($data['description']);
                 $release->setReleaseDate(new \DateTime());
                 $release->setSrcLink($data['src_link']);
+                $release->setSprint($sprint);
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($release);
                 $em->flush();
 
                 $response->setStatusCode(Response::HTTP_CREATED);
                 $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize($release, 'json');
+                $jsonContent = $serializer->serialize($release, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]);
                 $response->setContent($jsonContent);
             } else {
                 $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
@@ -95,21 +114,26 @@ class ReleaseController extends AbstractController {
             $release = $this->getDoctrine()->getRepository(Release::class)->find($id);
             if ($release != null) {
                 $userId = $this->getUser()->getId();
-                $sprint = $this->getDoctrine()->getRepository(Sprint::class)->find($data["sprint"]);
-                $userReleasesRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $sprint->getProject()->getId()]);
+                $userReleasesRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $release->getSprint()->getProject()->getId()]);
                 if(!empty($userReleasesRelations)) {
+                    $sprint = $this->getDoctrine()->getRepository(Sprint::class)->find($data["sprint"]);
                     $release->setName($data['name']);
                     $release->setDescription($data['description']);
-                    $release->setReleaseDate($data['release_date']);
+                    $release->setReleaseDate(new \DateTime($data['release_date']));
                     $release->setSrcLink($data['src_link']);
-                    $release->setSprint($sprint);
+                    if($sprint != null) {
+                        $release->setSprint($sprint);
+                    }
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($release);
                     $em->flush();
                     $response->setStatusCode(Response::HTTP_OK);
-                    $jsonContent = $serializer->serialize($release, 'json');
+                    $jsonContent = $serializer->serialize($release, 'json', ['circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]);
                     $response->headers->set('Content-Type', 'application/json');
                     $response->setContent($jsonContent);
+
                 } else {
                     $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
                     $response->setContent("You can't update this release." );
