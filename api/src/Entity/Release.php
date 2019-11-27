@@ -38,19 +38,11 @@ class Release
     private $src_link;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $doc_description;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $doc_file;
-
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Sprint", mappedBy="realease_target", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Sprint", inversedBy="releases")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $sprint;
+
 
     public function getId(): ?int
     {
@@ -105,30 +97,6 @@ class Release
         return $this;
     }
 
-    public function getDocDescription(): ?string
-    {
-        return $this->doc_description;
-    }
-
-    public function setDocDescription(?string $doc_description): self
-    {
-        $this->doc_description = $doc_description;
-
-        return $this;
-    }
-
-    public function getDocFile(): ?string
-    {
-        return $this->doc_file;
-    }
-
-    public function setDocFile(?string $doc_file): self
-    {
-        $this->doc_file = $doc_file;
-
-        return $this;
-    }
-
     public function getSprint(): ?Sprint
     {
         return $this->sprint;
@@ -137,12 +105,6 @@ class Release
     public function setSprint(?Sprint $sprint): self
     {
         $this->sprint = $sprint;
-
-        // set (or unset) the owning side of the relation if necessary
-        $newRealease_target = $sprint === null ? null : $this;
-        if ($newRealease_target !== $sprint->getRealeaseTarget()) {
-            $sprint->setRealeaseTarget($newRealease_target);
-        }
 
         return $this;
     }
