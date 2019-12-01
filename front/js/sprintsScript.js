@@ -122,7 +122,7 @@ function updateSprint() {
 
         let issuesBlock = document.getElementById("S" + sprint.id + "-issues");
         issuesBlock.querySelectorAll('*').forEach(n => n.remove());
-        fillWithSprintIssues(sprint.id,  Object.values(sprint.issues));
+        fillWithSprintIssues(sprint.id, Object.values(sprint.issues));
 
         $("#modal").modal("hide");
 
@@ -166,11 +166,49 @@ function displaySprint(sprintsList, sprint) {
         "<div class=\"card card-body\">" +
         "<div class=\"sprint-issues\" id=\"S" + sprintId + "-issues\">\n" +
         "</div>" +
+        "<div class=\"progress\" >" +
+        "<div id=\"progress-done-" + sprintId + "\" class=\"progress-bar progress-bar-striped progress-bar-animated bg-success\"></div>" +
+        "<div id=\"progress-ip-" + sprintId + "\" class=\"progress-bar progress-bar-striped progress-bar-animated bg-warning\"></div>" +
+        "<div id=\"progress-todo-" + sprintId + "\" class=\"progress-bar progress-bar-striped progress-bar-animated bg-danger\"></div>" +
+        "</div>" +
         "</div>" +
         "</div>" +
         "</div>";
-    fillWithSprintIssues(sprint.id, sprint.issues);
+    fillWithSprintIssues(sprintId, sprint.issues);
 
+    let pBDone = document.getElementById("progress-done-" + sprintId);
+    const donePercentage = progressBarWidth(sprint, "done");
+    fillProgressBar(pBDone, donePercentage);
+
+
+}
+function fillProgressBar(progressBar, percentage) {
+    progressBar.style = "width:" + percentage + "%";
+    progressBar.innerHTML = percentage + "%";
+}
+
+function progressBarWidth(sprint, status) {
+    const issues = sprint.issues;
+    const nbOfIssues = issues.length;
+    let nbOfDoneIssues = 0;
+    for (let i = 0; i < nbOfIssues; i++) {
+        const issue = issues[i];
+        const issueTasks = issue.tasks;
+        let nbOfDoneTasks = 0;
+        for (let j = 0; j < issueTasks.length; j++) {
+            if (issueTasks[j].status === status) {
+                nbOfDoneTasks++;
+            }
+        }
+        if (nbOfDoneTasks == issueTasks.length) {
+            nbOfDoneIssues++;
+        }
+    }
+    if (nbOfDoneIssues > 0)
+        return nbOfDoneIssues / nbOfIssues * 100;
+    else {
+        return 0;
+    }
 }
 
 function fillWithSprintIssues(sprintId, issuesList) {
