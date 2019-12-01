@@ -13,10 +13,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-
 class ProjectController extends AbstractController
 {
-
     /**
      * @Route("/projects", name="api_get_all_projects", methods={"GET"})
      */
@@ -42,7 +40,6 @@ class ProjectController extends AbstractController
         }
         return $response;
     }
-
     private function getProjectsByRelations($userProjectsRelations)
     {
         $p = [];
@@ -51,7 +48,6 @@ class ProjectController extends AbstractController
         }
         return $p;
     }
-
     /**
      * @Route("/members/{projectId}", name="api_get_members_of_project", methods={"GET"})
      */
@@ -64,7 +60,7 @@ class ProjectController extends AbstractController
             if (!empty($userProjectsRelations)) {
                 $members = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findBy(['project' => $projectId]);
                 if ($members != null) {
-                    $jsonContent = $serializer->serialize($members, 'json', [ AbstractNormalizer::ATTRIBUTES => ['user'=> ['id','name']],'circular_reference_handler' => function ($object) {
+                    $jsonContent = $serializer->serialize($members, 'json', [AbstractNormalizer::ATTRIBUTES => ['user' => ['id', 'name']], 'circular_reference_handler' => function ($object) {
                         return $object->getId();
                     }]);
                     $response->setStatusCode(Response::HTTP_OK);
@@ -84,7 +80,6 @@ class ProjectController extends AbstractController
         }
         return $response;
     }
-
     /**
      * @Route("/project/{id}", name="api_get_project_by_id", methods={"GET"})
      */
@@ -110,7 +105,6 @@ class ProjectController extends AbstractController
         }
         return $response;
     }
-
     /**
      * @Route("/project", name="api_create_project", methods={"POST"})
      */
@@ -132,15 +126,22 @@ class ProjectController extends AbstractController
             $userProjRelation->setRole("owner");
 
             $otherUsers = $parametersAsArray['users'];
-
             $em = $this->getDoctrine()->getManager();
+            $inArray = array_search($user->getId(), $otherUsers);
+            if (is_int($inArray)) {
+                unset($otherUsers[$inArray]);
+            }
+            $project->addUserProjectRelation($userProjRelation);
             $this->addMembersToProject($otherUsers, $project, $em);
+
             $em->persist($project);
             $em->persist($userProjRelation);
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
             $response->headers->set('Content-Type', 'application/json');
-            $jsonContent = $serializer->serialize($project, 'json');
+            $jsonContent = $serializer->serialize($project, 'json',  ['circular_reference_handler' => function ($object) {
+                return $object->getId();
+            }]);
             $response->setContent($jsonContent);
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -148,7 +149,6 @@ class ProjectController extends AbstractController
         }
         return $response;
     }
-
     private function addMembersToProject($otherUsers, $project, $em)
     {
         foreach ($otherUsers as $otherUserId) {
@@ -158,6 +158,7 @@ class ProjectController extends AbstractController
             $userProjRelation->setProject($project);
             $userProjRelation->setRole("owner");
             $em->persist($userProjRelation);
+            $project->addUserProjectRelation($userProjRelation);
         }
     }
 
@@ -173,7 +174,6 @@ class ProjectController extends AbstractController
             if (!empty($userProjectsRelations)) {
                 $data = json_decode($request->getContent(), true);
                 $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
-
                 if ($project != null) {
                     $project->setName($data['name']);
                     $project->setDescription($data['description']);
@@ -182,7 +182,9 @@ class ProjectController extends AbstractController
                     $em->persist($project);
                     $em->flush();
                     $response->setStatusCode(Response::HTTP_OK);
-                    $jsonContent = $serializer->serialize($project, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at']]);
+                    $jsonContent = $serializer->serialize($project, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'userProjectRelations' => ['user']],  'circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]);
                     $response->headers->set('Content-Type', 'application/json');
                     $response->setContent($jsonContent);
                 } else {
@@ -199,25 +201,23 @@ class ProjectController extends AbstractController
         }
         return $response;
     }
-
     private function updateMembersOfProject($newMembers, $project, $entityManager)
     {
         $projectId = $project->getId();
         $oldRelations =  $this->getDoctrine()->getRepository(UserProjectRelation::class)->findBy(['project' => $projectId]);
-        $toBeDeleted = [];
         foreach ($oldRelations as $oldRelation) {
             $oldUser = $oldRelation->getUser();
             $oldUserId = $oldUser->getId();
             $inArray = array_search($oldUserId, $newMembers);
-            if (!$inArray && $oldUserId != ($this->getUser()->getId())) {
-                $entityManager->remove($oldRelation);
+            if (!$inArray) {
+                $project->removeUserProjectRelation($oldRelation);
+                $entityManager->remove($oldRelation);        
             } else {
-                array_splice($newMembers, $inArray, 1);
+                unset($newMembers[$inArray]);
             }
         }
-        $this->addMembersToProject($newMembers, $project, $entityManager);
+        $this->addMembersToProject(array_values($newMembers), $project, $entityManager);
     }
-
     /**
      * @Route("/project/{id}", name="api_delete_project", methods={"DELETE"})
      */
@@ -231,6 +231,10 @@ class ProjectController extends AbstractController
                 $project = $this->getDoctrine()->getRepository(Project::class)->find($id);
                 if ($project != null) {
                     $entityManager = $this->getDoctrine()->getManager();
+                    $relations = $project->getUserProjectRelations();
+                    foreach($relations as $relation){
+                        $project->removeUserProjectRelation($relation);
+                    }
                     $entityManager->remove($project);
                     $entityManager->flush();
                     $response->setStatusCode(Response::HTTP_OK);
