@@ -1,4 +1,5 @@
 const projectId = JSON.parse(localStorage.getItem("user_current_project")).id;
+const sprintId = document.getElementById("sprintId").value;
 
 $(document).ready(function () {
     startUp();
@@ -29,12 +30,31 @@ function fillModalWithIssueOptions() {
             optionNode.value = "u" + issue.id;
             modalOptions.appendChild(optionNode);
             $("#modal-dependant-issues").selectpicker("refresh");
-        }    
+        }
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
+}
+
+function isIssueInSprint(issue, sprintId) {
+    const issueSprints = issue.sprints;
+    for (let i = 0; i < issueSprints.length; i++) {
+        if (issueSprints[i].id.toString() === sprintId) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isTaskInSprint(taskIssues, sprintId) {
+    for (let i = 0; i < taskIssues.length; i++) {
+        const issue = taskIssues[i];
+        if (isIssueInSprint(issue, sprintId))
+            return true;
+    }
+    return false;
 }
 
 function fillWithTasks() {
@@ -42,7 +62,9 @@ function fillWithTasks() {
         let tasks = res;
         for (let i = 0; i < tasks.length; i++) {
             let task = tasks[i];
-            fillListWithTask(getListAccordingToStatus(task.status), task);
+            if (isTaskInSprint(task.issues, sprintId)) {
+                fillListWithTask(getListAccordingToStatus(task.status), task);
+            }
         }
         let edit_el_btns = document.getElementsByClassName("edit-el");
         let delete_el_btns = document.getElementsByClassName("delete-el");
@@ -57,10 +79,10 @@ function fillWithTasks() {
             delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); });
         }
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
 function fillListWithTask(list, task) {
@@ -96,30 +118,34 @@ function fillListWithTask(list, task) {
         "</div>" +
         "</div>";
 
-    let issuesBlock = document.getElementById("T" + task.id + "-issues");
+    listTaskIssues(task.id, task.issues);
+    setDragAndDrop();
+}
+
+function listTaskIssues(taskId, issues) {
+    let issuesBlock = document.getElementById("T" + taskId + "-issues");
     let title = document.createElement("h5");
     title.innerHTML = "Issues : ";
     issuesBlock.appendChild(title);
     let ul = document.createElement("ul");
 
-    for (let i = 0; i < task.issues.length; i++) {
-        let dependantIssue = task.issues[i];
+    for (let i = 0; i < issues.length; i++) {
+        let dependantIssue = issues[i];
         let issueName = document.createElement("li");
         issueName.innerHTML += dependantIssue.name;
         ul.appendChild(issueName);
         let hiddenInput = document.createElement("button");
         hiddenInput.hidden = true;
 
-        hiddenInput.classList.add("T" + task.id + "-hiddenIds");
-        hiddenInput.id = task.id + "-" + i;
+        hiddenInput.classList.add("T" + taskId + "-hiddenIds");
+        hiddenInput.id = taskId + "-" + i;
         hiddenInput.value = "u" + dependantIssue.id;
         ul.appendChild(hiddenInput);
     }
     issuesBlock.appendChild(ul);
-    setDragAndDrop();
 }
 
-function setDragAndDrop(){
+function setDragAndDrop() {
     let todo = document.getElementById('to-do');
     let inprogress = document.getElementById('in-progress');
     let done = document.getElementById('done');
@@ -130,7 +156,7 @@ function setDragAndDrop(){
         sort: false,
         onEnd: function (/**Event*/evt) {
             updateStatus(evt.item.id, evt.to.id);
-	    }
+        }
     });
 
     Sortable.create(inprogress, {
@@ -139,7 +165,7 @@ function setDragAndDrop(){
         handle: '.draggableblock',
         onEnd: function (/**Event*/evt) {
             updateStatus(evt.item.id, evt.to.id);
-	    }
+        }
     });
 
     Sortable.create(done, {
@@ -148,21 +174,21 @@ function setDragAndDrop(){
         handle: '.draggableblock',
         onEnd: function (/**Event*/evt) {
             updateStatus(evt.item.id, evt.to.id);
-	    }
+        }
     });
 }
 
-function updateStatus(task, new_status){
+function updateStatus(task, new_status) {
     let id = task.substring(5);
     let status = new_status;
-    if (new_status === "to-do"){
+    if (new_status === "to-do") {
         status = "todo";
     }
-    else if(new_status === "in-progress"){
+    else if (new_status === "in-progress") {
         status = status.replace("-", " ");
     }
     let jsonData = {
-        status : status
+        status: status
     }
 
     sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
@@ -233,7 +259,8 @@ function createTask() {
 
     sendAjax("/api/task", 'POST', JSON.stringify(jsonData)).then(res => {
         let task = res;
-        const node = document.createElement("div");
+        if (isTaskInSprint(task.issues, sprintId)) {
+            const node = document.createElement("div");
             getListAccordingToStatus(task.status).appendChild(node);
             fillListWithTask(node, task);
 
@@ -241,12 +268,13 @@ function createTask() {
             edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
             const delete_btn = document.getElementById("delete-el-" + task.id);
             delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); })
-            $("#modal").modal("hide");
+        }
+        $("#modal").modal("hide");
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
 
@@ -299,16 +327,20 @@ function deleteTask(task) {
     if (isConfirmed) {
         const tId = task.substring(1);
         sendAjax("/api/task/" + tId, 'DELETE').then(res => {
-            let deletedBlock = document.getElementById("element-block-" + tId);
-            deletedBlock.parentNode.removeChild(deletedBlock);
-            let deletedDetails = document.getElementById("details-block-" + tId);
-            deletedDetails.parentNode.removeChild(deletedDetails);
+            deleteTaskHtml(tId);
         })
-        .catch(e => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
+            .catch(e => {
+                $(".err-msg").fadeIn();
+                $(".spinner-border").fadeOut();
+            })
     }
+}
+
+function deleteTaskHtml(tId) {
+    let deletedBlock = document.getElementById("element-block-" + tId);
+    deletedBlock.parentNode.removeChild(deletedBlock);
+    let deletedDetails = document.getElementById("details-block-" + tId);
+    deletedDetails.parentNode.removeChild(deletedDetails);
 }
 
 function updateTask() {
@@ -317,7 +349,9 @@ function updateTask() {
 
     sendAjax("/api/task/" + tId, 'PUT', JSON.stringify(jsonData)).then(res => {
         let task = res;
-        document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + task.name;
+        let issues = Object.values(task.issues);
+        if (isTaskInSprint(issues, sprintId)) {
+            document.getElementById("element-block-title-" + tId).getElementsByTagName("a")[0].innerHTML = "<span class=\"badge\"> T" + tId + "</span >   " + task.name;
             document.getElementById("T" + tId + "-name").innerHTML = "<h4><strong>" + task.name + "</strong></h4>";
             document.getElementById("T" + tId + "-description").innerHTML = task.description;
             document.getElementById("T" + tId + "-workload-btn").value = task.workload;
@@ -327,29 +361,18 @@ function updateTask() {
 
             let issuesBlock = document.getElementById("T" + task.id + "-issues");
             issuesBlock.querySelectorAll('*').forEach(n => n.remove());
-            let issues = Object.values(task.issues);
 
-            for (let i = 0; i < issues.length; i++) {
-                let dependantIssue = issues[i];
-
-                let issueName = document.createElement("code");
-                issueName.innerHTML += dependantIssue.name;
-                issuesBlock.appendChild(issueName);
-                let hiddenInput = document.createElement("button");
-                hiddenInput.hidden = true;
-
-                hiddenInput.classList.add("T" + task.id + "-hiddenIds");
-                hiddenInput.id = task.id + "-" + i;
-                hiddenInput.value = "u" + dependantIssue.id;
-                issuesBlock.appendChild(hiddenInput);
-            }
-
-            $("#modal").modal("hide");
+            listTaskIssues(task.id, issues);
+        }
+        else {
+            deleteTaskHtml(task.id);
+        }
+        $("#modal").modal("hide");
     })
-    .catch(e => {
-        $(".err-msg").fadeIn();
-        $(".spinner-border").fadeOut();
-    })
+        .catch(e => {
+            $(".err-msg").fadeIn();
+            $(".spinner-border").fadeOut();
+        })
 }
 
 
