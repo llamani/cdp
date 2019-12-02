@@ -26,9 +26,13 @@ Si vous ne pouvez pas executer le script, voici les commandes à executer :
     # Execute les migrations sur la base de données pour la mettre à jour
     $ docker-compose exec api php bin/console doctrine:migrations:migrate -n
     
-    # (Optionel) : ajouter des données dans la base
+
+# Charger des données par défaut
+
+Utiliser la commande suivante pour charger des données dans la base de données
+
     $ docker-compose exec api php bin/console doctrine:fictures:load -n
-    
+      
 En chargeant les fixtures, vous pourrez vous connecter sur l'application avec les informations suivantes : 
 * email : johndoe@example.com
 * password : test
