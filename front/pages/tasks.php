@@ -5,6 +5,7 @@
                 <h1>Tâches</h1>
             </div>
         </div>
+        <button hidden id="sprintId" value="<?php echo $_GET['sprint'] ?>"></button>
     </div>
 </section>
 <!-- Main content -->

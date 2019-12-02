@@ -100,3 +100,15 @@
 .FAIL{
   background-color: #FEDADA;
 }
+
+.line-real {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+.line-ideal {
+  fill: none;
+  stroke: red;
+  stroke-width: 2px;
+}

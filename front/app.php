@@ -143,14 +143,14 @@ if (!is_readable($page)) {
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="app.php?page=tasks" class="nav-link<?php if($_GET['page'] == "tasks") {echo " active";}?>">
+                     <!--   <li class="nav-item">
+                            <a href="app.php?page=tasks" class="nav-link<?php //if($_GET['page'] == "tasks") {echo " active";}?>">
                                 <i class="nav-icon fas fa-tasks"></i>
                                 <p>
                                     Tâches
                                 </p>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a href="app.php?page=sprints" class="nav-link<?php if($_GET['page'] == "sprints") {echo " active";}?>">
                                 <i class="nav-icon fas fa-sync-alt"></i>
