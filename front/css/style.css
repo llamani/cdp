@@ -1,103 +1,102 @@
-.err-msg,
-.loader {
-    display: none;
+.err-msg, .loader {
+  display: none;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .error-page {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    -ms-flex-align: center;
-    align-items: center;
-    background: #e9ecef;
-    display: -ms-flexbox;
-    display: flex;
-    height: 100vh;
-    -ms-flex-pack: center;
-    justify-content: center;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  -ms-flex-align: center;
+  align-items: center;
+  background: #e9ecef;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100vh;
+  -ms-flex-pack: center;
+  justify-content: center;
 }
 
 .element-block {
-    padding: 1%;
+  padding: 1%;
 }
 
-.progress-list{
-    height:600px;
-    overflow-y:scroll;
-    transition: box-shadow .3s;
+.progress-list {
+  height: 600px;
+  overflow-y: scroll;
+  transition: box-shadow .3s;
 }
 
 .progress-list:hover {
-  box-shadow: 0 0 11px rgba(33,33,33,.2);
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
 }
 
-.project{
-    border-radius: 5px;
-    background-color: #d0d0d0;
-    padding: 10px;
-    margin : 10px;
-    transition: background-color 1s;
-  }
+.project {
+  border-radius: 5px;
+  background-color: #d0d0d0;
+  padding: 10px;
+  margin: 10px;
+  transition: background-color 1s;
+}
 
-  .project:hover{
-    background-color: #a2a2a2;
-  }
+.project:hover {
+  background-color: #a2a2a2;
+}
 
-  .line{
-    padding-bottom: 10px;
-    margin : 0% 30%;
-    border-bottom: 1px solid grey;
-  }
+.line {
+  padding-bottom: 10px;
+  margin: 0% 30%;
+  border-bottom: 1px solid grey;
+}
 
-  #logo{
-    margin : -15px -15px;
-  }
+#logo {
+  margin: -15px -15px;
+}
 
-  .sign-up{
-    background-color :#E6E6E6;
-    border-radius: 8px;
-    padding: 30px;
-  }
+.sign-up {
+  background-color: #E6E6E6;
+  border-radius: 8px;
+  padding: 30px;
+}
 
-  .btn-block{
-    margin-bottom : 5px;
-  }
+.btn-block {
+  margin-bottom: 5px;
+}
 
-  .accordian-body p {
-    text-align : left;
-    font-size: small;
-    font-weight: bold;
-  }
+.accordian-body p {
+  text-align: left;
+  font-size: small;
+  font-weight: bold;
+}
 
-  .accordian-body span{
-    font-weight: lighter;
-    margin-left: 5px;
-  }
+.accordian-body span {
+  font-weight: lighter;
+  margin-left: 5px;
+}
 
-  button.add {
-    margin-bottom : 20px;
-  }
+button.add {
+  margin-bottom: 20px;
+}
 
-  .hiddenRow {
-    padding: 0 4px !important;
+.hiddenRow {
+  padding: 0 4px !important;
 }
 
 .table tr {
   cursor: pointer;
 }
 
-.SUCCESS{
+.SUCCESS {
   background-color: #D3FECE;
 }
 
-.UNKNOWN{
+.UNKNOWN {
   background-color: #E1E1E1;
 }
 
-.FAIL{
+.FAIL {
   background-color: #FEDADA;
 }
 
@@ -111,4 +110,18 @@
   fill: none;
   stroke: red;
   stroke-width: 2px;
+}
+
+.square-ideal {
+  background-color: red;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.square-real {
+  background-color: blue;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
 }

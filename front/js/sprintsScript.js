@@ -49,6 +49,7 @@ function emptyModal() {
 function fillWithSprints() {
     sendAjax("/api/sprints/" + projectId).then(res => {
         let sprints = res;
+        console.log(sprints);
 
         let sprintsList = document.getElementById("sprints");
 
@@ -335,49 +336,79 @@ function getDependantIssuesFromBlock(id) {
 
 // ################## BURN DOWN CHART #######################
 function createChartForm(sprints) {
-    const chartForm = document.getElementById("chart-data");
-    let form = document.createElement("form");
-    chartForm.appendChild(form);
-    for (let i = 0; i < sprints.length; i++) {
-        let sprint = sprints[i];
-        let startDate = extractDate(sprint.startDate);
-        let endDate = extractDate(sprint.endDate);
-        form.innerHTML +=
-            "<div class=\"form-group row\">" +
-            "<div class=\"input-group\">" +
-            "<div class=\"input-group-prepend\"><span class=\"input-group-text\">" + startDate + " à " + endDate + "</span></div>" +
-            "<input id=\"real-" + sprint.id + "\" class=\"form-control real\" type=\"number\" data-decimals=\"0\" min=\"0\" step=\"1\" class=\"form-control\" placeholder=\"Réel\">" +
-            "<input id=\"ideal-" + sprint.id + "\" class=\"form-control ideal\" type=\"number\" data-decimals=\"0\" min=\"0\" step=\"1\" class=\"form-control\" placeholder=\"Idéal\">" +
-            "</div>" +
-            "</div>";
-    }
-
-    document.getElementById("generate-chart").addEventListener("click", function () {
-        const jsonData = generateChartData();
-        generateChart(jsonData);
-    });
+    const jsonData = generateChartDataFromSprints(sprints);
+    generateChart(jsonData);
 }
 
-function generateChartData() {
+
+function generateChartDataFromSprints(sprints) {
     let realBurn = [];
     let idealBurn = [];
-    const realInputs = document.getElementsByClassName('real');
-    const idealInputs = document.getElementsByClassName('ideal');
-    const maxIdeal = getMaxIdeal(idealInputs);
-
+    let maxIdeal = 0;
+    for (let i = 1; i <= sprints.length; i++) {
+        let sprintIndex = i - 1;
+        let sprintIssues = sprints[sprintIndex].issues;
+        idealBurn[i] = getSprintIdealBurn(sprintIssues, sprints[sprintIndex].id);
+        realBurn[i] = getSprintRealBurn(sprintIssues, sprints[sprintIndex].id);
+        maxIdeal += idealBurn[i];
+    }
     realBurn[0] = maxIdeal;
     idealBurn[0] = maxIdeal;
 
-    for (let i = 0; i < realInputs.length; i++) {
-        realBurn[i + 1] = realBurn[i] - parseInt(realInputs[i].value);
+    for (let i = 1; i < realBurn.length; i++) {
+        realBurn[i] = realBurn[i - 1] - realBurn[i];
+        idealBurn[i] = idealBurn[i - 1] - idealBurn[i];
     }
-
-    for (let i = 0; i < idealInputs.length; i++) {
-        idealBurn[i + 1] = idealBurn[i] - parseInt(idealInputs[i].value);
-    }
-
     return generateChartJsonData(idealBurn, realBurn);
 }
+
+
+function getSprintIdealBurn(issues, sprintId) {
+    let ideal = 0;
+    for (let i = 0; i < issues.length; i++) {
+        let issue = issues[i];
+        if (issue.sprints[0] === sprintId) {
+            ideal += mapBurn(issue.difficulty);
+        }
+    }
+    return ideal;
+}
+
+function getSprintRealBurn(issues, sprintId) {
+    let real = 0;
+    for (let i = 0; i < issues.length; i++) {
+        let issue = issues[i];
+        let lastSprintIndex = issue.sprints.length - 1;
+        if (issue.sprints[lastSprintIndex] === sprintId) {
+            if (isIssueDone(issue)) {
+                real += mapBurn(issue.difficulty);
+            }
+        }
+    }
+    return real;
+}
+
+function isIssueDone(issue) {
+    const tasks = issue.tasks;
+    const nbOfTasks = tasks.length;
+    let nbOfDoneTasks = 0;
+    for (let i = 0; i < nbOfTasks; i++) {
+        if (tasks[i].status === 'done') {
+            nbOfDoneTasks++;
+        }
+    }
+    return nbOfDoneTasks === nbOfTasks;
+}
+
+function mapBurn(difficulty) {
+    if (difficulty === 'easy')
+        return 1;
+    else if (difficulty === 'intermediate')
+        return 3;
+    else
+        return 5;
+}
+
 
 function generateChartJsonData(idealBurn, realBurn) {
     let data = {};
@@ -394,14 +425,6 @@ function generateChartJsonData(idealBurn, realBurn) {
         data.points.push(point);
     }
     return data;
-}
-
-function getMaxIdeal(idealInputs) {
-    let maxIdeal = 0;
-    for (let i = 0; i < idealInputs.length; i++) {
-        maxIdeal += parseFloat(idealInputs[i].value);
-    }
-    return maxIdeal;
 }
 
 function generateChart(jsonData) {
@@ -427,8 +450,8 @@ function generateChart(jsonData) {
     // appends a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
     var svg = d3.select("#chart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width + 50 + margin.left + margin.right)
+        .attr("height", height + 50 + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
@@ -441,8 +464,6 @@ function generateChart(jsonData) {
         d.Real = d.real;
         d.Ideal = d.ideal;
     });
-
-    console.log(data);
 
     // Scale the range of the data
     x.domain(d3.extent(data, function (d) { return d.Day; }));
@@ -496,5 +517,20 @@ function generateChart(jsonData) {
     // Add the Y Axis
     svg.append("g")
         .call(d3.axisLeft(y));
-    // draw(jsonData, "points", x, y, svg, valueline, valueline2);
+
+    // text label for the x axis
+    svg.append("text")
+        .attr("transform",
+            "translate(" + (width / 2) + " ," +
+            (height + margin.top + 20) + ")")
+        .style("text-anchor", "middle")
+        .text("Sprint");
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Difficulté");
 }

@@ -126,10 +126,7 @@ function progressBarWidth(issue, status) {
     if (nbOfTasks > 0)
         return nbOfDoneTasks / nbOfTasks * 100;
     else {
-        if (status === "done")
-            return 100;
-        else
-            return 0;
+        return 0;
     }
 }
 

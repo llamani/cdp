@@ -94,17 +94,13 @@
                 <div class="chart" id="chart"></div>
             </div>
 
-            <!-- Modal footer -->
             <div class="modal-footer">
-                <button type="button" id="generate-chart" class="btn btn-primary">Générer graphe</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                <div class="square-ideal"> Idéal</div>
+                <div class="square-real"> Réel </div>
             </div>
-
         </div>
     </div>
 </div>
-
-
 
 <!-- Script -->
 <script type="text/javascript">
