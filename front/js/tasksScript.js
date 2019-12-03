@@ -14,7 +14,6 @@ function startUp() {
         let add_btn = add_el_btns[i];
         add_btn.addEventListener("click", function () { emptyModal(add_btn.value); });
     }
-
     fillModalWithIssueOptions();
 }
 
@@ -90,7 +89,7 @@ function fillListWithTask(list, task) {
         "<div class=\"draggableblock\" id=\"drag-" + task.id + "\">" +
         "<div id=\"element-block-" + task.id + "\" class=\"row\">\n" +
         "<div id=\"element-block-title-" + task.id + "\" class=\"col-sm-8 element-block\">\n" +
-        "<a data-target=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\"\>" +
+        "<a data-target=\"#T" + task.id + "\" class=\"btn btn-default btn-block\" data-toggle=\"collapse\">" +
         "<span class=\"badge\"> T" + task.id + "</span >   " + task.name + "</a > \n" +
         "</div>\n" +
         "<div class=\"col-sm-2 element-block\"><button id=\"edit-el-" + task.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"T" + task.id + "\">" +
@@ -190,7 +189,6 @@ function updateStatus(task, new_status) {
     let jsonData = {
         status: status
     }
-
     sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
         .catch(e => {
             $(".err-msg").fadeIn();
@@ -248,6 +246,7 @@ function emptyModal(status) {
     }
     $("#modal").modal("show");
 }
+
 const modalConfirmBtn = document.getElementById("modal-mode");
 modalConfirmBtn.addEventListener("click", function () {
     if (modalConfirmBtn.value === "create") createTask();
@@ -277,7 +276,6 @@ function createTask() {
         })
 }
 
-
 function getJsonDataFromModal() {
     $("#modal-dependant-issues").selectpicker("refresh");
     const nom = document.getElementById("modal-nom").value;
@@ -295,8 +293,6 @@ function getJsonDataFromModal() {
     };
 }
 
-
-
 function getDependantIssuesFromModal() {
     let select = document.getElementById("modal-dependant-issues");
     let selectedValues = [];
@@ -313,14 +309,12 @@ function getListAccordingToStatus(status) {
     const todoListEl = document.getElementById("to-do");
     const inProgressListEl = document.getElementById("in-progress");
     const doneListEl = document.getElementById("done");
-
     if (status === 'todo')
         return todoListEl;
     else if (status === 'in progress')
         return inProgressListEl;
     else return doneListEl;
 }
-
 
 function deleteTask(task) {
     const isConfirmed = confirm("Vous êtes sûr ?");
@@ -361,7 +355,6 @@ function updateTask() {
 
             let issuesBlock = document.getElementById("T" + task.id + "-issues");
             issuesBlock.querySelectorAll('*').forEach(n => n.remove());
-
             listTaskIssues(task.id, issues);
         }
         else {

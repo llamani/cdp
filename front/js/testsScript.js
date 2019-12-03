@@ -10,21 +10,18 @@ function startUp() {
 
     for (let i = 0; i < add_el_btns.length; i++) {
         let add_btn = add_el_btns[i];
-        add_btn.addEventListener("click", function () { emptyModal(add_btn.value); });
+        add_btn.addEventListener("click", function () { emptyModal(); });
     }
-
     const modalConfirmBtn = document.getElementById("modal-modal-mode");
     modalConfirmBtn.addEventListener("click", function () {
         if (modalConfirmBtn.value === "create") createTest();
         else updateTest();
     });
-
     fillModalWithManagerOptions();
 }
 
 function fillModalWithManagerOptions() {
     let modalOptions = document.getElementById("modal-test-managers");
-
     sendAjax("/api/project/" + projectId).then(res => {
         let project = res;
         let users = project.userProjectRelations;
@@ -51,7 +48,6 @@ function fillWithTests() {
             let test = tests[i];
             displayTest(test, testsTable);
         }
-
         let edit_el_btns = document.getElementsByClassName("edit-el");
         let delete_el_btns = document.getElementsByClassName("delete-el");
 
@@ -59,7 +55,6 @@ function fillWithTests() {
             let edit_btn = edit_el_btns[i];
             edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); });
         }
-
         for (let i = 0; i < delete_el_btns.length; i++) {
             let delete_btn = delete_el_btns[i];
             delete_btn.addEventListener("click", function () { deleteTest(delete_btn.value); });
@@ -141,7 +136,6 @@ function fillModal(value) {
     document.getElementById("modal-modal-mode").value = "update";
 
     let selectedValues = getTestManagersFromBlock(testId);
-
     let modalOptions = document.getElementById("modal-test-managers").options;
 
     for (let i = 0; i < modalOptions.length; i++) {
@@ -152,7 +146,6 @@ function fillModal(value) {
             option.selected = false;
     }
     $("#modal-test-managers").selectpicker("refresh");
-
     $("#modal").modal("show");
 }
 
@@ -165,7 +158,7 @@ function getTestManagersFromBlock(testId) {
     return managers;
 }
 
-function emptyModal(status) {
+function emptyModal() {
     document.getElementById("modal-id").value = '';
     document.getElementById("modal-name").value = '';
     document.getElementById("modal-description").value = '';
@@ -178,8 +171,6 @@ function emptyModal(status) {
     for (let i = 0; i < modalOptions.length; i++) {
         modalOptions[i].selected = false;
     }
-
-
     $("#modal").modal("show");
 }
 
@@ -187,10 +178,8 @@ function createTest() {
     let jsonData = getJsonDataFromModal();
     sendAjax("/api/test", 'POST', JSON.stringify(jsonData)).then(res => {
         let test = res;
-
         let testsTable = document.getElementById("tests");
         displayTest(test, testsTable);
-
         const edit_btn = document.getElementById("edit-el-" + test.id);
         edit_btn.addEventListener("click", function () { fillModal(edit_btn.value); })
         const delete_btn = document.getElementById("delete-el-" + test.id);
@@ -202,7 +191,6 @@ function createTest() {
             $(".spinner-border").fadeOut();
         })
 }
-
 
 function getJsonDataFromModal() {
     const name = document.getElementById("modal-name").value;
@@ -241,7 +229,6 @@ function getTestManagersFromModal() {
     }
     return selectedValues;
 }
-
 
 function deleteTest(test) {
     const isConfirmed = confirm("Vous êtes sûr ?");

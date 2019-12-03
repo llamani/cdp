@@ -10,9 +10,7 @@ $(document).ready(function () {
         else updateSprint();
     });
     document.getElementById("chart-btn").addEventListener("click", function () { $("#chartModal").modal("show"); });
-
 });
-
 
 function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
@@ -49,8 +47,6 @@ function emptyModal() {
 function fillWithSprints() {
     sendAjax("/api/sprints/" + projectId).then(res => {
         let sprints = res;
-        console.log(sprints);
-
         let sprintsList = document.getElementById("sprints");
 
         for (let i = 0; i < sprints.length; i++) {
@@ -79,13 +75,11 @@ function fillWithSprints() {
                 localStorage.setItem("sprint", value.substring(6));
             });
         }
-
     })
         .catch(e => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
-
 }
 
 function fillModal(value) {
@@ -138,13 +132,11 @@ function updateSprint() {
         fillWithSprintIssues(sprint.id, Object.values(sprint.issues));
 
         $("#modal").modal("hide");
-
     })
         .catch(e => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
-
 }
 
 function displaySprint(sprintsList, sprint) {
@@ -194,9 +186,8 @@ function displaySprint(sprintsList, sprint) {
     let pBDone = document.getElementById("progress-done-" + sprintId);
     const donePercentage = progressBarWidth(sprint);
     fillProgressBar(pBDone, donePercentage);
-
-
 }
+
 function fillProgressBar(progressBar, percentage) {
     progressBar.style = "width:" + percentage + "%";
     progressBar.innerHTML = percentage + "%";
@@ -209,7 +200,7 @@ function progressBarWidth(sprint) {
     for (let i = 0; i < nbOfIssues; i++) {
         const issue = issues[i];
         if (isDone(issue)) {
-            nbOfDoneIssues++;
+            nbOfDoneIssues += 1;
         }
     }
     if (nbOfDoneIssues > 0)
@@ -224,7 +215,7 @@ function isDone(issue) {
     let nbOfDoneTasks = 0;
     for (let j = 0; j < issueTasks.length; j++) {
         if (issueTasks[j].status === "done") {
-            nbOfDoneTasks++;
+            nbOfDoneTasks += 1;
         }
     }
     if (nbOfDoneTasks === issueTasks.length) {
@@ -254,15 +245,13 @@ function fillWithSprintIssues(sprintId, issuesList) {
     }
     issuesBlock.appendChild(ul);
 }
-function extractDate(date) {
-    const formattedDate = date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
-    return formattedDate;
-}
 
+function extractDate(date) {
+    return date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
+}
 
 function createSprint() {
     let jsonData = getJsonDataFromModal();
-
     sendAjax("/api/sprint", 'POST', JSON.stringify(jsonData)).then(res => {
         let sprint = res;
         displaySprint(document.getElementById("sprints"), sprint);
@@ -277,7 +266,6 @@ function createSprint() {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
-
 }
 
 function getJsonDataFromModal() {
@@ -286,15 +274,12 @@ function getJsonDataFromModal() {
     const end = document.getElementById("enddate_datepicker").value;
     const dependantIssues = getDependantIssuesFromModal();
 
-    let jsonData = {
+    return {
         "startDate": start,
         "endDate": end,
         "issue": dependantIssues,
         "project": projectId
-
-    }
-
-    return jsonData;
+    };
 }
 
 function getDependantIssuesFromModal() {
@@ -333,13 +318,11 @@ function getDependantIssuesFromBlock(id) {
     return issues;
 }
 
-
-// ################## BURN DOWN CHART #######################
+//################## BURN DOWN CHART #######################
 function createChartForm(sprints) {
     const jsonData = generateChartDataFromSprints(sprints);
     generateChart(jsonData);
 }
-
 
 function generateChartDataFromSprints(sprints) {
     let realBurn = [];
@@ -361,7 +344,6 @@ function generateChartDataFromSprints(sprints) {
     }
     return generateChartJsonData(idealBurn, realBurn);
 }
-
 
 function getSprintIdealBurn(issues, sprintId) {
     let ideal = 0;
@@ -394,7 +376,7 @@ function isIssueDone(issue) {
     let nbOfDoneTasks = 0;
     for (let i = 0; i < nbOfTasks; i++) {
         if (tasks[i].status === 'done') {
-            nbOfDoneTasks++;
+            nbOfDoneTasks += 1;
         }
     }
     return nbOfDoneTasks === nbOfTasks;
@@ -408,7 +390,6 @@ function mapBurn(difficulty) {
     else
         return 5;
 }
-
 
 function generateChartJsonData(idealBurn, realBurn) {
     let data = {};
@@ -428,60 +409,60 @@ function generateChartJsonData(idealBurn, realBurn) {
 }
 
 function generateChart(jsonData) {
-    // set the dimensions and margins of the graph
-    var margin = { top: 20, right: 20, bottom: 30, left: 50 },
-        width = 400 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    //set the dimensions and margins of the graph
+    const margin = {top: 20, right: 20, bottom: 30, left: 50};
+    const width = 400 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
 
-    // set the ranges
-    var x = d3.scaleLinear().range([0, width]);
-    var y = d3.scaleLinear().range([height, 0]);
+    //set the ranges
+    let x = d3.scaleLinear().range([0, width]);
+    let y = d3.scaleLinear().range([height, 0]);
 
-    // define the line
-    var valueline = d3.line()
+    //define the line
+    const valueline = d3.line()
         .x(function (d) { return x(d.Day); })
         .y(function (d) { return y(d.Real); });
-    // define the line
-    var valueline2 = d3.line()
+    //define the line
+    const valueline2 = d3.line()
         .x(function (d) { return x(d.Day); })
         .y(function (d) { return y(d.Ideal); });
 
-    // append the svg object to the body of the page
-    // appends a 'group' element to 'svg'
-    // moves the 'group' element to the top left margin
-    var svg = d3.select("#chart").append("svg")
+    /*append the svg object to the body of the page
+      appends a 'group' element to 'svg'
+      moves the 'group' element to the top left margin
+    */
+    let svg = d3.select("#chart").append("svg")
         .attr("width", width + 50 + margin.left + margin.right)
         .attr("height", height + 50 + margin.top + margin.bottom)
         .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-    var data = jsonData["points"];
-    // format the data
+    const data = jsonData["points"];
+    //format the data
     data.forEach(function (d) {
         d.Day = d.day;
         d.Real = d.real;
         d.Ideal = d.ideal;
     });
 
-    // Scale the range of the data
+    //Scale the range of the data
     x.domain(d3.extent(data, function (d) { return d.Day; }));
-    y.domain([0, d3.max(data, function (d) {
-        return Math.max(d.Real, d.Ideal);
-    })]);
+    y.domain([
+        0, d3.max(data, function (d) {
+            return Math.max(d.Real, d.Ideal);
+        })
+    ]);
 
-    // Add the valueline path.
+    //Add the valueline path.
     svg.append("path")
         .data([data])
         .attr("class", "line-real")
         .attr("d", valueline);
-    // Add the valueline path.
+    //Add the valueline path.
     svg.append("path")
         .data([data])
         .attr("class", "line-ideal")
         .attr("d", valueline2);
-
 
     svg.selectAll(".circle1")
         .data(data)
@@ -509,20 +490,18 @@ function generateChart(jsonData) {
             return y(d.ideal)
         });
 
-    // Add the X Axis
+    //Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
 
-    // Add the Y Axis
+    //Add the Y Axis
     svg.append("g")
         .call(d3.axisLeft(y));
 
-    // text label for the x axis
+    //text label for the x axis
     svg.append("text")
-        .attr("transform",
-            "translate(" + (width / 2) + " ," +
-            (height + margin.top + 20) + ")")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 20) + ")")
         .style("text-anchor", "middle")
         .text("Sprint");
 

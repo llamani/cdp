@@ -12,14 +12,12 @@ function startUp() {
         let add_btn = add_el_btns[i];
         add_btn.addEventListener("click", function () { emptyModal(); });
     }
-
     const modalConfirmBtn = document.getElementById("modal-mode");
     modalConfirmBtn.addEventListener("click", function () {
         if (modalConfirmBtn.value === "create") createIssue();
         else updateIssue();
     });
 }
-
 
 function fillWithIssues() {
     sendAjax("/api/issues/" + projectId).then(res => {
@@ -46,7 +44,6 @@ function fillWithIssues() {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
-
 }
 
 function displayIssue(node, issue) {
@@ -120,7 +117,7 @@ function progressBarWidth(issue, status) {
     let nbOfDoneTasks = 0;
     for (let i = 0; i < nbOfTasks; i++) {
         if (tasks[i].status === status) {
-            nbOfDoneTasks++;
+            nbOfDoneTasks += 1;
         }
     }
     if (nbOfTasks > 0)
@@ -129,19 +126,6 @@ function progressBarWidth(issue, status) {
         return 0;
     }
 }
-
-function getListAccordingToStatus(status) {
-    const todoListEl = document.getElementById("to-do");
-    const inProgressListEl = document.getElementById("in-progress");
-    const doneListEl = document.getElementById("done");
-
-    if (status === 'todo')
-        return todoListEl;
-    else if (status === 'in progress')
-        return inProgressListEl;
-    else return doneListEl;
-}
-
 
 function fillModal(value) {
     let name = document.getElementById(value + "-name").textContent;
@@ -159,7 +143,7 @@ function fillModal(value) {
     $("#modal").modal("show");
 }
 
-function emptyModal(status) {
+function emptyModal() {
     document.getElementById("modal-id").value = 'issue';
     document.getElementById("modal-nom").value = '';
     document.getElementById("modal-description").value = '';
@@ -202,7 +186,6 @@ function createIssue() {
         })
 }
 
-
 function deleteIssue(us) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
@@ -217,7 +200,6 @@ function deleteIssue(us) {
             })
     }
 }
-
 
 function updateIssue() {
     const usId = document.getElementById("modal-id").value.substring(5);

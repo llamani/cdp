@@ -45,7 +45,6 @@ function displayProject(node, project) {
     projectBlock.classList.add("row");
     node.appendChild(projectBlock);
 
-
     projectBlock.innerHTML +=
 
         "<div class=\"col-8\" id=\"accordion-" + projectId + "\">" +
@@ -171,7 +170,6 @@ function deleteProject(value) {
 
 function fillModal(value) {
     let id = value.substring(7);
-    console.log(id);
     let name = document.getElementById(value + "-name").textContent;
     let description = document.getElementById(value + "-description").innerHTML;
 
@@ -181,7 +179,6 @@ function fillModal(value) {
     document.getElementById("modal-mode").value = "update";
 
     let selectedValues = getUsersFromBlock(id);
-    console.log("selected values : " + selectedValues);
 
     let modalOptions = document.getElementById("modal-users").options;
     for (let i = 0; i < modalOptions.length; i++) {
@@ -191,13 +188,11 @@ function fillModal(value) {
         else
             option.selected = false;
     }
-
     $("#modal").modal("show");
 }
 
 function getUsersFromBlock(id) {
     let classes = document.getElementsByClassName("members" + id + "-hiddenIds");
-    console.log("className : " + "members" + id + "-hiddenIds");
     let issues = [];
     for (let i = 0; i < classes.length; i++) {
         console.log("value : " + classes[i].value);
@@ -217,15 +212,12 @@ function emptyModal() {
     for (let i = 0; i < modalOptions.length; i++) {
         modalOptions[i].selected = false;
     }
-
     $("#modal").modal("show");
 }
 
 function updateProject() {
     const id = document.getElementById("id").value;
     let jsonData = getJsonDataFromModal();
-    console.log(jsonData);
-
     sendAjax("/api/project/" + id, 'PUT', JSON.stringify(jsonData))
         .then(res => {
             let project = res;
@@ -250,8 +242,6 @@ function updateProject() {
             let membersBlock = document.getElementById("project" + id + "-members");
             membersBlock.querySelectorAll('*').forEach(n => n.remove());
             fillProjectWithMembers(id);
-
-
         })
 }
 
