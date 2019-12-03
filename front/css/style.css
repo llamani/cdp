@@ -125,3 +125,7 @@ button.add {
   padding: 5px;
   border-radius: 5px;
 }
+
+.test tr {
+  transition: background-color 0.5s;
+}

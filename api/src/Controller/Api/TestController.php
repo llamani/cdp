@@ -14,7 +14,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
 
-class TestController extends AbstractController {
+class TestController extends AbstractController
+{
 
     /**
      * @Route("/tests/{projectId}", name="api_get_all_tests", methods={"GET"})
@@ -25,9 +26,11 @@ class TestController extends AbstractController {
         try {
             $testsList = $this->getDoctrine()->getRepository(Test::class)->findBy(array('project' => $projectId));
             if (!empty($testsList)) {
-                $jsonContent = $serializer->serialize($testsList, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize(
+                    $testsList, 'json', ['circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]
+                );
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
@@ -54,9 +57,11 @@ class TestController extends AbstractController {
             if ($test != null) {
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize($test, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize(
+                    $test, 'json', ['circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]
+                );
                 $response->setContent($jsonContent);
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
@@ -84,20 +89,23 @@ class TestController extends AbstractController {
             $test->setType($data['type']);
             $test->setExpectedResult($data['expectedResult']);
             $test->setObtainedResult($data['obtainedResult']);
-            $test->setTestDate( new \DateTime($data['testDate']));
-            $test->setStatus($data['status']);
+            $test->setTestDate(new \DateTime($data['testDate']));
+            $test->setStatus("UNKNOWN");
             $test->setProject($this->getDoctrine()->getRepository(Project::class)->find($data['project']));
             $testManagers = $data['testManagers'];
-            foreach($testManagers as $manager)
+            foreach($testManagers as $manager) {
                 $test->addTestManager($this->getDoctrine()->getRepository(User::class)->find($manager));
+            }
             $em = $this->getDoctrine()->getManager();
             $em->persist($test);
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
             $response->headers->set('Content-Type', 'application/json');
-            $jsonContent = $serializer->serialize($test, 'json', ['circular_reference_handler' => function ($object) {
-                return $object->getId();
-            }]);
+            $jsonContent = $serializer->serialize(
+                $test, 'json', ['circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }]
+            );
             $response->setContent($jsonContent);
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -109,7 +117,8 @@ class TestController extends AbstractController {
     /**
      * @Route("/test/{id}", name="api_update_test", methods={"PUT"})
      */
-    public function updateTest(Request $request, SerializerInterface $serializer, $id) {
+    public function updateTest(Request $request, SerializerInterface $serializer, $id)
+    {
         $response = new Response();
         try {
             $data = json_decode($request->getContent(), true);
@@ -122,13 +131,12 @@ class TestController extends AbstractController {
                 $test->setObtainedResult($data['obtainedResult']);
                 $format = "d-m-Y";
                 $test->setTestDate(date_create_from_format($format, $data['testDate']));
-                $test->setStatus($data['status']);
 
                 $oldTestManagers = $test->getTestManagers();
                 $newTestManagers = $data['testManagers'];
 
                  //remove old test managers
-                 foreach ($oldTestManagers as $i => $oldManager) {
+                foreach ($oldTestManagers as $i => $oldManager) {
                     $test->removeTestManager($oldManager);
                 }
                 //insert new test managers
@@ -141,9 +149,11 @@ class TestController extends AbstractController {
                 $em->persist($test);
                 $em->flush();
                 $response->setStatusCode(Response::HTTP_OK);
-                $jsonContent = $serializer->serialize($test, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize(
+                    $test, 'json', ['circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]
+                );
                 $response->headers->set('Content-Type', 'application/json');
                 $response->setContent($jsonContent);
             } else {
@@ -160,7 +170,8 @@ class TestController extends AbstractController {
     /**
      * @Route("/test/{id}", name="api_delete_test", methods={"DELETE"})
      */
-    public function deleteTest($id) {
+    public function deleteTest($id)
+    {
         $response = new Response();
         try {
             $test = $this->getDoctrine()->getRepository(Test::class)->find($id);
@@ -180,4 +191,39 @@ class TestController extends AbstractController {
         }
         return $response;
     }
+
+     /**
+      * @Route("/test/status/{id}", name="api_update_test_status", methods={"PUT"})
+      */
+    public function updateTestStatus(Request $request, SerializerInterface $serializer, $id)
+    {
+        $response = new Response();
+        try {
+            $data = json_decode($request->getContent(), true);
+            $test = $this->getDoctrine()->getRepository(Test::class)->find($id);
+            if ($test != null) {
+                $test->setStatus($data['status']);
+                
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($test);
+                $em->flush();
+                $response->setStatusCode(Response::HTTP_OK);
+                $jsonContent = $serializer->serialize(
+                    $test, 'json', ['circular_reference_handler' => function ($object) {
+                        return $object->getId();
+                    }]
+                );
+                $response->headers->set('Content-Type', 'application/json');
+                $response->setContent($jsonContent);
+            } else {
+                $response->setStatusCode(Response::HTTP_NOT_FOUND);
+                $response->setContent('Unknown test with id ' . $id);
+            }
+        } catch (Exception $e) {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $response->setContent($e->getMessage());
+        }
+        return $response;
+    }
+
 } 
