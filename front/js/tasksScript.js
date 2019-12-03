@@ -31,7 +31,7 @@ function fillModalWithIssueOptions() {
             $("#modal-dependant-issues").selectpicker("refresh");
         }
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -78,7 +78,7 @@ function fillWithTasks() {
             delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); });
         }
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -190,7 +190,7 @@ function updateStatus(task, new_status) {
         status: status
     }
     sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -270,7 +270,7 @@ function createTask() {
         }
         $("#modal").modal("hide");
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -320,10 +320,10 @@ function deleteTask(task) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const tId = task.substring(1);
-        sendAjax("/api/task/" + tId, 'DELETE').then(res => {
+        sendAjax("/api/task/" + tId, 'DELETE').then(() => {
             deleteTaskHtml(tId);
         })
-            .catch(e => {
+            .catch(() => {
                 $(".err-msg").fadeIn();
                 $(".spinner-border").fadeOut();
             })
@@ -362,7 +362,7 @@ function updateTask() {
         }
         $("#modal").modal("hide");
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })

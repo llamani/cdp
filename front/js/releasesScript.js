@@ -127,7 +127,7 @@ function deleteRelease(rel) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const relId = rel.substring(3);
-        sendAjax("/api/release/" + relId, 'DELETE').then(res => {
+        sendAjax("/api/release/" + relId, 'DELETE').then(() => {
             $("#release-line-" + relId).empty();
         })
     }

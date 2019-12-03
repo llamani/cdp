@@ -14,12 +14,10 @@ $(document).ready(function () {
 
 function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
-
     sendAjax("/api/issues/" + projectId).then(res => {
         let issues = res;
         for (let i = 0; i < issues.length; i++) {
-
-            issue = issues[i];
+            let issue = issues[i];
             optionNode = document.createElement("option");
             optionNode.innerHTML = issue.name;
             optionNode.value = "u" + issue.id;
@@ -27,7 +25,7 @@ function fillModalWithIssueOptions() {
             $("#modal-dependant-issues").selectpicker("refresh");
         }
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -76,7 +74,7 @@ function fillWithSprints() {
             });
         }
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -133,7 +131,7 @@ function updateSprint() {
 
         $("#modal").modal("hide");
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -218,11 +216,7 @@ function isDone(issue) {
             nbOfDoneTasks += 1;
         }
     }
-    if (nbOfDoneTasks === issueTasks.length) {
-        return true;
-    }
-    else
-        return false;
+    return nbOfDoneTasks === issueTasks.length;
 }
 
 function fillWithSprintIssues(sprintId, issuesList) {
@@ -262,7 +256,7 @@ function createSprint() {
         delete_btn.addEventListener("click", function () { deleteSprint(delete_btn.value); })
         $("#modal").modal("hide");
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -298,11 +292,11 @@ function deleteSprint(sprint) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const sprintId = sprint.substring(6);
-        sendAjax("/api/sprint/" + sprintId, 'DELETE').then(res => {
+        sendAjax("/api/sprint/" + sprintId, 'DELETE').then(() => {
             let deletedSprintBlock = document.getElementById("sprint-block-" + sprintId);
             deletedSprintBlock.parentNode.removeChild(deletedSprintBlock);
         })
-            .catch(e => {
+            .catch(() => {
                 $(".err-msg").fadeIn();
                 $(".spinner-border").fadeOut();
             })

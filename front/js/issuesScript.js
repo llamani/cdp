@@ -40,7 +40,7 @@ function fillWithIssues() {
             delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); });
         }
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -180,7 +180,7 @@ function createIssue() {
         delete_btn.addEventListener("click", function () { deleteIssue(delete_btn.value); })
         $("#modal").modal("hide");
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
@@ -190,11 +190,11 @@ function deleteIssue(us) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
         const usId = us.substring(5);
-        sendAjax("/api/issue/" + usId, 'DELETE').then(res => {
+        sendAjax("/api/issue/" + usId, 'DELETE').then(() => {
             let deletedProjectBlock = document.getElementById("issue-block-" + usId);
             deletedProjectBlock.parentNode.removeChild(deletedProjectBlock);
         })
-            .catch(e => {
+            .catch(() => {
                 $(".err-msg").fadeIn();
                 $(".spinner-border").fadeOut();
             })
@@ -215,7 +215,7 @@ function updateIssue() {
         "difficulty": difficulty
     }
 
-    sendAjax("/api/issue/" + usId, 'PUT', JSON.stringify(jsonData)).then(res => {
+    sendAjax("/api/issue/" + usId, 'PUT', JSON.stringify(jsonData)).then(() => {
         document.getElementById("issue" + usId + "-name").innerHTML = "<h4><strong>" + nom + "</strong></h4>";
         document.getElementById("issue" + usId + "-description").innerHTML = description;
         document.getElementById("issue" + usId + "-priority-btn").value = priority;
@@ -228,7 +228,7 @@ function updateIssue() {
             "</h6>";
         $("#modal").modal("hide");
     })
-        .catch(e => {
+        .catch(() => {
             $(".err-msg").fadeIn();
             $(".spinner-border").fadeOut();
         })
