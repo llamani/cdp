@@ -22,7 +22,7 @@
             <div class="card">
                 <div class="card-body">
                 <div class="container">
-        <table class="table table-hover" >
+        <table class="table test" >
             <thead>
                 <tr>
                 <th scope="col">#</th>
@@ -100,14 +100,6 @@
                             </div>
                         </div>
                         <br />
-                        <div class="form-group">
-                            <label for="modal-status">Statut:</label>
-                            <select class="form-control" id="modal-status">
-                                <option value="SUCCESS">SUCCESS</option>
-                                <option value="FAIL">FAIL</option>
-                                <option value="UNKNOWN">UNKNOWN</option>
-                            </select>
-                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
