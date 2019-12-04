@@ -94,7 +94,9 @@ function displayTest(test, node) {
     let type = type_select.options[type_select.selectedIndex].text;
     node.innerHTML +=
         "<tr id=\"test-block" + test.id + "\" colspan=\"8\" class=\"accordion-toggle " + test.status + "\" >" +
-        "<th scope=\"row\"><span data-toggle=\"collapse\" data-target=\"#test-data" + test.id + "\" class=\"fas fa-angle-down fa-lg toggle-button\" aria-expanded=\"true\" aria-controls=\"test-data\"></span></th>" +
+        "<th scope=\"row\"><span data-toggle=\"collapse\" data-target=\"#test-data" + test.id + 
+        "\" class=\"fas fa-angle-down fa-lg toggle-button\" aria-expanded=\"true\" " +
+        "aria-controls=\"test-data\"></span></th>" +
         "<td id=\"test" + test.id + "-name\" >" + test.name + "</td>" +
         "<td id=\"test" + test.id + "-type\">" + type + "</td>" +
         "<td id=\"test" + test.id + "-date\">" + date + "</td>" +
@@ -102,22 +104,30 @@ function displayTest(test, node) {
         "<td id=\"test" + test.id + "-status\">" +
         "<div class=\"btn-group btn-group-sm btn-group-toggle\" role=\"group\" data-toggle=\"buttons\">" +
         "<label id=\"test" + test.id + "-SUCCESS\" class=\"btn btn-secondary\">" +
-        "<input class=\"change-status\" value=\"SUCCESS\" type=\"radio\" onchange=\"updateTestStatus(this.value," + test.id + ");\" autocomplete=\"off\"><span title=\"Succès\" class=\"fa fa-check\"></span></button>" +
+        "<input class=\"change-status\" value=\"SUCCESS\" type=\"radio\" "+ 
+        "onchange=\"updateTestStatus(this.value," + test.id + ");\" autocomplete=\"off\">"+
+        "<span title=\"Succès\" class=\"fa fa-check\"></span></button>" +
         "</label>" +
         "<label  id=\"test" + test.id + "-UNKNOWN\" class=\"btn btn-secondary\">" +
-        "<input class=\"change-status\" value=\"UNKNOWN\" type=\"radio\" onchange=\"updateTestStatus(this.value," + test.id + ");\" autocomplete=\"off\"><span title=\"Indéterminé\" class=\"fa fa-question-circle\"></span></button>" +
+        "<input class=\"change-status\" value=\"UNKNOWN\" type=\"radio\" "+
+        "onchange=\"updateTestStatus(this.value," + test.id + ");\" autocomplete=\"off\">"+
+        "<span title=\"Indéterminé\" class=\"fa fa-question-circle\"></span></button>" +
         "</label>" +
         "<label id=\"test" + test.id + "-FAIL\" class=\"btn btn-secondary\">" +
-        "<input class=\"change-status\" value=\"FAIL\" type=\"radio\" onchange=\"updateTestStatus(this.value," + test.id + ");\" autocomplete=\"off\"><span title=\"Échec\" class=\"fa fa-exclamation-triangle\"></span></button>" +
+        "<input class=\"change-status\" value=\"FAIL\" type=\"radio\" "+
+        "onchange=\"updateTestStatus(this.value," + test.id + ");\" autocomplete=\"off\">"+
+        "<span title=\"Échec\" class=\"fa fa-exclamation-triangle\"></span></button>" +
         "</label>" +
         "</div>" +
         "</td>" +
         "<td>" +
-        "<button id=\"edit-el-" + test.id + "\" class=\"btn btn-warning btn-block edit-el\" value=\"test" + test.id + "\">" +
+        "<button id=\"edit-el-" + test.id + "\" "+
+        "class=\"btn btn-warning btn-block edit-el\" value=\"test" + test.id + "\">" +
         "<span class=\"fa fa-edit\"></span>\n" +
         "</td>" +
         "<td>" +
-        "<button id=\"delete-el-" + test.id + "\" class=\"btn btn-danger btn-block delete-el\" value=\"test" + test.id + "\">" +
+        "<button id=\"delete-el-" + test.id + "\" "+
+        "class=\"btn btn-danger btn-block delete-el\" value=\"test" + test.id + "\">" +
         "<span class=\"fa fa-trash\"></span></button>" +
         "</td>" +
         "</tr>" +
@@ -125,8 +135,10 @@ function displayTest(test, node) {
         "<td  colspan=\"8\" class= \"hiddenRow\">" +
         "<div class=\"accordian-body collapse p-3\" id=\"test-data" + test.id + "\">" +
         "<p>Description :" + "<span id=\"test" + test.id + "-description\">" + test.description + "</span></p>" +
-        "<p>Résultat attendu :" + "<span id=\"test" + test.id + "-expectedResult\">" + test.expectedResult + "</span></p>" +
-        "<p>Résultat obtenu :" + "<span id=\"test" + test.id + "-obtainedResult\">" + test.obtainedResult + "</span></p>" +
+        "<p>Résultat attendu :" + "<span id=\"test" + test.id + "-expectedResult\">" + 
+        test.expectedResult + "</span></p>" +
+        "<p>Résultat obtenu :" + "<span id=\"test" + test.id + "-obtainedResult\">" + 
+        test.obtainedResult + "</span></p>" +
         "</div>" +
         "</td>" +
         "</tr>";
@@ -171,10 +183,10 @@ function updateTestStatus(newStatus, testId) {
     sendAjax("/api/test/status/" + testId, 'PUT', JSON.stringify(jsonData)).then(res => {
         let test = res;
         let row = document.getElementById("test-block" + test.id);
-        if (test.status == "SUCCESS") {
+        if (test.status === "SUCCESS") {
             row.style.backgroundColor = "#D3FECE";
         }
-        else if (test.status == "FAIL") {
+        else if (test.status === "FAIL") {
             row.style.backgroundColor = "#FEDADA";
         }
         else {
@@ -292,8 +304,7 @@ function getJsonDataFromModal() {
 }
 
 function extractDate(date) {
-    const formattedDate = date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
-    return formattedDate;
+   return date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
 }
 
 function getTestManagersFromModal() {

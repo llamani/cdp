@@ -73,7 +73,6 @@ class IssueControllerTest extends WebTestCase
 
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         $this->checkArrays($arr, $parametersAsArray);
-        $parametersAsArray = json_decode($responseContent, true);
     }
 
     private function removeIssue($id)
