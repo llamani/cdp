@@ -409,8 +409,14 @@ function generateChart(jsonData) {
     const height = 400 - margin.top - margin.bottom;
 
     //set the ranges
-    let x = d3.scaleLinear().range([0, width]);
-    let y = d3.scaleLinear().range([height, 0]);
+    let x = d3.scaleLinear().range([
+        0,
+        width
+    ]);
+    let y = d3.scaleLinear().range([
+        height,
+        0
+    ]);
 
     //define the line
     const valueline = d3.line()
@@ -431,7 +437,7 @@ function generateChart(jsonData) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    const data = jsonData["points"];
+    const data = jsonData.points;
     //format the data
     data.forEach(function (d) {
         d.Day = d.day;
@@ -442,7 +448,8 @@ function generateChart(jsonData) {
     //Scale the range of the data
     x.domain(d3.extent(data, function (d) { return d.Day; }));
     y.domain([
-        0, d3.max(data, function (d) {
+        0,
+        d3.max(data, function (d) {
             return Math.max(d.Real, d.Ideal);
         })
     ]);

@@ -85,6 +85,8 @@
 <!-- AdminLTE App -->
 <script src="js/adminlte.min.js"></script>
 <script defer src="js/utils.js"></script>
+<script defer src="js/usersScript.js"></script>
+
 <script>
     $(document).ready(function () {
         $("form").submit(function(e){
@@ -92,34 +94,6 @@
             createUser();
         });
     });
-
-    function createUser(){
-        const name= $("#full_name").val();
-        const email= $("#email").val();
-        const password= $("#password").val();
-        const confirmPassword= $("#confirmPassword").val();
-
-        $(".err-msg").fadeOut();
-        $(".loader").fadeIn();
-        if(password === confirmPassword) {
-            let jsonData = {
-                "name": name,
-                "email": email,
-                "password": password
-            }
-            sendAjax('/signup', 'POST', JSON.stringify(jsonData))
-                .then(res => {
-                    console.log(res)
-                })
-                .catch(e => {
-                    $(".err-msg").empty().append("Erreur de création de compte").fadeIn();
-                    $(".spinner-border").fadeOut();
-                })
-        } else {
-            $(".err-msg").empty().append("Le mot de passe n'est pas identique à la confirmation").fadeIn();
-            $(".spinner-border").fadeOut();
-        }
-    }
 </script>
 </body>
 </html>

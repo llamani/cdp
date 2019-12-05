@@ -143,7 +143,7 @@ function deleteProject(value) {
     if (isConfirmed) {
         const id = value.substring(7);
         sendAjax("/api/project/" + id, 'DELETE')
-            .then(res => {
+            .then(() => {
                 let deletedProjectBlock = document.getElementById("project-block-" + id);
                 deletedProjectBlock.parentNode.removeChild(deletedProjectBlock);
 

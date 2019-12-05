@@ -106,6 +106,7 @@
 <!-- AdminLTE App -->
 <script src="js/adminlte.min.js"></script>
 <script defer src="js/utils.js"></script>
+<script defer src="js/usersScript.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -121,69 +122,6 @@
             addFirstProject();
         });
     });
-
-    function auth() {
-        const username = $("#username").val();
-        const password = $("#password").val();
-        const data = JSON.stringify({
-            username: username,
-            password: password,
-        });
-        $("#login-err-msg").fadeOut();
-        $("#login-loader").fadeIn();
-        sendAjax('/login_check', 'POST', data)
-            .then(res => {
-                localStorage.removeItem("user_token");
-                localStorage.removeItem("user_all_projects");
-                localStorage.removeItem("user_current_project");
-                localStorage.setItem("user_token", res.token);
-                sendAjax('/api/projects')
-                    .then(response => {
-                        console.log(response);
-                        if(response.length > 0) { //projets existants
-                            localStorage.setItem('user_all_projects', JSON.stringify(response));
-                            localStorage.setItem('user_current_project', JSON.stringify(response[0]))
-                            document.location.href = "app.php";
-                        } else {
-                            $('#modal-first-project').modal({
-                                show: true,
-                                keyboard: false,
-                                backdrop: false
-                            });
-                        }
-                    })
-            })
-            .catch(e => {
-                $("#login-err-msg").fadeIn();
-                $("#login-loader").fadeOut();
-            })
-    }
-
-    function addFirstProject() {
-        const nom = $("#name-project").val();
-        const description = $("#desc-project").val();
-        let jsonData = {
-            "name": nom,
-            "description": description,
-            "users" : []
-        };
-
-        $("#modal-err-msg").fadeOut();
-        $("#modal-loader").fadeIn();
-        sendAjax("/api/project", 'POST', JSON.stringify(jsonData))
-            .then(res => {
-                console.log(res);
-                const projects = [];
-                projects.push(res);
-                localStorage.setItem('user_all_projects', JSON.stringify(projects));
-                localStorage.setItem('user_current_project', JSON.stringify(res));
-                document.location.href = "app.php";
-            })
-            .catch(e => {
-                $("#modal-err-msg").fadeIn();
-                $("#modal-loader").fadeOut();
-            })
-    }
 </script>
 </body>
 </html>
