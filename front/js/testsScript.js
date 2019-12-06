@@ -94,7 +94,7 @@ function displayTest(test, node) {
     let type = type_select.options[type_select.selectedIndex].text;
     node.innerHTML +=
         "<tr id=\"test-block" + test.id + "\" colspan=\"8\" class=\"accordion-toggle " + test.status + "\" >" +
-        "<th scope=\"row\"><span data-toggle=\"collapse\" data-target=\"#test-data" + test.id + 
+        "<th scope=\"row\"><span data-toggle=\"collapse\" data-target=\"#test-data" + test.id +
         "\" class=\"fas fa-angle-down fa-lg toggle-button\" aria-expanded=\"true\" " +
         "aria-controls=\"test-data\"></span></th>" +
         "<td id=\"test" + test.id + "-name\" >" + test.name + "</td>" +
@@ -104,7 +104,7 @@ function displayTest(test, node) {
         "<td id=\"test" + test.id + "-status\">" +
         "<div class=\"btn-group btn-group-sm btn-group-toggle\" role=\"group\" data-toggle=\"buttons\">" +
         "<label id=\"test" + test.id + "-SUCCESS\" class=\"btn btn-secondary\">" +
-        "<input class=\"change-status\" value=\"SUCCESS\" type=\"radio\" "+ 
+        "<input class=\"change-status\" value=\"SUCCESS\" type=\"radio\" "+
         "onchange=\"updateTestStatus(this.value," + test.id + ");\" autocomplete=\"off\">"+
         "<span title=\"Succès\" class=\"fa fa-check\"></span></button>" +
         "</label>" +
@@ -135,9 +135,9 @@ function displayTest(test, node) {
         "<td  colspan=\"8\" class= \"hiddenRow\">" +
         "<div class=\"accordian-body collapse p-3\" id=\"test-data" + test.id + "\">" +
         "<p>Description :" + "<span id=\"test" + test.id + "-description\">" + test.description + "</span></p>" +
-        "<p>Résultat attendu :" + "<span id=\"test" + test.id + "-expectedResult\">" + 
+        "<p>Résultat attendu :" + "<span id=\"test" + test.id + "-expectedResult\">" +
         test.expectedResult + "</span></p>" +
-        "<p>Résultat obtenu :" + "<span id=\"test" + test.id + "-obtainedResult\">" + 
+        "<p>Résultat obtenu :" + "<span id=\"test" + test.id + "-obtainedResult\">" +
         test.obtainedResult + "</span></p>" +
         "</div>" +
         "</td>" +

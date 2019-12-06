@@ -18,7 +18,10 @@ function displaySidebarProjects() {
     let sidebar = '';
     all_projects.forEach(project => {
         const classLink = project.id === projectSelected.id ? "nav-link active" : "nav-link";
-        sidebar += '<li class="nav-item"><a href="#" onclick="switchCurrentProject(\''+ project.id + '\')" class="'+ classLink +'"><i class="far fa-circle nav-icon"></i><p>' + project.name + '</p></a></li>';
+        sidebar += '<li class="nav-item">' + '' +
+            '<a href="#" onclick="switchCurrentProject(\''+ project.id + '\')" class="'+ classLink +'">' +
+            '<i class="far fa-circle nav-icon"></i><p>' + project.name + '</p>' +
+            '</a></li>';
     });
     sidebar += '<li class="nav-item"><a href="app.php?page=projects" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Voir tous les projets</p></a></li>';
 

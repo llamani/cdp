@@ -27,9 +27,9 @@ class TaskController extends AbstractController
             if ($project != null) {
                 $tasksList = [];
                 $issues = $project->getIssues();
-                foreach ($issues->getIterator() as $i => $issue) {
+                foreach ($issues as $issue) {
                     $tasksPerIssue = $issue->getTasks();
-                    foreach ($tasksPerIssue as $j => $task) {
+                    foreach ($tasksPerIssue as $task) {
                         if (!in_array($task, $tasksList)) {
                             array_push($tasksList, $task);
                         }
@@ -76,9 +76,9 @@ class TaskController extends AbstractController
             $task->setWorkload($data['workload']);
 
             $dependantIssues = $data['issue'];
-            foreach ($dependantIssues as $issue)
+            foreach ($dependantIssues as $issue) {
                 $task->addIssue($this->getDoctrine()->getRepository(Issue::class)->find($issue));
-
+            }
             $em = $this->getDoctrine()->getManager();
             $em->persist($task);
             $em->flush();
@@ -108,11 +108,10 @@ class TaskController extends AbstractController
                 $task->setDescription($data['description']);
                 $task->setWorkload($data['workload']);
 
-                $oldIssues = $task->getIssues();
                 $newIssues = $data['issue'];
 
                 //remove old issues
-                foreach ($oldIssues as $i => $oldIssue) {
+                foreach ($task->getIssues() as $oldIssue) {
                     $task->removeIssue($oldIssue);
                 }
                 //insert new issues

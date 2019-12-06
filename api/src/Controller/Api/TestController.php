@@ -136,7 +136,7 @@ class TestController extends AbstractController
                 $newTestManagers = $data['testManagers'];
 
                  //remove old test managers
-                foreach ($oldTestManagers as $i => $oldManager) {
+                foreach ($oldTestManagers as $oldManager) {
                     $test->removeTestManager($oldManager);
                 }
                 //insert new test managers
@@ -203,7 +203,7 @@ class TestController extends AbstractController
             $test = $this->getDoctrine()->getRepository(Test::class)->find($id);
             if ($test != null) {
                 $test->setStatus($data['status']);
-                
+
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($test);
                 $em->flush();
@@ -226,4 +226,4 @@ class TestController extends AbstractController
         return $response;
     }
 
-} 
+}

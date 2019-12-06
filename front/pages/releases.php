@@ -21,15 +21,16 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <table id="releasesTable" class="table table-bordered table-hover">
+                    <p id="table-desc" class="hidden">Liste des releases</p>
+                    <table id="releasesTable" class="table table-bordered table-hover" aria-describedby="table-desc">
                         <thead>
                         <tr>
-                            <th>Titre</th>
-                            <th>Date</th>
-                            <th>Sprint</th>
-                            <th>Description</th>
-                            <th>Sources</th>
-                            <th>Actions</th>
+                            <th scope="col">Titre</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Sprint</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Sources</th>
+                            <th scope="col">Actions</th>
                         </tr>
                         </thead>
                         <tbody id="release-table-body">

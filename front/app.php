@@ -1,7 +1,8 @@
 <?php
 
-if (!empty($_GET['page']))
+if (!empty($_GET['page'])) {
     $page = $_GET['page'];
+}
 else {
     $_GET['page'] = "projects";
     $page = 'projects';
@@ -16,7 +17,7 @@ if (!is_readable($page)) {
 
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 
 <head>
     <meta charset="utf-8">
@@ -85,7 +86,7 @@ if (!is_readable($page)) {
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light" aria-label="navbar-head">
             <!-- Left navbar links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
@@ -113,7 +114,7 @@ if (!is_readable($page)) {
             <!-- Sidebar -->
             <div class="sidebar">
                 <!-- Sidebar Menu -->
-                <nav class="mt-2">
+                <nav class="mt-2" aria-label="sidebar-menu">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->

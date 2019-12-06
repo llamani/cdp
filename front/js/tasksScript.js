@@ -31,10 +31,6 @@ function fillModalWithIssueOptions() {
             $("#modal-dependant-issues").selectpicker("refresh");
         }
     })
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
 
 function isIssueInSprint(issue, sprintId) {
@@ -78,10 +74,6 @@ function fillWithTasks() {
             delete_btn.addEventListener("click", function () { deleteTask(delete_btn.value); });
         }
     })
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
 
 function fillListWithTask(list, task) {
@@ -190,10 +182,6 @@ function updateStatus(task, new_status) {
         status: status
     }
     sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
 
 function fillModal(value) {
@@ -270,10 +258,6 @@ function createTask() {
         }
         $("#modal").modal("hide");
     })
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
 
 function getJsonDataFromModal() {
@@ -323,10 +307,6 @@ function deleteTask(task) {
         sendAjax("/api/task/" + tId, 'DELETE').then(() => {
             deleteTaskHtml(tId);
         })
-            .catch(() => {
-                $(".err-msg").fadeIn();
-                $(".spinner-border").fadeOut();
-            })
     }
 }
 
@@ -362,10 +342,6 @@ function updateTask() {
         }
         $("#modal").modal("hide");
     })
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
 
 

@@ -18,17 +18,13 @@ function fillModalWithIssueOptions() {
         let issues = res;
         for (let i = 0; i < issues.length; i++) {
             let issue = issues[i];
-            optionNode = document.createElement("option");
+            let optionNode = document.createElement("option");
             optionNode.innerHTML = issue.name;
             optionNode.value = "u" + issue.id;
             modalOptions.appendChild(optionNode);
             $("#modal-dependant-issues").selectpicker("refresh");
         }
     })
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
     return false;
 }
 
@@ -74,10 +70,6 @@ function fillWithSprints() {
             });
         }
     })
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
 
 function fillModal(value) {
@@ -131,10 +123,6 @@ function updateSprint() {
 
         $("#modal").modal("hide");
     })
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
 
 function displaySprint(sprintsList, sprint) {
@@ -256,10 +244,6 @@ function createSprint() {
         delete_btn.addEventListener("click", function () { deleteSprint(delete_btn.value); })
         $("#modal").modal("hide");
     })
-        .catch(() => {
-            $(".err-msg").fadeIn();
-            $(".spinner-border").fadeOut();
-        })
 }
 
 function getJsonDataFromModal() {
@@ -296,10 +280,6 @@ function deleteSprint(sprint) {
             let deletedSprintBlock = document.getElementById("sprint-block-" + sprintId);
             deletedSprintBlock.parentNode.removeChild(deletedSprintBlock);
         })
-            .catch(() => {
-                $(".err-msg").fadeIn();
-                $(".spinner-border").fadeOut();
-            })
     }
 }
 

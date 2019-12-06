@@ -58,9 +58,9 @@ class SprintController extends AbstractController
             $sprint->setEndDate(date_create_from_format($format, $data['endDate']));
 
             $dependantIssues = $data['issue'];
-            foreach ($dependantIssues as $issue)
+            foreach ($dependantIssues as $issue) {
                 $sprint->addIssue($this->getDoctrine()->getRepository(Issue::class)->find($issue));
-
+            }
             $em = $this->getDoctrine()->getManager();
             $em->persist($sprint);
             $em->flush();
@@ -91,11 +91,10 @@ class SprintController extends AbstractController
                 $sprint->setStartDate(date_create_from_format($format, $data['startDate']));
                 $sprint->setEndDate(date_create_from_format($format, $data['endDate']));
 
-                $oldIssues = $sprint->getIssues();
                 $newIssues = $data['issue'];
 
                 //remove old issues
-                foreach ($oldIssues as $i => $oldIssue) {
+                foreach ($sprint->getIssues() as $oldIssue) {
                     $sprint->removeIssue($oldIssue);
                 }
                 //insert new issues
@@ -133,8 +132,7 @@ class SprintController extends AbstractController
         try {
             $sprint = $this->getDoctrine()->getRepository(Sprint::class)->find($id);
             if ($sprint != null) {
-                $issues = $sprint->getIssues();
-                foreach ($issues as $i => $issue) {
+                foreach ($sprint->getIssues() as $issue) {
                     $sprint->removeIssue($issue);
                 }
                 $entityManager = $this->getDoctrine()->getManager();
