@@ -30,7 +30,7 @@ Si vous ne pouvez pas executer le script, voici les commandes à executer :
     
 # Problèmes possibles
 
-Il est possible que les dépendances s'installent mal au déploiement du services docker "api".
+Il est possible que les dépendances s'installent mal au déploiement du service docker "api".
 Dans ce cas executez les commandes suivantes : 
 
     # Réinstallation des dépendances
@@ -52,3 +52,14 @@ En chargeant les fixtures, vous pourrez vous connecter sur l'application avec le
 * email : johndoe@example.com
 * password : test
       
+      
+# Tests unitaires
+
+Pour lancer manuellement les tests unitaires executez les commandes suivantes :  
+LES TESTS NECESSITENT LE CHARGEMENT DES DONNEES FACTICES VU AU POINT PRECEDENT !
+
+    # Tests backend
+    $ docker-compose exec api php bin/phpunit
+  
+    # Tests frontend
+    $ docker-compose run testing
