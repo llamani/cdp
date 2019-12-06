@@ -5,13 +5,15 @@ L'application propose un environnement Docker.
 Pour installer et lancer l'application il vous suffit de completer le fichier `.env` avec les paramètres de votre choix.
 **NE PAS MODIFIER LA VARIABLE `DATABASE_URL`.**
 
-Ensuite il suffit d'executer le script `setup.sh` de la façon suivante : 
+Ensuite il suffit d'executer le script `setup.sh`(linux) ou `setup.bat` (windows) de la façon suivante : 
 
     # Lancement classique
     $ ./setup.sh 
+    $ setup.bat
     
     # Lancement en forçant la reconstruction des containers dockers à partir de leur dockerfile
     $ ./setup.sh --build
+    $ setup.bat --build
     
 Votre application est maintenant disponible à http://127.0.0.1:{FRONT_PORT}.
 
@@ -26,7 +28,20 @@ Si vous ne pouvez pas executer le script, voici les commandes à executer :
     # Execute les migrations sur la base de données pour la mettre à jour
     $ docker-compose exec api php bin/console doctrine:migrations:migrate -n
     
+# Problèmes possibles
 
+Il est possible que les dépendances s'installent mal au déploiement du services docker "api".
+Dans ce cas executez les commandes suivantes : 
+
+    # Réinstallation des dépendances
+    $ docker-compose exec api composer install
+    
+    # Copie les variables d'environnement pour symfony
+    $ cp .env api/ 
+    
+    # Execute les migrations sur la base de données pour la mettre à jour
+    $ docker-compose exec api php bin/console doctrine:migrations:migrate -n
+    
 # Charger des données par défaut
 
 Utiliser la commande suivante pour charger des données dans la base de données
@@ -37,4 +52,3 @@ En chargeant les fixtures, vous pourrez vous connecter sur l'application avec le
 * email : johndoe@example.com
 * password : test
       
- 
