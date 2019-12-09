@@ -5,6 +5,9 @@ $(document).ready(function () {
     fillWithReleases();
 });
 
+/**
+ * Attaches the event listener to the add buttons and modal
+ * confirm button. */
 function startUp() {
     const add_el_btns = document.getElementById("add-btn-release");
     add_el_btns.addEventListener("click", function () { emptyModal(); });
@@ -16,6 +19,9 @@ function startUp() {
     loadSprintOptions();
 }
 
+/**
+ * Adds releases to the page and attaches the event listeners to their
+ * corresponding edit and delete buttons. */
 function fillWithReleases() {
     sendAjax("/api/releases/" + projectId).then(res => {
         let releases = res;
@@ -37,6 +43,9 @@ function fillWithReleases() {
     })
 }
 
+/**
+ * Adds all the project sprints to the sprint section of the 
+ * release's modal so the creator can add them to the release. */
 function loadSprintOptions() {
     sendAjax("/api/sprints/" + projectId).then(res => {
         if (res.length > 0) {
@@ -51,6 +60,9 @@ function loadSprintOptions() {
     })
 }
 
+/**
+ * Adds a release to the releases table
+ * @param {*} release */
 function fillTable(release) {
     const tableRow =
         "<tr id='release-line-" + release.id + "'>" +
@@ -69,6 +81,10 @@ function fillTable(release) {
     $("#release-table-body").append(tableRow);
 }
 
+/**
+ * Fills the modal fields with the existing details of the release
+ * opened in edit mode
+ * @param {*} value : release opened in edit mode */
 function fillModal(value) {
     let name = $("#" + value + "-name").html();
     let description = $("#" + value + "-description").html();
@@ -88,6 +104,8 @@ function fillModal(value) {
     $("#modal-release").modal("show");
 }
 
+/**
+ * Empties the modal fields. */
 function emptyModal() {
     document.getElementById("modal-id").value = 'rel';
     document.getElementById("modal-name").value = '';
@@ -100,6 +118,9 @@ function emptyModal() {
     $("#modal-release").modal("show");
 }
 
+/**
+ * Creates a new release and displays it
+ * on the page. */
 function createRelease() {
     const nom = document.getElementById("modal-name").value;
     const description = document.getElementById("modal-description").value;
@@ -123,6 +144,9 @@ function createRelease() {
     })
 }
 
+/**
+ * Deletes a release and removes it from the page
+ * @param {*} value : the release to be deleted */
 function deleteRelease(rel) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
@@ -133,6 +157,9 @@ function deleteRelease(rel) {
     }
 }
 
+/**
+ * Updates a release with the information in the modal
+ * and refreshes the details already displayed in the page. */
 function updateRelease() {
     const relId = document.getElementById("modal-id").value.substring(3);
     const nom = document.getElementById("modal-name").value;

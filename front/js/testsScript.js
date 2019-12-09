@@ -5,6 +5,9 @@ $(document).ready(function () {
     fillWithTests();
 });
 
+/**
+ * Attaches the event listener to the add buttons and modal
+ * confirm button. */
 function startUp() {
     const add_el_btns = document.getElementsByClassName("btn btn-primary add");
     for (let i = 0; i < add_el_btns.length; i++) {
@@ -24,6 +27,9 @@ function startUp() {
     fillModalWithManagerOptions();
 }
 
+/**
+ * Adds all the project members to the test managers section of the 
+ * test's modal so the creator can add them to the test. */
 function fillModalWithManagerOptions() {
     let modalOptions = document.getElementById("modal-test-managers");
     sendAjax("/api/project/" + projectId).then(res => {
@@ -44,6 +50,9 @@ function fillModalWithManagerOptions() {
         })
 }
 
+/**
+ * Adds tests to the page and attaches the event listeners to their
+ * corresponding edit and delete buttons. */
 function fillWithTests() {
     sendAjax("/api/tests/" + projectId).then(res => {
         let tests = res;
@@ -87,6 +96,10 @@ function fillWithTests() {
         })
 }
 
+/**
+ * @param {*} test 
+ * @param {*} node : the html element where the test 
+ * should be displayed */
 function displayTest(test, node) {
     const date = extractDate(test.testDate);
     let type_select = document.getElementById("modal-type");
@@ -175,6 +188,9 @@ function displayTest(test, node) {
     }
 }
 
+/**
+ * @param {*} newStatus : pass, fail or unknown
+ * @param {*} testId */
 //eslint-disable-next-line no-unused-vars
 function updateTestStatus(newStatus, testId) {
     let jsonData = {
@@ -201,6 +217,10 @@ function updateTestStatus(newStatus, testId) {
         })
 }
 
+/**
+ * Fills the modal fields with the existing details of the test
+ * opened in edit mode
+ * @param {*} value : test opened in edit mode */
 function fillModal(value) {
     const testId = value.substring(4);
     let name = document.getElementById(value + "-name").textContent;
@@ -237,6 +257,10 @@ function fillModal(value) {
     $("#modal").modal("show");
 }
 
+/**
+ * Extracts the managers of a test from the html of 
+ * its corresponding section in the page
+ * @param {*} testId */
 function getTestManagersFromBlock(testId) {
     let classes = document.getElementsByClassName("test" + testId + "-hiddenIds");
     let managers = [];
@@ -246,6 +270,8 @@ function getTestManagersFromBlock(testId) {
     return managers;
 }
 
+/**
+ * Empties the modal fields. */
 function emptyModal() {
     document.getElementById("modal-id").value = '';
     document.getElementById("modal-name").value = '';
@@ -260,6 +286,9 @@ function emptyModal() {
     $("#modal").modal("show");
 }
 
+/**
+ * Creates a new test and displays it
+ * on the page. */
 function createTest() {
     let jsonData = getJsonDataFromModal();
     sendAjax("/api/test", 'POST', JSON.stringify(jsonData)).then(res => {
@@ -282,6 +311,9 @@ function createTest() {
         })
 }
 
+/**
+ * Returns the information of the modal fields
+ * in json format. */
 function getJsonDataFromModal() {
     const name = document.getElementById("modal-name").value;
     const description = document.getElementById("modal-description").value;
@@ -307,6 +339,8 @@ function extractDate(date) {
    return date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
 }
 
+/**
+ * Returns the members selected in the modal. */
 function getTestManagersFromModal() {
     let select = document.getElementById("modal-test-managers");
     let selectedValues = [];
@@ -319,6 +353,9 @@ function getTestManagersFromModal() {
     return selectedValues;
 }
 
+/**
+ * Deletes a test and removes it from the page
+ * @param {*} value : the test to be deleted */
 function deleteTest(test) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
@@ -336,6 +373,9 @@ function deleteTest(test) {
     }
 }
 
+/**
+ * Updates a test with the information in the modal
+ * and refreshes the details already displayed in the page. */
 function updateTest() {
     const tId = document.getElementById("modal-id").value.substring(4);
     let jsonData = getJsonDataFromModal();

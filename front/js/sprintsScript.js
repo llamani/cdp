@@ -12,6 +12,9 @@ $(document).ready(function () {
     document.getElementById("chart-btn").addEventListener("click", function () { $("#chartModal").modal("show"); });
 });
 
+/**
+ * Adds all the project issues to the "Issues" section of the sprint's modal
+ * so the creator can add them to the sprint. */
 function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
     sendAjax("/api/issues/" + projectId).then(res => {
@@ -28,6 +31,8 @@ function fillModalWithIssueOptions() {
     return false;
 }
 
+/**
+ * Empties the modal fields. */
 function emptyModal() {
     let modalOptions = document.getElementById("modal-dependant-issues").options;
 
@@ -38,6 +43,9 @@ function emptyModal() {
     $("#modal").modal("show");
 }
 
+/**
+ * Adds sprints to the page and attaches the event listeners to their
+ * corresponding edit and delete buttons. */
 function fillWithSprints() {
     sendAjax("/api/sprints/" + projectId).then(res => {
         let sprints = res;
@@ -72,6 +80,10 @@ function fillWithSprints() {
     })
 }
 
+/**
+ * Fills the modal fields with the existing details of the sprint
+ * opened in edit mode
+ * @param {*} value : sprint */
 function fillModal(value) {
     const id = value.substring(6);
     document.getElementById("modal-id").value = "S" + id;
@@ -104,6 +116,9 @@ function fillModal(value) {
     $("#modal").modal("show");
 }
 
+/**
+ * Updates a sprint with the information in the modal
+ * and refreshes the details already displayed in the page. */
 function updateSprint() {
     let id = document.getElementById("modal-id").value.substring(1);
     let jsonData = getJsonDataFromModal();
@@ -125,6 +140,11 @@ function updateSprint() {
     })
 }
 
+/**
+ * 
+ * @param {*} sprintsList : the html element where the sprint 
+ * should be displayed
+ * @param {*} sprint */
 function displaySprint(sprintsList, sprint) {
     const startDate = extractDate(sprint.startDate);
     const endDate = extractDate(sprint.endDate);
@@ -174,6 +194,9 @@ function displaySprint(sprintsList, sprint) {
     fillProgressBar(pBDone, donePercentage);
 }
 
+/**
+ * @param {*} progressBar : the progressbar which should be animated
+ * @param {*} percentage : its corresponding percentage */
 function fillProgressBar(progressBar, percentage) {
     progressBar.style = "width:" + percentage + "%";
     progressBar.innerHTML = percentage + "%";
@@ -196,6 +219,9 @@ function progressBarWidth(sprint) {
     }
 }
 
+/**
+ * Returns true if all of the issue's tasks are done
+ * @param {*} issue */
 function isDone(issue) {
     const issueTasks = issue.tasks;
     let nbOfDoneTasks = 0;
@@ -207,6 +233,11 @@ function isDone(issue) {
     return nbOfDoneTasks === issueTasks.length;
 }
 
+/**
+ * Displays issues attached to a sprint 
+ * with id: sprintId
+ * @param {*} sprintId 
+ * @param {*} issuesList : the html element where the sprint is */
 function fillWithSprintIssues(sprintId, issuesList) {
     let issuesBlock = document.getElementById("S" + sprintId + "-issues");
     let title = document.createElement("h5");
@@ -228,10 +259,16 @@ function fillWithSprintIssues(sprintId, issuesList) {
     issuesBlock.appendChild(ul);
 }
 
+/**
+ * Returns the formatted date from data
+ * @param {*} date */
 function extractDate(date) {
     return date.substring(8, 10) + "-" + date.substring(5, 7) + "-" + date.substring(0, 4);
 }
 
+/**
+ * Creates a new sprint and displays it
+ * on the page */
 function createSprint() {
     let jsonData = getJsonDataFromModal();
     sendAjax("/api/sprint", 'POST', JSON.stringify(jsonData)).then(res => {
@@ -246,6 +283,9 @@ function createSprint() {
     })
 }
 
+/**
+ * Returns the information of the modal fields
+ * in json format. */
 function getJsonDataFromModal() {
     $("#modal-dependant-issues").selectpicker("refresh");
     const start = document.getElementById("startdate_datepicker").value;
@@ -260,6 +300,8 @@ function getJsonDataFromModal() {
     };
 }
 
+/**
+ * Returns the issues selected in the modal. */
 function getDependantIssuesFromModal() {
     let select = document.getElementById("modal-dependant-issues");
     let selectedValues = [];
@@ -272,6 +314,9 @@ function getDependantIssuesFromModal() {
     return selectedValues;
 }
 
+/**
+ * Deletes a sprint and removes it from the page
+ * @param {*} value : the sprint to be deleted */
 function deleteSprint(sprint) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
@@ -283,6 +328,10 @@ function deleteSprint(sprint) {
     }
 }
 
+/**
+ * Extracts the issues of a sprint from the html of 
+ * its corresponding section in the page
+ * * @param {*} id : sprint id */
 function getDependantIssuesFromBlock(id) {
     let classes = document.getElementsByClassName("S" + id + "-hiddenIds");
     let issues = [];

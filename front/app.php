@@ -182,16 +182,6 @@ if (!is_readable($page)) {
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="app.php?page=docs" class="nav-link<?php if ($_GET['page'] == "docs") {
-                                                                            echo " active";
-                                                                        } ?>">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>
-                                    Documentation
-                                </p>
-                            </a>
-                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

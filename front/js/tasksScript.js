@@ -7,6 +7,8 @@ $(document).ready(function () {
     setDragAndDrop();
 });
 
+/**
+ * Attaches the event listener to the add buttons. */
 function startUp() {
     const add_el_btns = document.getElementsByClassName("add-el");
 
@@ -17,6 +19,9 @@ function startUp() {
     fillModalWithIssueOptions();
 }
 
+/**
+ * Adds all the project issues to the "Issues" section of the task's modal
+ * so the creator can add them to the task. */
 function fillModalWithIssueOptions() {
     let modalOptions = document.getElementById("modal-dependant-issues");
 
@@ -33,6 +38,11 @@ function fillModalWithIssueOptions() {
     })
 }
 
+/**
+ * Returns true if a particular issue is planned for the sprint
+ * with id: sprintId
+ * @param {*} issue 
+ * @param {*} sprintId */
 function isIssueInSprint(issue, sprintId) {
     const issueSprints = issue.sprints;
     for (let i = 0; i < issueSprints.length; i++) {
@@ -43,6 +53,11 @@ function isIssueInSprint(issue, sprintId) {
     return false;
 }
 
+/**
+ * Returns true if a task corresponds to the sprint with
+ * id: sprintId
+ * @param {*} taskIssues 
+ * @param {*} sprintId */
 function isTaskInSprint(taskIssues, sprintId) {
     for (let i = 0; i < taskIssues.length; i++) {
         const issue = taskIssues[i];
@@ -52,6 +67,9 @@ function isTaskInSprint(taskIssues, sprintId) {
     return false;
 }
 
+/**
+ * Adds tasks to the page and attaches the event listeners to their
+ * corresponding edit and delete buttons. */
 function fillWithTasks() {
     sendAjax("/api/tasks/" + projectId).then(res => {
         let tasks = res;
@@ -76,6 +94,10 @@ function fillWithTasks() {
     })
 }
 
+/**
+ * Displays a task in a particular list according to its status
+ * @param {*} list : to do, in progress, or done list
+ * @param {*} task */
 function fillListWithTask(list, task) {
     list.innerHTML +=
         "<div class=\"draggableblock\" id=\"drag-" + task.id + "\">" +
@@ -113,6 +135,10 @@ function fillListWithTask(list, task) {
     setDragAndDrop();
 }
 
+/**
+ * Creates the 'issues' section of task displayed on the page
+ * @param {*} taskId 
+ * @param {*} issues */
 function listTaskIssues(taskId, issues) {
     let issuesBlock = document.getElementById("T" + taskId + "-issues");
     let title = document.createElement("h5");
@@ -136,6 +162,8 @@ function listTaskIssues(taskId, issues) {
     issuesBlock.appendChild(ul);
 }
 
+/**
+ * Enables drag and drop feature for a task. */
 function setDragAndDrop() {
     let todo = document.getElementById('to-do');
     let inprogress = document.getElementById('in-progress');
@@ -169,6 +197,10 @@ function setDragAndDrop() {
     });
 }
 
+/**
+ * Updates the task's status in case of a drag-and-drop
+ * @param {*} task 
+ * @param {*} new_status */
 function updateStatus(task, new_status) {
     let id = task.substring(5);
     let status = new_status;
@@ -184,6 +216,10 @@ function updateStatus(task, new_status) {
     sendAjax("/api/slide-task/" + id, 'PUT', JSON.stringify(jsonData))
 }
 
+/**
+ * Fills the modal fields with the existing details of the task
+ * opened in edit mode
+ * @param {*} value : task opened in edit mode */
 function fillModal(value) {
     const tId = value.substring(1);
     let name = document.getElementById(value + "-name").textContent;
@@ -210,6 +246,10 @@ function fillModal(value) {
     $("#modal").modal("show");
 }
 
+/**
+ * Extracts the issues of a task from the html of 
+ * its corresponding section in the page
+ * @param {*} taskId */
 function getDependantIssuesFromBlock(taskId) {
     let classes = document.getElementsByClassName("T" + taskId + "-hiddenIds");
     let issues = [];
@@ -219,6 +259,9 @@ function getDependantIssuesFromBlock(taskId) {
     return issues;
 }
 
+/**
+ * Empties the modal fields when opened in create mode
+ * @param {*} status : to do, in progress or done */
 function emptyModal(status) {
     document.getElementById("modal-id").value = 't';
     document.getElementById("modal-nom").value = '';
@@ -241,6 +284,9 @@ modalConfirmBtn.addEventListener("click", function () {
     else updateTask();
 });
 
+/**
+ * Creates a new task and displays it
+ * on the page. */
 function createTask() {
     let jsonData = getJsonDataFromModal();
 
@@ -260,6 +306,9 @@ function createTask() {
     })
 }
 
+/**
+ * Returns the information of the modal fields
+ * in json format. */
 function getJsonDataFromModal() {
     $("#modal-dependant-issues").selectpicker("refresh");
     const nom = document.getElementById("modal-nom").value;
@@ -277,6 +326,8 @@ function getJsonDataFromModal() {
     };
 }
 
+/**
+ * Returns the issues selected in the modal. */
 function getDependantIssuesFromModal() {
     let select = document.getElementById("modal-dependant-issues");
     let selectedValues = [];
@@ -289,6 +340,10 @@ function getDependantIssuesFromModal() {
     return selectedValues;
 }
 
+/**
+ * Returns the html element which corresponds to the 
+ * list with the required status
+ * @param {*} status : to do, in progress or done */
 function getListAccordingToStatus(status) {
     const todoListEl = document.getElementById("to-do");
     const inProgressListEl = document.getElementById("in-progress");
@@ -300,6 +355,9 @@ function getListAccordingToStatus(status) {
     else return doneListEl;
 }
 
+/**
+ * Deletes a task and removes it from the page
+ * @param {*} value : the task to be deleted */
 function deleteTask(task) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
@@ -310,6 +368,9 @@ function deleteTask(task) {
     }
 }
 
+/**
+ * Removes the html elements of task with id: tId
+ * @param {*} tId */
 function deleteTaskHtml(tId) {
     let deletedBlock = document.getElementById("element-block-" + tId);
     deletedBlock.parentNode.removeChild(deletedBlock);
@@ -317,6 +378,9 @@ function deleteTaskHtml(tId) {
     deletedDetails.parentNode.removeChild(deletedDetails);
 }
 
+/**
+ * Updates a task with the information in the modal
+ * and refreshes the details already displayed in the page. */
 function updateTask() {
     const tId = document.getElementById("modal-id").value.substring(1);
     let jsonData = getJsonDataFromModal();
