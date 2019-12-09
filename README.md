@@ -1,5 +1,5 @@
 # Conduite de projet 2019
-https://travis-ci.com/luciealmansa/cdp-dev.svg?branch=master
+<img src="https://travis-ci.com/luciealmansa/cdp-dev.svg?branch=master" />
 
 ## Objectif
 
