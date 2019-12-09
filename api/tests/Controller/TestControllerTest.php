@@ -13,8 +13,9 @@ class TestControllerTest extends WebTestCase
 
     public function setUp()
     {
+        //ini_set('memory_limit','512M');
         $this->client = static::createClient([], [
-            'PHP_AUTH_USER' => 'johndoe@example.com',
+            'PHP_AUTH_USER' => 'laura@example.com',
             'PHP_AUTH_PW'   => 'test',
         ]);
     }
@@ -38,7 +39,7 @@ class TestControllerTest extends WebTestCase
             "name" => "test",
             "description" => "test",
             "type" => "unit",
-            "status" => "success",
+            "status" => "UNKNOWN",
             "expectedResult" => "test",
             "obtainedResult" => "test",
             "testDate" => "23-11-2019",

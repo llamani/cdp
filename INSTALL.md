@@ -30,7 +30,12 @@ Si vous ne pouvez pas executer le script, voici les commandes à executer :
     
 # Problèmes possibles
 
-Il est possible que les dépendances s'installent mal au déploiement du service docker "api".
+Il est possible que les dépendances s'installent mal au déploiement du service docker "api" :
+```$xslt
+Warning: require(/usr/src/app/vendor/autoload.php): failed to open stream: No such file or directory in /usr/src/app/bin/console on line 15
+
+Fatal error: require(): Failed opening required '/usr/src/app/vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /usr/src/app/bin/console on line 15
+```
 Dans ce cas executez les commandes suivantes : 
 
     # Réinstallation des dépendances
