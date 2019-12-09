@@ -2,8 +2,7 @@
 
 if (!empty($_GET['page'])) {
     $page = $_GET['page'];
-}
-else {
+} else {
     $_GET['page'] = "projects";
     $page = 'projects';
 }
@@ -96,6 +95,11 @@ if (!is_readable($page)) {
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
+                    <a id="about" class="nav-link" href="app.php?page=about">
+                        <i class="fa fa-question"></i> A propos
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a id="logout" class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
                         <i class="fas fa-th-large"></i> Logout
                     </a>
@@ -120,7 +124,9 @@ if (!is_readable($page)) {
                          with font-awesome or any other icon font library -->
                         <li class="nav-header" id="header-selected-project"></li>
                         <li class="nav-item has-treeview">
-                            <a href="#" class="nav-link<?php if($_GET['page'] == "projects") {echo " active";}?>">
+                            <a href="#" class="nav-link<?php if ($_GET['page'] == "projects") {
+                                                            echo " active";
+                                                        } ?>">
                                 <i class="nav-icon fas fa-project-diagram"></i>
                                 <p>
                                     Projets
@@ -137,7 +143,9 @@ if (!is_readable($page)) {
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a href="app.php?page=issues" class="nav-link<?php if($_GET['page'] == "issues") {echo " active";}?>">
+                            <a href="app.php?page=issues" class="nav-link<?php if ($_GET['page'] == "issues") {
+                                                                                echo " active";
+                                                                            } ?>">
                                 <i class="nav-icon fas fa-th-list"></i>
                                 <p>
                                     Issues
@@ -145,7 +153,9 @@ if (!is_readable($page)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="app.php?page=sprints" class="nav-link<?php if($_GET['page'] == "sprints") {echo " active";}?>">
+                            <a href="app.php?page=sprints" class="nav-link<?php if ($_GET['page'] == "sprints") {
+                                                                                echo " active";
+                                                                            } ?>">
                                 <i class="nav-icon fas fa-sync-alt"></i>
                                 <p>
                                     Sprints
@@ -153,7 +163,9 @@ if (!is_readable($page)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="app.php?page=releases" class="nav-link<?php if($_GET['page'] == "releases") {echo " active";}?>">
+                            <a href="app.php?page=releases" class="nav-link<?php if ($_GET['page'] == "releases") {
+                                                                                echo " active";
+                                                                            } ?>">
                                 <i class="nav-icon fas fa-box"></i>
                                 <p>
                                     Releases
@@ -161,7 +173,9 @@ if (!is_readable($page)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="app.php?page=tests" class="nav-link<?php if($_GET['page'] == "tests") {echo " active";}?>">
+                            <a href="app.php?page=tests" class="nav-link<?php if ($_GET['page'] == "tests") {
+                                                                            echo " active";
+                                                                        } ?>">
                                 <i class="nav-icon fas fa-flask"></i>
                                 <p>
                                     Tests
@@ -169,7 +183,9 @@ if (!is_readable($page)) {
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="app.php?page=docs" class="nav-link<?php if($_GET['page'] == "docs") {echo " active";}?>">
+                            <a href="app.php?page=docs" class="nav-link<?php if ($_GET['page'] == "docs") {
+                                                                            echo " active";
+                                                                        } ?>">
                                 <i class="nav-icon fas fa-book"></i>
                                 <p>
                                     Documentation
@@ -196,4 +212,5 @@ if (!is_readable($page)) {
     </div>
     <!-- ./wrapper -->
 </body>
+
 </html>

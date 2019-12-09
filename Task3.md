@@ -13,5 +13,5 @@
 | T45 |  | Bouton ajout de membre à un projet sans passer par le modal <ul><li>Ajout d'un bouton et d'un modal dans projects.php</li><li>Implémentation des fonctions addMember, modification des fonctions précédentes, ajout d'une fonction addMember dans ProjectController.php</li></ul><br />| 0,5 | Lucie | | TODO |
 | T46 |  | Groupe de boutons de modification du statut d'un test sans passer par le modal <ul><li>Ajout d'un de groupe boutons dans tests.php</li><li>Implémentation des fonctions updateStatus, modification des fonctions précédentes, ajout d'une fonction updateStatus dans TestController.php</li></ul><br />| 0,5 | Lucie | | DONE |
 | T47 |  | Ajout de la durée d'un sprint dans la définition d'un projet.<ul><li>Ajout d'un champ dans le modal de création et update de projet</li><li>Modification dans le ProjetController.php des fonctions add et create</li><li>Pré-remplissage dans le modal de sprintScript.js </li></ul><br /> | 0,5 | Lucie | | TODO |
-
+| T48 |  | Ajout d'une page "a propos" du projet.<ul><li>Création de la page about.php</li></ul><br /> | 0,5 | Laura | | Done |
 
