@@ -1,7 +1,6 @@
 /**
  * Checks if a user can be logged in. If yes, 
- * stores the jwt token and gets their projects
- */
+ * stores the jwt token and gets their projects. */
 function auth() {
     const username = $("#username").val();
     const password = $("#password").val();
