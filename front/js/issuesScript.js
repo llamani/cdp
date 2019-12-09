@@ -5,6 +5,9 @@ $(document).ready(function () {
     fillWithIssues();
 });
 
+/**
+ * Attaches the event listener to the add buttons and the modal confirm button
+ */
 function startUp() {
     const add_el_btns = document.getElementsByClassName("add-el");
 
@@ -19,6 +22,10 @@ function startUp() {
     });
 }
 
+/**
+ * Adds issues to the page and attaches the event listeners to their
+ * corresponding edit and delete buttons
+ */
 function fillWithIssues() {
     sendAjax("/api/issues/" + projectId).then(res => {
         let issues = res;
@@ -46,6 +53,11 @@ function fillWithIssues() {
         })
 }
 
+/**
+ * 
+ * @param {*} node : the html node where the issue should be inserted
+ * @param {*} issue : the issue which should be displayed
+ */
 function displayIssue(node, issue) {
     const name = issue.name;
     const description = issue.description;
@@ -106,6 +118,10 @@ function displayIssue(node, issue) {
     fillProgressBar(pBToDo, todoPercentage);
 }
 
+/**
+ * @param {*} progressBar : the progressbar which should be animated
+ * @param {*} percentage : its corresponding percentage 
+ */
 function fillProgressBar(progressBar, percentage) {
     progressBar.style = "width:" + percentage + "%";
     progressBar.innerHTML = percentage + "%";
@@ -127,6 +143,11 @@ function progressBarWidth(issue, status) {
     }
 }
 
+/**
+ * This functions fills the modal with an issue's details when its edit mode
+ * is opened
+ * @param {*} value : The id of the issue which should be displayed in the modal
+ */
 function fillModal(value) {
     let name = document.getElementById(value + "-name").textContent;
     let description = document.getElementById(value + "-description").innerHTML;
@@ -143,6 +164,9 @@ function fillModal(value) {
     $("#modal").modal("show");
 }
 
+/**
+ * Empties the modal fields
+ */
 function emptyModal() {
     document.getElementById("modal-id").value = 'issue';
     document.getElementById("modal-nom").value = '';
@@ -154,6 +178,9 @@ function emptyModal() {
     $("#modal").modal("show");
 }
 
+/**
+ * Creates an issue and adds it to the page
+ */
 function createIssue() {
     const nom = document.getElementById("modal-nom").value;
     const description = document.getElementById("modal-description").value;
@@ -186,6 +213,10 @@ function createIssue() {
         })
 }
 
+/**
+ * This function deletes an issue and removes it from the page
+ * @param {*} us : the issue which must be deleted
+ */
 function deleteIssue(us) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
@@ -201,6 +232,10 @@ function deleteIssue(us) {
     }
 }
 
+/**
+ * This function updates an issue with the information in the modal
+ * and refreshes the details already displayed in the page
+ */
 function updateIssue() {
     const usId = document.getElementById("modal-id").value.substring(5);
     const nom = document.getElementById("modal-nom").value;

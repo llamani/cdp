@@ -3,6 +3,9 @@ $(document).ready(function () {
     fillWithProjects();
 });
 
+/**
+ * Attaches the event listener to the add buttons and the modal confirm button
+ */
 function startUp() {
     document.getElementById("add-btn").addEventListener("click", function () { emptyModal(); });
     const modalConfirmBtn = document.getElementById("modal-mode");
@@ -10,9 +13,15 @@ function startUp() {
         if (modalConfirmBtn.value === "create") createProject();
         else updateProject();
     });
+    //Adds all the website members to the "Members" section of the project modal
+    //so the creator can add them to the project
     fillWithUserOptions();
 }
 
+/**
+ * Adds projects to the page and attaches the event listeners to their
+ * corresponding edit and delete buttons
+ */
 function fillWithProjects() {
     let projects = JSON.parse(localStorage.getItem("user_all_projects"));
     let projectList = document.getElementById("projects");
@@ -35,6 +44,11 @@ function fillWithProjects() {
     }
 }
 
+/**
+ * 
+ * @param {*} node : the html node where the project should be inserted
+ * @param {*} issue : the project which should be displayed
+ */
 function displayProject(node, project) {
     const name = project.name;
     const description = project.description;
@@ -73,6 +87,10 @@ function displayProject(node, project) {
     fillProjectWithMembers(projectId);
 }
 
+/**
+ * Displays members of a project
+ * @param {*} projectId 
+ */
 function fillProjectWithMembers(projectId) {
     sendAjax("/api/members/" + projectId).then(res => {
         let members = res;
@@ -80,6 +98,11 @@ function fillProjectWithMembers(projectId) {
     });
 }
 
+/**
+ * Creates the html of the members of a project
+ * @param {*} members 
+ * @param {*} projectId 
+ */
 function fillProjectWithMembersHtml(members, projectId) {
     let membersBlock = document.getElementById("project" + projectId + "-members");
     let title = document.createElement("h5");
@@ -101,6 +124,10 @@ function fillProjectWithMembersHtml(members, projectId) {
     membersBlock.appendChild(ul);
 }
 
+/**
+ * Selects the existing members of a project in the modal
+ * when it's opened in the edit mode
+ */
 function fillWithUserOptions() {
     let modalOptions = document.getElementById("modal-users");
 
@@ -117,6 +144,10 @@ function fillWithUserOptions() {
     })
 }
 
+/**
+ * Creates a new project and displays it
+ * on the page
+ */
 function createProject() {
     let jsonData = getJsonDataFromModal();
 
@@ -138,6 +169,10 @@ function createProject() {
         })
 }
 
+/**
+ * Deletes a project and removes it from the page
+ * @param {*} value : the project to be deleted
+ */
 function deleteProject(value) {
     const isConfirmed = confirm("Vous êtes sûr ?");
     if (isConfirmed) {
@@ -167,6 +202,11 @@ function deleteProject(value) {
     }
 }
 
+/**
+ * Fills the modal fields with the existing details of the project
+ * opened in edit mode
+ * @param {*} value : project opened in edit mode
+ */
 function fillModal(value) {
     let id = value.substring(7);
     let name = document.getElementById(value + "-name").textContent;
@@ -190,6 +230,11 @@ function fillModal(value) {
     $("#modal").modal("show");
 }
 
+/**
+ * Extracts the members of a project from the html of 
+ * its corresponding section in the page
+ * @param {*} id : project id
+ */
 function getUsersFromBlock(id) {
     let classes = document.getElementsByClassName("members" + id + "-hiddenIds");
     let issues = [];
@@ -200,6 +245,9 @@ function getUsersFromBlock(id) {
     return issues;
 }
 
+/**
+ * Empties the modal fields
+ */
 function emptyModal() {
     document.getElementById("id").value = 'project';
     document.getElementById("name").value = '';
@@ -214,6 +262,10 @@ function emptyModal() {
     $("#modal").modal("show");
 }
 
+/**
+ * Updates a project with the information in the modal
+ * and refreshes the details already displayed in the page
+ */
 function updateProject() {
     const id = document.getElementById("id").value;
     let jsonData = getJsonDataFromModal();
@@ -244,6 +296,9 @@ function updateProject() {
         })
 }
 
+/**
+ * Returns the users selected in the modal
+ */
 function getUsersFromModal() {
     let select = document.getElementById("modal-users");
     let selectedValues = [];
@@ -256,6 +311,10 @@ function getUsersFromModal() {
     return selectedValues;
 }
 
+/**
+ * Returns the information of the modal fields
+ * in json format
+ */
 function getJsonDataFromModal() {
     const nom = document.getElementById("name").value;
     const description = document.getElementById("description").value;
