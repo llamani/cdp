@@ -13,7 +13,7 @@ install:
   - docker-compose exec api php bin/console doctrine:fixtures:load -n
 
 script:
-  #- docker-compose exec api php bin/phpunit
+  - docker-compose exec api php bin/phpunit
   - docker-compose run testing
 
 deploy:
