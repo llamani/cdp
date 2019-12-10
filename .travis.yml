@@ -13,7 +13,7 @@ install:
   - docker-compose exec api php bin/console doctrine:fixtures:load -n
 
 script:
-  #- docker-compose exec api php bin/phpunit
+  - docker-compose exec api php bin/phpunit
   - docker-compose run testing
 
 deploy:
@@ -21,4 +21,5 @@ deploy:
   api_key: $GH_TOKEN
   name: scrumup-${TRAVIS_BRANCH}-${TRAVIS_BUILD_ID}
   skip_cleanup: true
-  commit_message: =~ /(deploy)/
+  on:
+    tags: false
