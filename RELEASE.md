@@ -1,5 +1,9 @@
 # Releases
 
+## Archive des releases
+
+https://github.com/llamani/cdp/releases
+
 ## Release 3
 
 Release 3 (sprint 3) : 10/12/2019 
@@ -17,6 +21,16 @@ Identifiant du commit de la release :
 * Sources de la release : https://github.com/llamani/cdp/releases/tag/0.3.0  
 * Manuel d'installation disponible dans [INSTALL.md](./INSTALL.md)
 * Documentation disponible dans [DOCUMENTATION.md](./DOCUMENTATION.md)
+
+### Retrospective
+
+A la fin de ce sprint 3, nous estimons avoir atteint la majorité de nos objectifs. Le site contient le CRUD de tous les artefacts, ainsi que
+des autres features améliorant l'expérience utilisateur (drag-and-drop, burndown chart, suivi des issues). 
+Au cours de ce projet, nous avons rencontré les difficultés suivantes:
+* Utilisation de Symfony : apprehension de l'architecture et commandes
+* Mise en place de Travis : découverte de la technologie et configuration
+* Tests Puppeteer : problèmes non-résolus concernant les requêtes asynchrones et l'authentification
+
 
 ## Release 2
 
