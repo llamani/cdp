@@ -92,6 +92,7 @@
             <div id="modal-err-msg" class="err-msg alert alert-danger">
                 Erreur de création
             </div>
+            <div id="response-ajax"></div>
             <div class="modal-footer">
                 <button type="button" form="add-project" id="modal-submit" class="btn btn-primary" value="create">Enregistrer</button>
             </div>
