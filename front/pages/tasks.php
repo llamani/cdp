@@ -61,14 +61,13 @@
                                 <!-- Modal content-->
                                 <div class="modal-content">
                                     <div class="modal-header text-center">
-                                        <h4 class="modal-title">Nouvelle tâche</h4>
+                                        <h4 class="modal-title">Tâche</h4>
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                                     </div>
                                     <div class="modal-body">
                                         <form>
                                             <div class="form-group">
-                                                <label for="modal-id">Id:</label>
-                                                <input type="text" class="form-control" id="modal-id" value="T1">
+                                                <input type="hidden" class="form-control" id="modal-id" value="T1">
                                             </div>
                                             <div class="form-group">
                                                 <label for="modal-nom">Nom:</label>

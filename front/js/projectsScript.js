@@ -12,8 +12,9 @@ function startUp() {
         if (modalConfirmBtn.value === "create") createProject();
         else updateProject();
     });
-    //Adds all the website members to the "Members" section of the project modal
-    //so the creator can add them to the project
+    /**
+     * Adds all the website members to the "Members" section of the project modal
+     * so the creator can add them to the project */
     fillWithUserOptions();
 }
 
@@ -42,7 +43,7 @@ function fillWithProjects() {
     }
 }
 
-/** 
+/**
  * @param {*} node : the html node where the project should be inserted
  * @param {*} issue : the project which should be displayed */
 function displayProject(node, project) {
