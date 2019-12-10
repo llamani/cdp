@@ -21,6 +21,4 @@ deploy:
   api_key: $GH_TOKEN
   name: scrumup-${TRAVIS_BRANCH}-${TRAVIS_BUILD_ID}
   skip_cleanup: true
-  on:
-    tags: false
-    commit_message: =~ /(deploy)/
+  commit_message: =~ /(deploy)/
