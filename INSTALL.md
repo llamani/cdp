@@ -1,4 +1,4 @@
-# Manuel d'installation
+# [V1.0.0] [Last modified : 10/12/2019] Manuel d'installation
 
 L'application propose un environnement Docker.
 
