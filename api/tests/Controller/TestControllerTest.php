@@ -13,7 +13,6 @@ class TestControllerTest extends WebTestCase
 
     public function setUp()
     {
-        //ini_set('memory_limit','512M');
         $this->client = static::createClient([], [
             'PHP_AUTH_USER' => 'laura@example.com',
             'PHP_AUTH_PW'   => 'test',
@@ -72,7 +71,6 @@ class TestControllerTest extends WebTestCase
             "name" => "test2",
             "description" => "test2",
             "type" => "ui",
-            "status" => "fail",
             "expectedResult" => "test2",
             "obtainedResult" => "test1",
             "testDate" => "20-11-2019",
@@ -110,7 +108,6 @@ class TestControllerTest extends WebTestCase
         $this->assertEquals($arr['name'], $parametersAsArray['name']);
         $this->assertEquals($arr['description'], $parametersAsArray['description']);
         $this->assertEquals($arr['type'], $parametersAsArray['type']);
-        $this->assertEquals($arr['status'], $parametersAsArray['status']);
         $this->assertEquals($arr['expectedResult'], $parametersAsArray['expectedResult']);
         $this->assertEquals($arr['obtainedResult'], $parametersAsArray['obtainedResult']);
         $this->assertEquals($date, $dateArray);

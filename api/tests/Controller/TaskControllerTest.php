@@ -13,7 +13,6 @@ class TaskControllerTest extends WebTestCase
 
     public function setUp()
     {
-        //ini_set('memory_limit','512M');
         $this->client = static::createClient([], [
             'PHP_AUTH_USER' => 'laura@example.com',
             'PHP_AUTH_PW'   => 'test',
@@ -30,6 +29,7 @@ class TaskControllerTest extends WebTestCase
     public function testAuthorizedAccess()
     {
         $this->client->request('GET', 'api/issues/1');
+
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
@@ -89,7 +89,7 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals($arr['workload'], $parametersAsArray['workload']);
         $responseIssues = $parametersAsArray['issues'];
         $arrIssues = $arr['issue'];
-        $this->assertEquals(count($arrIssues), count($responseIssues ));
+        $this->assertEquals(count($arrIssues), count($responseIssues));
         $i = 0;
         foreach ($responseIssues  as $issue) {
             $this->assertEquals($arr['issue'][$i], $issue['id']);

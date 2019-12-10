@@ -13,7 +13,6 @@ class ReleaseControllerTest extends WebTestCase
 
     public function setUp()
     {
-        //ini_set('memory_limit','512M');
         $this->client = static::createClient([], [
             'PHP_AUTH_USER' => 'laura@example.com',
             'PHP_AUTH_PW'   => 'test',

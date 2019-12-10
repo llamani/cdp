@@ -10,11 +10,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 
 class SprintController extends AbstractController
 {
+
+
     /**
      * @Route("/sprints/{projectId}", name="api_get_all_sprints", methods={"GET"})
      */
@@ -25,9 +28,15 @@ class SprintController extends AbstractController
             $sprintsList = $this->getDoctrine()->getRepository(Sprint::class)->findBy(array('project' => $projectId));
 
             if (!empty($sprintsList)) {
-                $jsonContent = $serializer->serialize($sprintsList, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $normalizer = [
+                    AbstractNormalizer::ATTRIBUTES => [
+                        'id', 'startDate', 'endDate', 'issues' => ['id', 'name', 'tasks' => ['id', 'status'], 'sprints' => ['id']]
+                    ],
+                    AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                        return $object->getId();
+                    }
+                ];
+                $jsonContent = $serializer->serialize($sprintsList, 'json', $normalizer);
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
@@ -66,9 +75,15 @@ class SprintController extends AbstractController
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
             $response->headers->set('Content-Type', 'application/json');
-            $jsonContent = $serializer->serialize($sprint, 'json', ['circular_reference_handler' => function ($object) {
-                return $object->getId();
-            }]);
+            $normalizer = [
+                AbstractNormalizer::ATTRIBUTES => [
+                    'id', 'startDate', 'endDate', 'issues' => ['id', 'name', 'tasks' => ['id', 'status'], 'sprints' => ['id']]
+                ],
+                AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                    return $object->getId();
+                }
+            ];
+            $jsonContent = $serializer->serialize($sprint, 'json', $normalizer);
             $response->setContent($jsonContent);
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -107,9 +122,15 @@ class SprintController extends AbstractController
                 $em->persist($sprint);
                 $em->flush();
                 $response->setStatusCode(Response::HTTP_OK);
-                $jsonContent = $serializer->serialize($sprint, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $normalizer = [
+                    AbstractNormalizer::ATTRIBUTES => [
+                        'id', 'startDate', 'endDate', 'issues' => ['id', 'name', 'tasks' => ['id', 'status'], 'sprints' => ['id']]
+                    ],
+                    AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
+                        return $object->getId();
+                    }
+                ];
+                $jsonContent = $serializer->serialize($sprint, 'json', $normalizer);
                 $response->headers->set('Content-Type', 'application/json');
                 $response->setContent($jsonContent);
             } else {
