@@ -13,5 +13,12 @@ install:
   - docker-compose exec api php bin/console doctrine:fixtures:load -n
 
 script:
-  - docker-compose exec api php bin/phpunit
+  #- docker-compose exec api php bin/phpunit
   - docker-compose run testing
+
+deploy:
+  provider: releases
+  api_key: e9d05ad62167e900bcbf4dc7e1f7f4f1bc6a3bc6
+  skip_cleanup: true
+  on:
+    tags: false
