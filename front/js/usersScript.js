@@ -8,7 +8,9 @@ function auth() {
         username: username,
         password: password,
     });
-    $("#login-err-msg").fadeOut();
+    if($("#login-err-msg").hasClass('active-msg')) {
+        $("#login-err-msg").removeClass('active-msg').fadeOut();
+    }
     $("#login-loader").fadeIn();
     sendAjax('/login_check', 'POST', data)
         .then(res => {
@@ -35,7 +37,7 @@ function auth() {
         })
         .catch(e => {
             console.error(e)
-            $("#login-err-msg").fadeIn();
+            $("#login-err-msg").fadeIn({duration: 0}).addClass('active-msg');
             $("#login-loader").fadeOut();
         })
 }

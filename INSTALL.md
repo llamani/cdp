@@ -2,8 +2,9 @@
 
 L'application propose un environnement Docker.
 
-Pour installer et lancer l'application il vous suffit de completer le fichier `.env` avec les paramètres de votre choix.
-**NE PAS MODIFIER LA VARIABLE `DATABASE_URL`.**
+Pour installer et lancer l'application il vous suffit de completer le fichier `.env` avec les paramètres de votre choix.  
+**NE PAS MODIFIER LA VARIABLE `DATABASE_URL`.**  
+**SI VOUS CHANGEZ LE PORT NGINX (NGINX_PORT=8000), PENSEZ A AUSSI LE MODIFIER DANS LA PREMIERE LIGNE DU FICHIER `front/js/utils.js`.**  
 
 Ensuite il suffit d'executer le script `setup.sh`(linux) ou `setup.bat` (windows) de la façon suivante : 
 
@@ -54,7 +55,7 @@ Utiliser la commande suivante pour charger des données dans la base de données
     $ docker-compose exec api php bin/console doctrine:fictures:load -n
       
 En chargeant les fixtures, vous pourrez vous connecter sur l'application avec les informations suivantes : 
-* email : johndoe@example.com
+* email : laura@example.com / lucie@example.com / guillaume@example.com
 * password : test
       
       
@@ -64,7 +65,10 @@ Pour lancer manuellement les tests unitaires executez les commandes suivantes :
 LES TESTS NECESSITENT LE CHARGEMENT DES DONNEES FACTICES VU AU POINT PRECEDENT !
 
     # Tests backend
-    $ docker-compose exec api php bin/phpunit
+    $ docker-compose exec api php bin/phpunit 
   
     # Tests frontend
     $ docker-compose run testing
+
+
+Vous pouvez ajouter l'option `--testdox` à votre commande `phpunit` pour afficher le nom des tests effectués.

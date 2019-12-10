@@ -4,7 +4,7 @@ sudo: false
 
 services:
   - docker
-  -
+
 matrix:
   fast_finish: true
 
@@ -14,3 +14,4 @@ install:
 
 script:
   - docker-compose exec api php bin/phpunit
+  - docker-compose run testing

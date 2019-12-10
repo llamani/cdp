@@ -82,7 +82,7 @@ if (!is_readable($page)) {
     </script>
 </head>
 
-<body class="hold-transition sidebar-mini layout-fixed">
+<body id="app-body" class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light" aria-label="navbar-head">
