@@ -18,9 +18,7 @@ services:
       - db:db
 
   web:
-    restart: always
-    build:
-      context: front/.
+    image: guillaumened33/cdp-front
     ports:
       - ${FRONT_PORT}:8005
     volumes:
@@ -29,8 +27,7 @@ services:
       - api
 
   api:
-    build:
-      context: api/.
+    image: guillaumened33/cdp-api
     restart: always
     links:
       - db:db
@@ -49,8 +46,7 @@ services:
       - api
 
   testing:
-    build:
-      context: e2e-tests/.
+    image: guillaumened33/cdp-e2e
     restart: always
     volumes:
       - ./e2e-tests/tests/:/integration-tests/
