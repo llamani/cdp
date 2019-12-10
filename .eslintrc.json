@@ -304,7 +304,11 @@
             "error",
             "never"
         ],
+<<<<<<< HEAD
         "valid-jsdoc": "off",
+=======
+        "valid-jsdoc": "error",
+>>>>>>> 75b9092be6771e4852e496215b511bc0723489df
         "vars-on-top": "off",
         "wrap-iife": "off",
         "wrap-regex": "error",
