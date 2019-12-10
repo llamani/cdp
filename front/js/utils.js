@@ -1,5 +1,6 @@
 const API_URL = "http://localhost:8000";
 
+/*exported checkIsLoggedIn*/
 function checkIsLoggedIn() {
     if(localStorage.getItem("user_token") !== null && localStorage.getItem("user_token") !== "" &&
         localStorage.getItem("user_all_projects") !== null && localStorage.getItem("user_all_projects") !== "") {
@@ -12,6 +13,7 @@ function checkIsLoggedIn() {
     }
 }
 
+/*exported displaySidebarProjects*/
 function displaySidebarProjects() {
     const projectSelected = JSON.parse(localStorage.getItem("user_current_project"));
     const all_projects = JSON.parse(localStorage.getItem("user_all_projects"));
@@ -29,6 +31,7 @@ function displaySidebarProjects() {
     $("#project-list-sidebar").empty().append(sidebar);
 }
 
+/*exported switchCurrentProject*/
 function switchCurrentProject(id) {
     const projectSelected = JSON.parse(localStorage.getItem("user_current_project"));
     const all_projects = JSON.parse(localStorage.getItem("user_all_projects"));
@@ -47,6 +50,7 @@ function redirecttToLogin() {
     }
 }
 
+/*exported logout*/
 function logout() {
     localStorage.removeItem('user_token');
     localStorage.removeItem("user_projects");
