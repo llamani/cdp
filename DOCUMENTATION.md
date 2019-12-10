@@ -1,4 +1,4 @@
-#[V1.0.0] Documentation du projet
+#[V1.0.0] [Last modified : 10/12/2019] Documentation du projet
 
 ##Manuel d'installation
 
