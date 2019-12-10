@@ -13,7 +13,6 @@ class IssueControllerTest extends WebTestCase
 
     public function setUp()
     {
-
         $this->client = static::createClient([], [
             'PHP_AUTH_USER' => 'laura@example.com',
             'PHP_AUTH_PW'   => 'test',

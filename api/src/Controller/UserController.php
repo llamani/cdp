@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController {
 
-     /**
+    /**
      * @Route("/users", name="api_get_all_users", methods={"GET"})
      */
     public function getAll(SerializerInterface $serializer)
@@ -25,9 +26,7 @@ class UserController extends AbstractController {
             $usersList = $this->getDoctrine()->getRepository(User::class)->findAll();
 
             if(!empty($usersList)) {
-                $jsonContent = $serializer->serialize($usersList, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize($usersList, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name']]);
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {

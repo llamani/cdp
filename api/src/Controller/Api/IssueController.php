@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class IssueController extends AbstractController
@@ -27,9 +28,7 @@ class IssueController extends AbstractController
             if (!empty($userProjectsRelations)) {
                 $issuesList = $this->getDoctrine()->getRepository(Issue::class)->findBy(array('project' => $projectId));
                 if (!empty($issuesList)) {
-                    $jsonContent = $serializer->serialize($issuesList, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($issuesList, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'priority', 'difficulty', 'status', 'tasks'=>['id', 'status']]]);
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->setContent($jsonContent);
                 } else {
@@ -61,9 +60,7 @@ class IssueController extends AbstractController
                 if (!empty($userProjectsRelations)) {
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->headers->set('Content-Type', 'application/json');
-                    $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($issue, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'priority', 'difficulty', 'status', 'tasks'=>['id', 'status']]]);
                     $response->setContent($jsonContent);
                 } else {
                     $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
@@ -104,9 +101,7 @@ class IssueController extends AbstractController
                 $em->flush();
                 $response->setStatusCode(Response::HTTP_CREATED);
                 $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize($issue, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'priority', 'difficulty', 'status', 'tasks'=> ['id', 'status']]]);
                 $response->setContent($jsonContent);
             } else {
                 $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
@@ -140,9 +135,8 @@ class IssueController extends AbstractController
                     $em->persist($issue);
                     $em->flush();
                     $response->setStatusCode(Response::HTTP_OK);
-                    $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($issue, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'priority', 'difficulty', 'status', 'tasks'=>['id','status']]]);
+
                     $response->headers->set('Content-Type', 'application/json');
                     $response->setContent($jsonContent);
                 } else {
@@ -178,9 +172,7 @@ class IssueController extends AbstractController
                     $em->persist($issue);
                     $em->flush();
                     $response->setStatusCode(Response::HTTP_OK);
-                    $jsonContent = $serializer->serialize($issue, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($issue, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'priority', 'difficulty', 'status','tasks'=>['id', 'status']]]);
                     $response->headers->set('Content-Type', 'application/json');
                     $response->setContent($jsonContent);
                 } else {
@@ -224,42 +216,6 @@ class IssueController extends AbstractController
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
                 $response->setContent('Unknown issue with id ' . $id);
-            }
-        } catch (Exception $e) {
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-            $response->setContent($e->getMessage());
-        }
-        return $response;
-    }
-
-    /**
-     * @Route("/issueIds/{projectId}", name="api_get_issue_ids", methods={"GET"})
-     */
-    public function getIssueIds(SerializerInterface $serializer, $projectId)
-    {
-        $response = new Response();
-        try {
-            $userId = $this->getUser()->getId();
-            $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findOneBy(['user' => $userId, 'project' => $projectId]);
-            if (!empty($userProjectsRelations)) {
-                $query = $this->getDoctrine()->getRepository(Issue::class)->createQueryBuilder("t");
-                $issueIdsList = $query->select('t.id')
-                    ->getQuery()
-                    ->getResult();
-
-                if ($issueIdsList != null) {
-                    $jsonContent = $serializer->serialize($issueIdsList, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
-                    $response->setStatusCode(Response::HTTP_OK);
-                    $response->setContent($jsonContent);
-                } else {
-                    $response->setStatusCode(Response::HTTP_OK);
-                    $response->setContent(json_encode([]));
-                }
-            } else {
-                $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
-                $response->setContent("You can't access to this project.");
             }
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);

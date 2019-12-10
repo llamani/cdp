@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -26,11 +27,7 @@ class TestController extends AbstractController
         try {
             $testsList = $this->getDoctrine()->getRepository(Test::class)->findBy(array('project' => $projectId));
             if (!empty($testsList)) {
-                $jsonContent = $serializer->serialize(
-                    $testsList, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]
-                );
+                $jsonContent = $serializer->serialize($testsList, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'type', 'expectedResult', 'obtainedResult', 'testDate', 'status', 'testManagers'=>['id', 'name']]]);
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
@@ -57,11 +54,7 @@ class TestController extends AbstractController
             if ($test != null) {
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize(
-                    $test, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]
-                );
+                $jsonContent = $serializer->serialize($test, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'type', 'expectedResult', 'obtainedResult', 'testDate', 'status', 'testManagers'=>['id', 'name']]]);
                 $response->setContent($jsonContent);
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
@@ -101,11 +94,7 @@ class TestController extends AbstractController
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
             $response->headers->set('Content-Type', 'application/json');
-            $jsonContent = $serializer->serialize(
-                $test, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]
-            );
+            $jsonContent = $serializer->serialize($test, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'type', 'expectedResult', 'obtainedResult', 'testDate', 'status', 'testManagers'=>['id', 'name']]]);
             $response->setContent($jsonContent);
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -149,11 +138,7 @@ class TestController extends AbstractController
                 $em->persist($test);
                 $em->flush();
                 $response->setStatusCode(Response::HTTP_OK);
-                $jsonContent = $serializer->serialize(
-                    $test, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]
-                );
+                $jsonContent = $serializer->serialize($test, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'type', 'expectedResult', 'obtainedResult', 'testDate', 'status', 'testManagers'=>['id', 'name']]]);
                 $response->headers->set('Content-Type', 'application/json');
                 $response->setContent($jsonContent);
             } else {
@@ -208,11 +193,7 @@ class TestController extends AbstractController
                 $em->persist($test);
                 $em->flush();
                 $response->setStatusCode(Response::HTTP_OK);
-                $jsonContent = $serializer->serialize(
-                    $test, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]
-                );
+                $jsonContent = $serializer->serialize($test, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'type', 'expectedResult', 'obtainedResult', 'testDate', 'status', 'testManagers'=>['id', 'name']]]);
                 $response->headers->set('Content-Type', 'application/json');
                 $response->setContent($jsonContent);
             } else {

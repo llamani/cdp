@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -39,9 +40,7 @@ class TaskController extends AbstractController
                 $tasksCollection = new ArrayCollection($tasksList);
 
                 if (!empty($tasksCollection)) {
-                    $jsonContent = $serializer->serialize($tasksCollection, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($tasksCollection, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'status', 'workload', 'issues'=>['id', 'name','sprints'=>['id']]]]);
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->setContent($jsonContent);
                 } else {
@@ -84,9 +83,7 @@ class TaskController extends AbstractController
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
             $response->headers->set('Content-Type', 'application/json');
-            $jsonContent = $serializer->serialize($task, 'json', ['circular_reference_handler' => function ($object) {
-                return $object->getId();
-            }]);
+            $jsonContent = $serializer->serialize($task, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'status', 'workload', 'issues'=>['id', 'name', 'sprints'=>['id']]]]);
             $response->setContent($jsonContent);
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -124,9 +121,7 @@ class TaskController extends AbstractController
                 $em->persist($task);
                 $em->flush();
                 $response->setStatusCode(Response::HTTP_OK);
-                $jsonContent = $serializer->serialize($task, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize($task, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'status', 'workload', 'issues'=>['id', 'name','sprints'=>['id']]]]);
                 $response->headers->set('Content-Type', 'application/json');
                 $response->setContent($jsonContent);
             } else {
@@ -155,9 +150,7 @@ class TaskController extends AbstractController
                 $em->persist($task);
                 $em->flush();
                 $response->setStatusCode(Response::HTTP_OK);
-                $jsonContent = $serializer->serialize($task, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize($task, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'status', 'workload', 'issues'=>['id', 'name','sprints'=>['id']]]]);
                 $response->headers->set('Content-Type', 'application/json');
                 $response->setContent($jsonContent);
             } else {

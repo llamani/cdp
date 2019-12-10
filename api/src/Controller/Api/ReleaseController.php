@@ -30,9 +30,7 @@ class ReleaseController extends AbstractController {
             if(!empty($userReleasesRelations)) {
                 $releases = $this->getReleasesFromProject($project);
                 if (!empty($releases)) {
-                    $jsonContent = $serializer->serialize($releases, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($releases, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'releaseDate', 'srcLink', 'sprint' => ['id', 'startDate', 'endDate']]]);
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->setContent($jsonContent);
                 } else {
@@ -89,9 +87,7 @@ class ReleaseController extends AbstractController {
 
                 $response->setStatusCode(Response::HTTP_CREATED);
                 $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize($release, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize($release, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'releaseDate', 'srcLink', 'sprint' => ['id', 'startDate', 'endDate']]]);
                 $response->setContent($jsonContent);
             } else {
                 $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
@@ -128,9 +124,7 @@ class ReleaseController extends AbstractController {
                     $em->persist($release);
                     $em->flush();
                     $response->setStatusCode(Response::HTTP_OK);
-                    $jsonContent = $serializer->serialize($release, 'json', ['circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($release, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'releaseDate', 'srcLink', 'sprint' => ['id', 'startDate', 'endDate']]]);
                     $response->headers->set('Content-Type', 'application/json');
                     $response->setContent($jsonContent);
 

@@ -26,7 +26,7 @@ class ProjectController extends AbstractController
             $userProjectsRelations = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findBy(['user' => $userId]);
             $projects = $this->getProjectsByRelations($userProjectsRelations);
             if (!empty($projects)) {
-                $jsonContent = $serializer->serialize($projects, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at']]);
+                $jsonContent = $serializer->serialize($projects, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'userProjectRelations' => ['user'=>['id', 'name']]]]);
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->setContent($jsonContent);
             } else {
@@ -60,9 +60,7 @@ class ProjectController extends AbstractController
             if (!empty($userProjectsRelations)) {
                 $members = $this->getDoctrine()->getRepository(UserProjectRelation::class)->findBy(['project' => $projectId]);
                 if ($members != null) {
-                    $jsonContent = $serializer->serialize($members, 'json', [AbstractNormalizer::ATTRIBUTES => ['user' => ['id', 'name']], 'circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($members, 'json', [AbstractNormalizer::ATTRIBUTES => ['user' => ['id', 'name']]]);
                     $response->setStatusCode(Response::HTTP_OK);
                     $response->setContent($jsonContent);
                 } else {
@@ -91,9 +89,7 @@ class ProjectController extends AbstractController
             if ($project != null) {
                 $response->setStatusCode(Response::HTTP_OK);
                 $response->headers->set('Content-Type', 'application/json');
-                $jsonContent = $serializer->serialize($project, 'json', ['circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }]);
+                $jsonContent = $serializer->serialize($project, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at','userProjectRelations' => ['user'=>['id', 'name']]]]);
                 $response->setContent($jsonContent);
             } else {
                 $response->setStatusCode(Response::HTTP_NOT_FOUND);
@@ -139,9 +135,7 @@ class ProjectController extends AbstractController
             $em->flush();
             $response->setStatusCode(Response::HTTP_CREATED);
             $response->headers->set('Content-Type', 'application/json');
-            $jsonContent = $serializer->serialize($project, 'json',  ['circular_reference_handler' => function ($object) {
-                return $object->getId();
-            }]);
+            $jsonContent = $serializer->serialize($project, 'json',  [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'userProjectRelations' => ['user'=>['id', 'name']]]]);
             $response->setContent($jsonContent);
         } catch (Exception $e) {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -182,9 +176,7 @@ class ProjectController extends AbstractController
                     $em->persist($project);
                     $em->flush();
                     $response->setStatusCode(Response::HTTP_OK);
-                    $jsonContent = $serializer->serialize($project, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'userProjectRelations' => ['user']],  'circular_reference_handler' => function ($object) {
-                        return $object->getId();
-                    }]);
+                    $jsonContent = $serializer->serialize($project, 'json', [AbstractNormalizer::ATTRIBUTES => ['id', 'name', 'description', 'created_at', 'userProjectRelations' => ['user'=>['id', 'name']]]]);
                     $response->headers->set('Content-Type', 'application/json');
                     $response->setContent($jsonContent);
                 } else {
@@ -211,7 +203,7 @@ class ProjectController extends AbstractController
             $inArray = array_search($oldUserId, $newMembers);
             if (!$inArray) {
                 $project->removeUserProjectRelation($oldRelation);
-                $entityManager->remove($oldRelation);        
+                $entityManager->remove($oldRelation);
             } else {
                 unset($newMembers[$inArray]);
             }
