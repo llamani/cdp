@@ -1,6 +1,6 @@
 # [V1.0.0] [Last modified : 10/12/2019] Manuel d'installation
 
-L'application propose un environnement Docker.
+L'application propose un environnement Docker. Il est nécessaire de partager le disque où se trouve l'application pour que cela fonctionne.
 
 Pour installer et lancer l'application il vous suffit de completer le fichier `.env` avec les paramètres de votre choix (ou garder les paramètres par défaut).  
 **NE PAS MODIFIER LA VARIABLE `DATABASE_URL`.**  
