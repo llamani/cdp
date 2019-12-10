@@ -25,7 +25,7 @@ before(async() => {
 
 after(async() => {
     try {
-        //await browser.close()
+        await browser.close()
     } catch (e) {
         console.log(e);
     }
@@ -42,7 +42,7 @@ describe('LoginPage', () => {
 
     after(async() => {
         try {
-            //await page.close()
+            await page.close()
         } catch (e) {
             console.log(e);
         }
