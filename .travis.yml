@@ -18,7 +18,7 @@ script:
 
 deploy:
   provider: releases
-  api_key: e9d05ad62167e900bcbf4dc7e1f7f4f1bc6a3bc6
+  api_key: $GH_TOKEN
   skip_cleanup: true
   on:
     tags: false
