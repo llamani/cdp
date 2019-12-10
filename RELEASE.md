@@ -6,8 +6,8 @@ https://github.com/llamani/cdp/releases
 
 ## Release 3
 
-Release 3 (sprint 3) : 10/12/2019 
-Identifiant du commit de la release : 
+Release 3 (sprint 3) : 10/12/2019 15:50
+Identifiant du commit de la release : cde17d4e3b07c5791e1fa12b476b78dc4133e2ec
 
 ### Liste des issues réalisées
 
