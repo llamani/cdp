@@ -1,0 +1,1155 @@
+swagger: '2.0'
+info:
+  description: |
+    Scrumup
+  version: 1.0.0
+  title: Scrumup
+
+tags:
+- name: project
+  description: Projet d'un utilisateur
+- name: issue
+  description: Issue d'un projet
+- name: task
+  description: Tâche d'une issue
+- name: sprint
+  description: Sprint d'un projet
+- name: release
+  description: Release d'un sprint
+- name: test
+  description: Test d'un projet
+paths:
+  /project:
+    post:
+      tags:
+      - project
+      summary: Ajout d'un projet pour un utilisateur
+      operationId: api_create_project
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: project
+        description: Projet à ajouter à un utilisateur
+        required: true
+        schema:
+          $ref: '#/definitions/Project-request'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Project-response'
+        401:
+          description: You can't create this project
+      security:
+       - basicAuth: []
+
+  /projects:
+    get:
+      tags:
+      - project
+      summary: Tous les projets d'un utilisateur
+      operationId: api_get_all_projects
+      produces:
+      - application/json
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Project-response'
+      security:
+      - basicAuth: []
+       
+              
+  /members/{projectId}:
+    get:
+      tags:
+      - project
+      summary: Tous les membres d'un projet
+      operationId: api_get_members_of_project
+      parameters:
+      - in: path
+        name: projectId
+        description: Id du projet
+        type: integer
+        format: int64
+        required: true
+      produces:
+      - application/json
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: L'id du membre.
+              name:
+                type: string
+                description: Le nom du membre.
+      security:
+      - basicAuth: []
+
+
+  /project/{projectId}:
+    put:
+      tags:
+      - project
+      summary: Update d'un projet existant
+      operationId: api_update_project
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: projectId
+        description: Id du projet à modifier
+        type: integer
+        format: int64
+        required: true
+      - in: body
+        name: project
+        description: Données à modifier
+        schema:
+          $ref: '#/definitions/Project-request'
+      responses:
+        402:
+          description: You can't update this project
+        404:
+          description: Unknown project with id
+        200:
+          description: successful operation
+          schema: 
+            $ref: '#/definitions/Project-response'
+      security:
+      - basicAuth: []
+
+    delete:
+      tags:
+        - project
+      summary: Suppression d'un projet existant
+      operationId: api_delete_project
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: projectId
+        description: Id du projet à supprimer
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: Project successfully deleted
+        402:
+          description: You can't remove this project
+        404:
+          description: Unknown project with id
+      security:
+      - basicAuth: []
+
+  /issue:
+    post:
+      tags:
+      - issue
+      summary: Ajout d'une issue à un projet
+      operationId: api_create_issue
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Issue à ajouter à un projet
+        required: true
+        schema:
+          $ref: '#/definitions/Issue-request'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Issue-response'
+        402:
+          description: You can't create this issue
+      security:
+      - basicAuth: []
+
+  /issues/{projectId}:
+    get:
+      tags:
+      - issue
+      summary: Récupération des issues d'un projet
+      operationId: api_get_all_issues
+      produces:
+      - application/json
+      parameters:
+      - name: projectId
+        in: path
+        description: Id du projet des issues
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Issue-response'
+        401:
+          description: You can't add this issue
+        404:
+          description: Unknown project with id
+      security:
+      - basicAuth: []
+
+  /issue/{issueId}:
+    put:
+      tags:
+        - issue
+      summary: Update d'une issue existante
+      operationId: api_update_issue
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: issueId
+        description: Id de l'issue à modifier
+        type: integer
+        format: int64
+        required: true
+      - in: body
+        name: issue
+        description: Données à modifier
+        schema:
+          $ref: '#/definitions/Issue-request'
+      responses:
+        402:
+          description: You can't update this issue
+        404:
+          description: Unknown issue with id
+        200:
+          description: successful operation
+          schema: 
+            $ref: '#/definitions/Issue-response'
+      security:
+      - basicAuth: []
+
+    delete:
+      tags:
+        - issue
+      summary: Suppression d'une issue existante
+      operationId: api_delete_issue
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: issueId
+        description: Id de l'issue à supprimer
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: Issue successfully deleted
+        402:
+          description: You can't remove this issue
+        404:
+          description: Unknown issue with id
+      security:
+      - basicAuth: []
+
+  /task:
+    post:
+      tags:
+      - task
+      summary: Ajout d'une tâche à un projet
+      operationId: api_create_task
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Tâche à ajouter à un projet
+        required: true
+        schema:
+          $ref: '#/definitions/Task-request'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Task-response'
+        402:
+          description: You can't create this issue
+      security:
+      - basicAuth: []
+
+  /tasks/{projectId}:
+    get:
+      tags:
+      - task
+      summary: Récupération des tâches d'un projet
+      operationId: api_get_all_tasks
+      produces:
+      - application/json
+      parameters:
+      - name: projectId
+        in: path
+        description: Id du projet des tâches
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Task-response'
+        401:
+          description: You can't add this task
+        404:
+          description: Unknown project with id
+      security:
+      - basicAuth: []
+
+  /task/{taskId}:
+    put:
+      tags:
+        - task
+      summary: Update d'une tâche existante
+      operationId: api_update_task
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: taskId
+        description: Id de la tâche à modifier
+        type: integer
+        format: int64
+        required: true
+      - in: body
+        name: task
+        description: Données à modifier
+        schema:
+          $ref: '#/definitions/Task-request'
+      responses:
+        402:
+          description: You can't update this task
+        404:
+          description: Unknown task with id
+        200:
+          description: successful operation
+          schema: 
+            $ref: '#/definitions/Task-response'
+      security:
+      - basicAuth: []
+
+    delete:
+      tags:
+        - task
+      summary: Suppression d'une tâche existante
+      operationId: api_delete_task
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: taskId
+        description: Id de la tâche à supprimer
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Task-succint'
+        402:
+          description: You can't remove this task
+        404:
+          description: Unknown task with id
+      security:
+      - basicAuth: []
+
+
+  /sprint:
+    post:
+      tags:
+      - sprint
+      summary: Ajout d'un sprint à un projet
+      operationId: api_create_sprint
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Sprint à ajouter à un projet
+        required: true
+        schema:
+          $ref: '#/definitions/Sprint-request'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Sprint-response'
+        402:
+          description: You can't create this sprint
+      security:
+      - basicAuth: []
+
+  /sprints/{projectId}:
+    get:
+      tags:
+      - sprint
+      summary: Récupération des sprints d'un projet
+      operationId: api_get_all_sprints
+      produces:
+      - application/json
+      parameters:
+      - name: projectId
+        in: path
+        description: Id du projet des sprints
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Sprint-response'
+        401:
+          description: You can't get these sprints
+        404:
+          description: Unknown project with id
+      security:
+      - basicAuth: []
+
+  /sprint/{sprintId}:
+    put:
+      tags:
+        - sprint
+      summary: Update d'un sprint existant
+      operationId: api_update_sprint
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: sprintId
+        description: Id du sprint à modifier
+        type: integer
+        format: int64
+        required: true
+      - in: body
+        name: sprint
+        description: Données à modifier
+        schema:
+          $ref: '#/definitions/Sprint-request'
+      responses:
+        402:
+          description: You can't update this sprint
+        404:
+          description: Unknown sprint with id
+        200:
+          description: successful operation
+          schema: 
+            $ref: '#/definitions/Sprint-response'
+      security:
+      - basicAuth: []
+
+    delete:
+      tags:
+        - sprint
+      summary: Suppression d'un sprint existant
+      operationId: api_delete_sprint
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: sprintId
+        description: Id du sprint à supprimer
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: Sprint successfully deleted
+        402:
+          description: You can't remove this sprint
+        404:
+          description: Unknown sprint with id
+      security:
+      - basicAuth: []
+
+  /release:
+    post:
+      tags:
+      - release
+      summary: Ajout d'une release à un projet
+      operationId: api_create_release
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Release à ajouter à un projet
+        required: true
+        schema:
+          $ref: '#/definitions/Release-request'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Release-response'
+        402:
+          description: You can't create this release
+      security:
+      - basicAuth: []
+
+  /releases/{projectId}:
+    get:
+      tags:
+      - release
+      summary: Récupération des releases d'un projet
+      operationId: api_get_all_releases
+      produces:
+      - application/json
+      parameters:
+      - name: projectId
+        in: path
+        description: Id du projet des releases
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Release-response'
+        401:
+          description: You can't get these releases
+        404:
+          description: Unknown project with id
+      security:
+      - basicAuth: []
+
+  /release/{releaseId}:
+    put:
+      tags:
+        - release
+      summary: Update d'une release existante
+      operationId: api_update_release
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: releaseId
+        description: Id de la release à modifier
+        type: integer
+        format: int64
+        required: true
+      - in: body
+        name: release
+        description: Données à modifier
+        schema:
+          $ref: '#/definitions/Release-request'
+      responses:
+        402:
+          description: You can't update this release
+        404:
+          description: Unknown release with id
+        200:
+          description: successful operation
+          schema: 
+            $ref: '#/definitions/Release-response'
+      security:
+      - basicAuth: []
+
+    delete:
+      tags:
+        - release
+      summary: Suppression d'une release existante
+      operationId: api_delete_release
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: releaseId
+        description: Id de la release à supprimer
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: Release successfully deleted
+        402:
+          description: You can't remove this release
+        404:
+          description: Unknown release with id
+      security:
+      - basicAuth: []
+
+  /test:
+    post:
+      tags:
+      - test
+      summary: Ajout d'un test à un projet
+      operationId: api_create_test
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Test à ajouter à un projet
+        required: true
+        schema:
+          $ref: '#/definitions/Test-request'
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Test-response'
+        402:
+          description: You can't create this test
+      security:
+      - basicAuth: []
+
+  /tests/{testId}:
+    get:
+      tags:
+      - test
+      summary: Récupération des tests d'un projet
+      operationId: api_get_all_tests
+      produces:
+      - application/json
+      parameters:
+      - name: testId
+        in: path
+        description: Id du projet des tests
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Test-response'
+        401:
+          description: You can't get these tests
+        404:
+          description: Unknown project with id
+      security:
+      - basicAuth: []
+
+  /test/{testId}:
+    put:
+      tags:
+        - test
+      summary: Update d'un test existant
+      operationId: api_update_test
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: testId
+        description: Id du test à modifier
+        type: integer
+        format: int64
+        required: true
+      - in: body
+        name: release
+        description: Données à modifier
+        schema:
+          $ref: '#/definitions/Test-request'
+      responses:
+        402:
+          description: You can't update this test
+        404:
+          description: Unknown test with id
+        200:
+          description: successful operation
+          schema: 
+            $ref: '#/definitions/Test-response'
+      security:
+      - basicAuth: []
+
+    delete:
+      tags:
+        - test
+      summary: Suppression d'un test existant
+      operationId: api_delete_test
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: testId
+        description: Id du test à supprimer
+        type: integer
+        format: int64
+        required: true
+      responses:
+        200:
+          description: Test deleted successfully
+        402:
+          description: You can't remove this test
+        404:
+          description: Unknown test with id
+      security:
+      - basicAuth: []
+
+
+  /signup:
+    post:
+      tags:
+      - user
+      summary: Création d'un utilisateur
+      operationId: api_signup
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        default:
+          description: successful operation
+  /auth:
+    get:
+      tags:
+      - user
+      summary: Retourne l'utilisateur authentifié
+      operationId: api_auth_user
+      produces:
+      - application/json
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse'
+
+ 
+securityDefinitions:
+  basicAuth:
+    type: basic
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+ 
+
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+
+  UserProjectRelations:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/User'
+
+  Project-response:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        example: project_root
+      description:
+        type: string
+        example : test_description
+      userProjectRelations:
+        type: array
+        items:
+          $ref: '#/definitions/UserProjectRelations'
+          
+  Project-request:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+        example: project_root
+      description:
+        type: string
+        example : test_description
+      users:
+        type: array
+        items:
+          type: integer
+
+ 
+  Issue-response:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        example: issue_test
+      description:
+        type: string
+        example : test_description
+      priority:
+        type: string
+        description: priorité d'une issue
+        enum:
+        - low
+        - medium
+        - high
+      difficulty:
+        type: string
+        description: difficulté d'une issue
+        enum:
+        - easy
+        - intermediate
+        - difficult
+      project:
+        type: integer
+        description: id du projet
+      tasks:
+          type: array
+          items:
+            $ref: '#/definitions/Task-succint'
+            
+  Issue-request:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+        example: issue_test
+      description:
+        type: string
+        example : test_description
+      priority:
+        type: string
+        description: priorité d'une issue
+        enum:
+        - low
+        - medium
+        - high
+      difficulty:
+        type: string
+        description: difficulté d'une issue
+        enum:
+        - easy
+        - intermediate
+        - difficult
+      project:
+        type: integer
+        description: id du projet
+        
+  Issue-sprint-response:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        example: issue_test
+      tasks:
+        type: array
+        items:
+          $ref: '#/definitions/Task-succint'
+      sprints:
+        type: array
+        items:
+          type: integer
+          format: int64
+
+
+  Issue-succint:
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        example: issue_test
+        
+  Task-succint:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      status:
+        type: string
+        description: statut d'une tâche
+        enum:
+        - todo
+        - in progress
+        - done    
+        
+  Task-response:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        example: task_test
+      description:
+        type: string
+        example : test_description
+      workload:
+        type: number
+        description: charge de travail d'une tâche
+      issues:
+        description: difficulté d'une issue
+        type: array
+        items:
+          $ref: '#/definitions/Issue-succint'
+      status:
+        type: string
+        description: statut d'une tache
+        enum:
+        - todo
+        - in progress
+        - done
+        
+  Task-request:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+        example: task_test
+      description:
+        type: string
+        example : test_description
+      workload:
+        type: number
+        description: charge de travail d'une tâche
+      issues:
+        description: difficulté d'une issue
+        type: array
+        items:
+          type: integer
+          format: int64
+          description: issues attachées à la tâche
+      status:
+        type: string
+        description: statut d'une tache
+        enum:
+        - todo
+        - in progress
+        - done
+  
+  Sprint-request:
+    type: object
+    required:
+    - name
+    properties:
+      startDate:
+        type: string
+      endDate:
+        type: string
+      issues:
+        description: difficulté d'une issue
+        type: array
+        items:
+          type: integer
+          description: issue id
+          
+  Sprint-response:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      startDate:
+        type: string
+      endDate:
+        type: string
+      issues:
+        description: difficulté d'une issue
+        type: array
+        items:
+          $ref: '#/definitions/Issue-sprint-response'
+  Sprint-succint:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      startDate:
+        type: string
+      endDate:
+        type: string
+
+  Release-response:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      description:
+        type: string
+      releaseDate:
+        type: string
+      srcLink:
+        type: string
+      sprint:
+        $ref: '#/definitions/Sprint-succint'
+  
+  Release-request:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      releaseDate:
+        type: string
+      srcLink:
+        type: string
+      sprint:
+        type: integer
+        format: int64
+        
+  
+  Test-request:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      type:
+        type: string
+        enum:
+        - unit
+        - functional
+        - integration
+        - ui
+      expectedResult:
+        type: string
+      obtainedResult:
+        type: string
+      testManagers:
+        type: array
+        items:
+          type: integer
+          
+  Test-response:
+    type: object
+    required:
+    - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      description:
+        type: string
+      type:
+        type: string
+        enum:
+        - unit
+        - functional
+        - integration
+        - ui
+      expectedResult:
+        type: string
+      obtainedResult:
+        type: string
+      status: 
+        type: string
+        enum:
+        - success
+        - fail
+        - unknown
+      testManagers:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+
+  ApiResponse:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+
+
+basePath: /llamani/Scrumup/1.0.0
+schemes:
+ - https
+ - http
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
