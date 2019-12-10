@@ -4,7 +4,7 @@ sudo: false
 
 services:
   - docker
-  -
+
 matrix:
   fast_finish: true
 

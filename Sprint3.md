@@ -1,4 +1,4 @@
-# Sprint 3 - 25/11/19 au 06/12/19
+# Sprint 3 - 25/11/19 au 10/12/19
 
 | ID | User Story | Priorité | Difficulté |
 | -- | ---------- | -------- | ---------- |
