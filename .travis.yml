@@ -12,6 +12,21 @@ install:
   - ./setup.sh
   - docker-compose exec api php bin/console doctrine:fixtures:load -n
 
-script:
-  - docker-compose exec api php bin/phpunit
-  - docker-compose run testing
+#script:
+  #- docker-compose exec api php bin/phpunit
+  #- docker-compose run testing
+
+jobs:
+  include:
+    - stage: Backend tests
+      script: docker-compose exec api php bin/phpunit
+    - stage: Frontend e2e tests
+      script: docker-compose run testing
+    - stage: deploy Release
+      script: skip
+      deploy:
+        provider: releases
+        api_key: 7e92b96922805c55863c1f6f5ebcd473e7d4f212
+        skip_cleanup: true
+        on:
+          tags: true
