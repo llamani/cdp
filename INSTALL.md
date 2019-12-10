@@ -2,7 +2,7 @@
 
 L'application propose un environnement Docker.
 
-Pour installer et lancer l'application il vous suffit de completer le fichier `.env` avec les paramètres de votre choix.  
+Pour installer et lancer l'application il vous suffit de completer le fichier `.env` avec les paramètres de votre choix (ou garder les paramètres par défaut).  
 **NE PAS MODIFIER LA VARIABLE `DATABASE_URL`.**  
 **SI VOUS CHANGEZ LE PORT NGINX (NGINX_PORT=8000), PENSEZ A AUSSI LE MODIFIER DANS LA PREMIERE LIGNE DU FICHIER `front/js/utils.js`.**  
 
@@ -12,19 +12,17 @@ Ensuite il suffit d'executer le script `setup.sh`(linux) ou `setup.bat` (windows
     $ ./setup.sh 
     $ setup.bat
     
-    # Lancement en forçant la reconstruction des containers dockers à partir de leur dockerfile
-    $ ./setup.sh --build
-    $ setup.bat --build
-    
-Votre application est maintenant disponible à http://127.0.0.1:{FRONT_PORT}.
+Votre application est maintenant disponible à [http://127.0.0.1:8001]('http://127.0.0.1:8001') (ou http://127.0.0.1:{FRONT_PORT} si vous avez
+changé le port)
+
 
 Si vous ne pouvez pas executer le script, voici les commandes à executer : 
 
     # Copie les variables d'environnement pour le bon fonctionnement de Symfony
     $ cp ./.env api/
     
-    # Construit et lance les containers docker. Optionnel : le flag (--build) permet de reconstruire les containers à partir des Dockerfile
-    $ docker-compose up -d (--build)
+    # Construit et lance les containers docker. 
+    $ docker-compose up -d 
     
     # Execute les migrations sur la base de données pour la mettre à jour
     $ docker-compose exec api php bin/console doctrine:migrations:migrate -n

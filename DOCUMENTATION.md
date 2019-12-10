@@ -4,7 +4,7 @@
 
 Vous trouverez le manuel d'installation de l'application ainsi que la documentation pour les tests unitaires dans le fichier [INSTALL.md](./INSTALL.md)
 
-**Une description Swagger de l'API est disponible avec le fichier [https://app.swaggerhub.com/apis/llamani/Scrumup/1.0.0](https://app.swaggerhub.com/apis/llamani/Scrumup/1.0.0)**
+**Une description Swagger de l'API est disponible avec le fichier [swagger.yaml]('./swagger.yaml') ou à l'adresse suivante [https://app.swaggerhub.com/apis/llamani/Scrumup/1.0.0](https://app.swaggerhub.com/apis/llamani/Scrumup/1.0.0)**
 
 ##Architecture
 
